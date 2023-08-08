@@ -22,6 +22,8 @@ public class UserController {
 
     @GetMapping("/add/{userId}")
     public String add(@PathVariable("userId") String userId) {
+    	log.info("/add/{}, {}, {}",userId, userId, userId);
+    	System.out.println("/add/"+userId+", "+userId+", "+userId);
         userService.register(userId, "test");
         return "사용자 생성이 완료되었습니다. ";
     }
