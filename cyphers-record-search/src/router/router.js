@@ -25,8 +25,8 @@ const routes = [
 ]
 
 const router = new VueRouter({
-    mode: 'history',
-    base: process.env.BASE_URL,
+    mode: 'hash',
+    base: '/vue/html', // 이 부분을 추가하세요.
     routes
 })
 

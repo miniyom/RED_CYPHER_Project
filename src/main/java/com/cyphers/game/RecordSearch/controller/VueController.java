@@ -1,15 +1,23 @@
 package com.cyphers.game.RecordSearch.controller;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
 @Controller
+@Slf4j
 public class VueController {
 
-    @RequestMapping({ "/user/**", "/anotherPath/**", "/*" }) // 여기에 필요한 경로를 추가하세요.
-    public String index() {
+    @RequestMapping("/vue/html/**")
+    public String redirectVue() {
         return "forward:/index.html";
     }
 
 }
+
 

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <b-form @submit.prevent="handleSubmit">
+    <b-form>
       <b-form-input
           v-if="!isEdit"
           v-model="user.userId"
@@ -11,7 +11,9 @@
           v-model="user.nickname"
           placeholder="Enter nickname"
       ></b-form-input>
-      <b-button type="submit">Submit</b-button>
+      <b-button @click="confirm" variant="success">save</b-button>
+      <b-button class="m-2" @click="goToList" variant="info">list</b-button>
+      <b-button v-if="isEdit" @click="deleteUser" variant="danger">Delete</b-button>
     </b-form>
   </div>
 </template>
@@ -36,7 +38,7 @@ export default {
     }
   },
   methods: {
-    handleSubmit() {
+    confirm() {
       if (this.isEdit) {
         axios.get(`/api/user/update/${this.user.userId}/${this.user.nickname}`)
             .then(response => {
@@ -52,7 +54,17 @@ export default {
               this.$router.push('/user/list');
             });
       }
-    }
+    },
+    deleteUser() {
+      axios.get(`/api/user/remove/${this.user.userId}`)
+          .then(response => {
+            console.log('Delete Response:', response);
+            this.$router.push('/user/list');  // 삭제 후 목록 페이지로 리다이렉트
+          });
+    },
+    goToList() {
+      this.$router.push('/user/list');
+    },
   },
   mounted() {
     if (this.userId) {
