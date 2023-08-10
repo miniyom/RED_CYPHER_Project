@@ -1,6 +1,7 @@
 # Created by https://www.toptal.com/developers/gitignore/api/intellij,eclipse,java,vuejs
 # Edit at https://www.toptal.com/developers/gitignore?templates=intellij,eclipse,java,vuejs
 target/
+datasource.properties
 
 ### Eclipse ###
 .metadata
