@@ -1,14 +1,17 @@
 package com.cyphers.game.RecordSearch.controller;
 
+import com.cyphers.game.RecordSearch.cyphers.CyphersApiService;
+import com.cyphers.game.RecordSearch.cyphers.model.CyphersPlayerInfo;
+import com.cyphers.game.RecordSearch.cyphers.model.CyphersPlayerResponse;
+import com.cyphers.game.RecordSearch.cyphers.model.enumuration.CyphersWordType;
 import com.cyphers.game.RecordSearch.model.CrsUser;
 import com.cyphers.game.RecordSearch.service.user.CrsUserService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,6 +22,7 @@ import java.util.Optional;
 public class UserController {
 
     private final CrsUserService userService;
+    private final CyphersApiService cyphersApiService;
 
     @GetMapping("/add/{userId}")
     public String add(@PathVariable("userId") String userId) {
@@ -58,11 +62,26 @@ public class UserController {
     }
 
     @GetMapping("/get/{userId}")
-    public CrsUser get(@PathVariable("userId") String userId) {
+    public CrsUser get(@PathVariable("userId") String userId) throws URISyntaxException, IOException {
         Optional<CrsUser> user = userService.getUser(userId);
         if (user.isEmpty()) {
             return null;
         }
         return user.get();
+    }
+
+    @GetMapping("/find/cyphers/{nickname}")
+    public CyphersPlayerResponse findCyphersUsers(@PathVariable("nickname") String nickname) throws Exception {
+        CyphersPlayerResponse cyphersPlayerResponse = cyphersApiService.searchPlayers(nickname, null, null);
+        CyphersPlayerResponse cyphersPlayerResponse2 = cyphersApiService.searchPlayers(nickname, CyphersWordType.MATCH, 100);
+        CyphersPlayerResponse cyphersPlayerResponse3 = cyphersApiService.searchPlayers(nickname, CyphersWordType.FULL, 100);
+        CyphersPlayerResponse cyphersPlayerResponse4 = cyphersApiService.searchPlayers(nickname, CyphersWordType.FULL, 1);
+        return cyphersPlayerResponse;
+    }
+
+    @GetMapping("/find/id/{playerId}")
+    public CyphersPlayerInfo findCyphersUserInfo(@PathVariable("playerId") String playerId) throws Exception {
+        CyphersPlayerInfo res = cyphersApiService.searchPlayerInfo(playerId);
+        return res;
     }
 }

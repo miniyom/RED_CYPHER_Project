@@ -1,7 +1,5 @@
 package com.cyphers.game.RecordSearch.cyphers.model;
 
-import java.util.List;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,6 +9,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class CyphersMatchingHistory {
-	List<CyphersMatchingInfo> rows;
+public class CyphersMatchingInfo {
+    private String test;
+
 }
