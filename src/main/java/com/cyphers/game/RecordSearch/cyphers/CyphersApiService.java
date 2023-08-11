@@ -60,18 +60,16 @@ public class CyphersApiService {
         params.put("nickname", nickname);
 
         if (wordType != null) {
+        	if (wordType == CyphersWordType.FULL && (nickname.length() > 8 || nickname.length() < 2) ) {
+                throw new IllegalArgumentException("full Search 에서 닉네임 길이는 2자 이상, 8자 이하 여야 합니다.");
+            }
             params.put("wordType", wordType.getValue());
         }
         if (limit != null) {
+        	if (limit < 10 || limit > 200) {
+                throw new IllegalArgumentException("limit은 10 이상, 200 이하까지만 사용할 수 있습니다.");
+            }
             params.put("limit", limit.toString());
-        }
-
-        if (limit < 10 || limit > 200) {
-            throw new IllegalArgumentException("limit은 10 이상, 200 이하까지만 사용할 수 있습니다.");
-        }
-
-        if (wordType == CyphersWordType.FULL && (nickname.length() > 8 || nickname.length() < 2) ) {
-            throw new IllegalArgumentException("full Search 에서 닉네임 길이는 2자 이상, 8자 이하 여야 합니다.");
         }
 
         String resString = get("/cy/players", params);

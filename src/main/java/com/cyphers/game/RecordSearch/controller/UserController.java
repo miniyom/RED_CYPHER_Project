@@ -70,13 +70,15 @@ public class UserController {
         return user.get();
     }
 
-    @GetMapping("/find/cyphers/{nickname}")
-    public CyphersPlayerResponse findCyphersUsers(@PathVariable("nickname") String nickname) throws Exception {
+    @GetMapping("/find/cyphers/{nickname}/{wordType}")
+    public CyphersPlayerResponse findCyphersUsers(@PathVariable("nickname") String nickname, @PathVariable("wordType") CyphersWordType wordType) throws Exception {
         CyphersPlayerResponse cyphersPlayerResponse = cyphersApiService.searchPlayers(nickname, null, null);
-        CyphersPlayerResponse cyphersPlayerResponse2 = cyphersApiService.searchPlayers(nickname, CyphersWordType.MATCH, 100);
+        log.info("워드타입테스트= {}", wordType);
+        log.info("닉네임테스트= {}", nickname);
+        
+        CyphersPlayerResponse cyphersPlayerResponse2 = cyphersApiService.searchPlayers(nickname, wordType, 100);
         CyphersPlayerResponse cyphersPlayerResponse3 = cyphersApiService.searchPlayers(nickname, CyphersWordType.FULL, 100);
-        CyphersPlayerResponse cyphersPlayerResponse4 = cyphersApiService.searchPlayers(nickname, CyphersWordType.FULL, 1);
-        return cyphersPlayerResponse;
+        return cyphersPlayerResponse2;
     }
 
     @GetMapping("/find/id/{playerId}")
