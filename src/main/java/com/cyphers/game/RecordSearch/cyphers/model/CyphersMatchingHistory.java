@@ -12,5 +12,15 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CyphersMatchingHistory {
-	List<CyphersMatchingInfo> rows;
+	private String playerId;
+	private String nickname;
+	private Integer grade;
+	private Boolean tierTest;
+	private CyphersPlayerRepresent represent;
+	private String clanName;
+	private Integer ratingPoint;
+	private Integer maxRatingPoint;
+	private String tierName;
+	private List<CyphersRecords> records;
+	private CyphersMatches matches;
 }
