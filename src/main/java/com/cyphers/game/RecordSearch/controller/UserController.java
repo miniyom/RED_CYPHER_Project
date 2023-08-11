@@ -76,8 +76,6 @@ public class UserController {
                                                   @PathVariable(value = "wordType", required = false) CyphersWordType wordType,
                                                   @PathVariable(value = "limit", required = false) Integer limit) throws Exception {
         log.info("/find/cyphers , findCyphersUsers, nickname = {} / wordType = {}, limit = {}", nickname, wordType, limit);
-        log.info("워드타입테스트= {}", wordType);
-        log.info("닉네임테스트= {}", nickname);
         return cyphersApiService.searchPlayers(nickname, wordType, limit);
     }
 

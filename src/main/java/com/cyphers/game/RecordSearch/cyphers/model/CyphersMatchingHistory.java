@@ -12,10 +12,6 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CyphersMatchingHistory {
-<<<<<<< Updated upstream
-	
-=======
->>>>>>> Stashed changes
 	private String playerId;
 	private String nickname;
 	private Integer grade;
@@ -26,9 +22,5 @@ public class CyphersMatchingHistory {
 	private Integer maxRatingPoint;
 	private String tierName;
 	private List<CyphersRecords> records;
-<<<<<<< Updated upstream
 	private CyphersMatches matches;
-
-=======
->>>>>>> Stashed changes
 }
