@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 
 @RestController
 @RequestMapping(value = "/api/user")
@@ -70,13 +71,12 @@ public class UserController {
         return user.get();
     }
 
-    @GetMapping("/find/cyphers/{nickname}")
-    public CyphersPlayerResponse findCyphersUsers(@PathVariable("nickname") String nickname) throws Exception {
-        CyphersPlayerResponse cyphersPlayerResponse = cyphersApiService.searchPlayers(nickname, null, null);
-        CyphersPlayerResponse cyphersPlayerResponse2 = cyphersApiService.searchPlayers(nickname, CyphersWordType.MATCH, 100);
-        CyphersPlayerResponse cyphersPlayerResponse3 = cyphersApiService.searchPlayers(nickname, CyphersWordType.FULL, 100);
-        CyphersPlayerResponse cyphersPlayerResponse4 = cyphersApiService.searchPlayers(nickname, CyphersWordType.FULL, 1);
-        return cyphersPlayerResponse;
+    @GetMapping(value = {"/find/cyphers/{nickname}/{wordType}/{limit}", "/find/cyphers/{nickname}/{wordType}", "/find/cyphers/{nickname}"})
+    public CyphersPlayerResponse findCyphersUsers(@PathVariable("nickname") String nickname,
+                                                  @PathVariable(value = "wordType", required = false) CyphersWordType wordType,
+                                                  @PathVariable(value = "limit", required = false) Integer limit) throws Exception {
+        log.info("/find/cyphers , findCyphersUsers, nickname = {} / wordType = {}, limit = {}", nickname, wordType, limit);
+        return cyphersApiService.searchPlayers(nickname, wordType, limit);
     }
 
     @GetMapping("/find/id/{playerId}")
