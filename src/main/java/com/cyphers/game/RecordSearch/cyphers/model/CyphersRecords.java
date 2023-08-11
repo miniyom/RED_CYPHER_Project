@@ -10,9 +10,11 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CyphersRecords {
+
 	private String gameTypeId;
 	private Integer winCount;
 	private Integer loseCount;
 	private Integer stopCount;
+
 }
 	

@@ -20,10 +20,10 @@ import java.net.URISyntaxException;
 public class OpenApi {
 
     public static void main (String[] args) throws URISyntaxException, IOException {
-        URI uri = new URI("https://api.neople.co.kr/cy/players");
+        URI uri = new URI("/cy/players");
         uri = new URIBuilder(uri)
                 .addParameter("nickname", "실은내")
-                .addParameter("apikey", "3QcQMjJPpgQr4EOyshsN7Ss3ctYDoFEb").build();
+                .addParameter("apikey", "").build();
 
         HttpClient httpClient = HttpClientBuilder.create().build();
         HttpResponse response = httpClient.execute(new HttpGet(uri)); // post 요청은 HttpPost()를 사용하면 된다.
