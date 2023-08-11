@@ -14,6 +14,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -37,6 +38,48 @@ public class CyphersApiService {
     @Value("${cyphers.openapi.testplayerId}")
     private String testplayerId;
 
+    private ObjectMapper objectMapper;
+
+    public static String getTest(String url, Map<String, String> params) throws URISyntaxException, IOException {
+        URI uri = new URI("https://api.neople.co.kr" + url);
+        URIBuilder uriBuilder = new URIBuilder(uri);
+        uriBuilder.addParameter("apikey", "3QcQMjJPpgQr4EOyshsN7Ss3ctYDoFEb");
+        for (String key : params.keySet()) {
+            uriBuilder.addParameter(key, params.get(key));
+        }
+        uri = uriBuilder.build();
+
+        HttpClient httpClient = HttpClientBuilder.create().build();
+        HttpResponse response = httpClient.execute(new HttpGet(uri)); // post 요청은 HttpPost()를 사용하면 된다.
+        HttpEntity entity = response.getEntity();
+        return EntityUtils.toString(entity);
+    }
+
+    private static final String testPlayerId = "d0bafa87b7675759c60ee5282355f8c1";
+    private static final String testNickname = "실은내";
+    private static final String imageUrl = "https://img-api.neople.co.kr/cy/characters/<characterId>?zoom=<zoom>";
+
+    public static void main(String[] args) throws Exception {
+        Map<String, String> params = new HashMap<>();
+        params.put("nickname", testNickname);
+        String cyPlayer = getTest("/cy/players", params);
+//        System.out.println("cyPlayer = " + cyPlayer);
+
+        String cyCharacters = getTest("/cy/characters", params);
+        System.out.println("cyCharacters = " + cyCharacters);
+
+        String cyMatchingHistory = getTest("/cy/players/" + testPlayerId + "/matches", params);
+//        System.out.println("cyMatchingHistory = " + cyMatchingHistory);
+
+//        String cyCharacters = getTest("/cy/characters", params);
+//        System.out.println("cyCharacters = " + cyCharacters);
+//        String cyCharacters = getTest("/cy/characters", params);
+//        System.out.println("cyCharacters = " + cyCharacters);
+//        String cyCharacters = getTest("/cy/characters", params);
+//        System.out.println("cyCharacters = " + cyCharacters);
+//        String cyCharacters = getTest("/cy/characters", params);
+//        System.out.println("cyCharacters = " + cyCharacters);
+    }
 
     // get요청 보내기
     private String get(String url, Map<String, String> params) throws URISyntaxException, IOException {
@@ -52,7 +95,6 @@ public class CyphersApiService {
         HttpResponse response = httpClient.execute(new HttpGet(uri)); // post 요청은 HttpPost()를 사용하면 된다.
         HttpEntity entity = response.getEntity();
         return EntityUtils.toString(entity);
-
     }
 
     public CyphersPlayerResponse searchPlayers(@Required String nickname, CyphersWordType wordType, Integer limit) throws Exception {
@@ -60,33 +102,29 @@ public class CyphersApiService {
         params.put("nickname", nickname);
 
         if (wordType != null) {
-        	if (wordType == CyphersWordType.FULL && (nickname.length() > 8 || nickname.length() < 2) ) {
-                throw new IllegalArgumentException("full Search 에서 닉네임 길이는 2자 이상, 8자 이하 여야 합니다.");
-            }
             params.put("wordType", wordType.getValue());
         }
         if (limit != null) {
-        	if (limit < 10 || limit > 200) {
+            if (limit < 10 || limit > 200) {
                 throw new IllegalArgumentException("limit은 10 이상, 200 이하까지만 사용할 수 있습니다.");
             }
             params.put("limit", limit.toString());
         }
 
-        String resString = get("/cy/players", params);
-        log.info("request result = {}", resString);
-        ObjectMapper mapper = new ObjectMapper();
-        CyphersPlayerResponse res = mapper.readValue(resString, CyphersPlayerResponse.class);
-        return res;
+        if (wordType == CyphersWordType.FULL && (nickname.length() > 8 || nickname.length() < 2) ) {
+            throw new IllegalArgumentException("full Search 에서 닉네임 길이는 2자 이상, 8자 이하 여야 합니다.");
+        }
+
+        return objectMapper.readValue(get("/cy/players", params), CyphersPlayerResponse.class);
     }
 
     public CyphersPlayerInfo searchPlayerInfo(@Required String playerId) throws Exception {
         Map<String, String> params = new HashMap<>();
+        return objectMapper.readValue(get("/cy/players/" + playerId, params), CyphersPlayerInfo.class);
+    }
 
-        String resString = get("/cy/players/" + playerId, params);
-        log.info("request result = {}", resString);
-        ObjectMapper mapper = new ObjectMapper();
-        CyphersPlayerInfo res = mapper.readValue(resString, CyphersPlayerInfo.class);
-
-        return res;
+    public CyphersPlayerInfo searchMatchingHistory(@Required String playerId) throws Exception {
+        Map<String, String> params = new HashMap<>();
+        return objectMapper.readValue(getTest("/cy/players/" + playerId + "/matches", params), CyphersPlayerInfo.class);
     }
 }
