@@ -144,6 +144,7 @@ public class CyphersApiService {
     //playerId가 있으면 해당 플레이어의 랭킹, 없으면 1위부터 limit까지 나열
     public CyphersPlayerInfo searchPlayerRanking(@Required String playerId) throws Exception {
         Map<String, String> params = new HashMap<>();
+        params.put("playerId", playerId);
         return objectMapper.readValue(getTest("/cy/ranking/ratingPoint", params), CyphersPlayerInfo.class);
     }
     public CyphersPlayerInfo searchRanking() throws Exception {
