@@ -11,14 +11,13 @@
 
 <script>
 import axios from "axios";
-
 export default {
   data() {
     return {
       fields: [
         'userId',
         'nickname',
-        { key: 'actions', label: 'Actions' }
+        'actions',
       ],
       users: [] // You would typically populate this from an API call
     }
@@ -33,7 +32,9 @@ export default {
   },
   mounted() {
     axios.get('/api/user/all').then(response => {
+      console.log('response = ', response)
       this.users = response.data;
+      console.log('users = ', this.users)
     });
   }
 }
