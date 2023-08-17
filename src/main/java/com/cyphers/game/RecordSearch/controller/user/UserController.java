@@ -3,7 +3,7 @@ package com.cyphers.game.RecordSearch.controller.user;
 import com.cyphers.game.RecordSearch.cyphers.CyphersApiService;
 import com.cyphers.game.RecordSearch.cyphers.model.CyphersPlayerInfo;
 import com.cyphers.game.RecordSearch.cyphers.model.CyphersPlayerResponse;
-import com.cyphers.game.RecordSearch.cyphers.model.enumuration.CyphersWordType;
+import com.cyphers.game.RecordSearch.cyphers.model.enumuration.CyphersItemWordType;
 import com.cyphers.game.RecordSearch.model.CrsUser;
 import com.cyphers.game.RecordSearch.service.user.CrsUserService;
 import lombok.AllArgsConstructor;
@@ -73,7 +73,7 @@ public class UserController {
 
     @GetMapping(value = {"/find/cyphers/{nickname}/{wordType}/{limit}", "/find/cyphers/{nickname}/{wordType}", "/find/cyphers/{nickname}"})
     public CyphersPlayerResponse findCyphersUsers(@PathVariable("nickname") String nickname,
-                                                  @PathVariable(value = "wordType", required = false) CyphersWordType wordType,
+                                                  @PathVariable(value = "wordType", required = false) CyphersItemWordType wordType,
                                                   @PathVariable(value = "limit", required = false) Integer limit) throws Exception {
         log.info("/find/cyphers , findCyphersUsers, nickname = {} / wordType = {}, limit = {}", nickname, wordType, limit);
         return cyphersApiService.searchPlayers(nickname, wordType, limit);
