@@ -1,4 +1,4 @@
-package com.cyphers.game.RecordSearch.controller;
+package com.cyphers.game.RecordSearch.controller.vue;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;

@@ -1,4 +1,4 @@
-package com.cyphers.game.RecordSearch.controller;
+package com.cyphers.game.RecordSearch.controller.user;
 
 import com.cyphers.game.RecordSearch.cyphers.CyphersApiService;
 import com.cyphers.game.RecordSearch.cyphers.model.CyphersPlayerInfo;
