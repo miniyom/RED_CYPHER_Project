@@ -103,6 +103,7 @@ public class CyphersApiService {
         HttpResponse response = httpClient.execute(new HttpGet(uri)); // post 요청은 HttpPost()를 사용하면 된다.
         HttpEntity entity = response.getEntity();
         return EntityUtils.toString(entity);
+        
     }
 
     public CyphersPlayerResponse searchPlayers(@Required String nickname, CyphersWordType wordType, Integer limit) throws Exception {
