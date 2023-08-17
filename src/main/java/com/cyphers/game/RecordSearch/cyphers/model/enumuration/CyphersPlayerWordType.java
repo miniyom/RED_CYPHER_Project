@@ -7,14 +7,9 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public enum CyphersWordType {
-    MATCH("match"),
-    FULL("full"),
-	front("front"),;
+public enum CyphersPlayerWordType {
+	MATCH("match"),
+    FULL("full"),;
 
     private String value;
-    
-    public String value() {
-    	return value;
-    }
 }

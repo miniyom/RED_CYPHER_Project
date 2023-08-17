@@ -13,6 +13,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -26,8 +27,7 @@ import com.cyphers.game.RecordSearch.cyphers.model.CyphersPlayerInfo;
 import com.cyphers.game.RecordSearch.cyphers.model.CyphersPlayerRanking;
 import com.cyphers.game.RecordSearch.cyphers.model.CyphersPlayerResponse;
 import com.cyphers.game.RecordSearch.cyphers.model.CyphersTsjRanking;
-import com.cyphers.game.RecordSearch.cyphers.model.enumuration.CyphersGameTypeId;
-import com.cyphers.game.RecordSearch.cyphers.model.enumuration.CyphersWordType;
+import com.cyphers.game.RecordSearch.cyphers.model.enumuration.CyphersItemWordType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.extern.slf4j.Slf4j;
@@ -45,7 +45,8 @@ public class CyphersApiService {
     @Value("${cyphers.openapi.testplayerId}")
     private String testplayerId;
 
-    private ObjectMapper objectMapper = new ObjectMapper();
+    @Autowired
+    private ObjectMapper objectMapper;
 
     public static String getTest(String url, Map<String, String> params) throws URISyntaxException, IOException {
         URI uri = new URI("https://api.neople.co.kr" + url);
@@ -114,8 +115,8 @@ public class CyphersApiService {
         String cyCharacters = getTest("/cy/characters", params);
 //        System.out.println("cyCharacters = " + cyCharacters);
         
-        String a = CyphersWordType.FULL.value();
-        System.out.println(a);
+//        String a = CyphersWordType.FULL.value();
+//        System.out.println(a);
         
     }
 
@@ -136,12 +137,12 @@ public class CyphersApiService {
     }
     
     //플레이어 검색
-    public CyphersPlayerResponse searchPlayers(@Required String nickname, CyphersWordType wordType, Integer limit) throws Exception {
+    public CyphersPlayerResponse searchPlayers(@Required String nickname, CyphersItemWordType wordType, Integer limit) throws Exception {
         Map<String, String> params = new HashMap<>();
         params.put("nickname", nickname);
 
         if (wordType != null) {
-        	if (wordType == CyphersWordType.FULL && (nickname.length() > 8 || nickname.length() < 2) ) {
+        	if (wordType == CyphersItemWordType.FULL && (nickname.length() > 8 || nickname.length() < 2) ) {
                 throw new IllegalArgumentException("full Search 에서 닉네임 길이는 2자 이상, 8자 이하 여야 합니다.");
             }
             params.put("wordType", wordType.getValue());
@@ -231,10 +232,10 @@ public class CyphersApiService {
     }
     
     //아이템 검색
-    public CyphersItemSearch searchItem(@Required String itemName, CyphersWordType wordType, Integer limit, String characterId, String slotCode, String rarityCode, String seasonCode) throws Exception {
+    public CyphersItemSearch searchItem(@Required String itemName, CyphersItemWordType wordType, Integer limit, String characterId, String slotCode, String rarityCode, String seasonCode) throws Exception {
         Map<String, String> params = new HashMap<>();
         params.put("itemName", itemName);
-        params.put("wordType", wordType.value());
+        params.put("wordType", wordType.getValue());
         if (limit != null) {
             if (limit < 10 || limit > 100) {
                 throw new IllegalArgumentException("limit은 10 이상, 100 이하까지만 사용할 수 있습니다.");
