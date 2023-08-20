@@ -43,51 +43,186 @@
         </b-col>
 
         <!-- 공식전 내용 -->
-        <b-col sm="4" class="container-box">
-          <h3>공식전</h3>
-          <ul>
-            <li>게임1: 승리 (KDA: 10/2/5)</li>
-            <li>게임2: 패배 (KDA: 3/5/1)</li>
-            <li>게임3: 승리 (KDA: 8/0/6)</li>
-          </ul>
-        </b-col>
+        <b-col sm="5" class="container-box">
 
-        <!-- 일반전 내용 -->
-        <b-col sm="2" class="container-box">
-          <h3>일반전</h3>
-          <ul>
-            <li>게임1: 패배 (KDA: 2/7/4)</li>
-            <li>게임2: 승리 (KDA: 15/1/3)</li>
-          </ul>
+          <b-container class="my-3">
+            <b-row style="border-bottom: solid 1px #000;">
+              <b-col sm="6">
+                <h3>공식전</h3>
+                <b-row>
+                  <b-col cols="4" class="d-flex align-items-center justify-content-center">
+                    <b-img src="path_to_tier_image.jpg" fluid alt="Tier Image"/>
+                  </b-col>
+                  <b-col cols="8">
+                    <b-list-group flush>
+                      <b-list-group-item>골드</b-list-group-item>
+                      <b-list-group-item>20승 5패 2중단</b-list-group-item>
+                      <b-list-group-item>승률: 80%</b-list-group-item>
+                    </b-list-group>
+                  </b-col>
+                </b-row>
+              </b-col>
+              <b-col sm="6">
+                <h3>일반전</h3>
+                <b-list-group flush>
+                  <b-list-group-item>20승 5패 2중단</b-list-group-item>
+                  <b-list-group-item>승률: 80%</b-list-group-item>
+                </b-list-group>
+              </b-col>
+            </b-row>
+
+            <b-row style="height: 300px;">
+              <LineGraph/>
+            </b-row>
+
+          </b-container>
+
         </b-col>
       </b-row>
     </b-container>
 
     <!-- 플레이어의 최근 플레이 지표 박스 -->
-    <b-container class="my-3">
+    <b-container class="my-3 container-box">
       <b-row>
-        <b-col sm="2">
+        <b-col sm="2" class="br-1">
           <h4>게임수</h4>
-          1
+          <h2 class="mt-4">1</h2>
         </b-col>
-        <b-col sm="2">
+        <b-col sm="2" class="br-1">
           <h4>승률</h4>
-          2
+          <h2 class="mt-4">20%</h2>
         </b-col>
-        <b-col sm="2">
+        <b-col sm="2" class="br-1">
           <h4>KDA</h4>
-          3
+          <h2 class="mt-4">3.24</h2>
         </b-col>
-        <b-col sm="2">
+        <b-col sm="2" class="br-1">
           <h4>게임 점수</h4>
-          4
+          <h2 class="mt-4">176</h2>
         </b-col>
         <b-col sm="4">
-          <h4>최근 플레이</h4>
-          <b-table small :items="recent_play_data_source"></b-table>
+          <b-list-group flush>
+            <b-list-group-item class="d-flex align-items-center py-2">
+              <b-img src="path_to_character_image.jpg" fluid alt="Character Image" class="mr-3"
+                     style="width: 20px; height: 20px;"></b-img>
+              <div class="flex-fill">캐릭터 이름</div>
+              <div class="me-4">20승 5패</div>
+              <div class="ml-3">KDA: 10/2/5</div>
+            </b-list-group-item>
+            <b-list-group-item class="d-flex align-items-center py-2">
+              <b-img src="path_to_character_image.jpg" fluid alt="Character Image" class="mr-3"
+                     style="width: 20px; height: 20px;"></b-img>
+              <div class="flex-fill">캐릭터 이름</div>
+              <div class="me-4">20승 5패</div>
+              <div class="ml-3">KDA: 10/2/5</div>
+            </b-list-group-item>
+            <b-list-group-item class="d-flex align-items-center py-2">
+              <b-img src="path_to_character_image.jpg" fluid alt="Character Image" class="mr-3"
+                     style="width: 20px; height: 20px;"></b-img>
+              <div class="flex-fill">캐릭터 이름</div>
+              <div class="me-4">20승 5패</div>
+              <div class="ml-3">KDA: 10/2/5</div>
+            </b-list-group-item>
+          </b-list-group>
         </b-col>
       </b-row>
     </b-container>
+
+    <b-container class="my-3 container-box h-100">
+      <b-list-group class="h-100">
+        <b-list-group-item v-for="game in games" :key="game.id" class="p-1">
+          <!-- 게임 타입 -->
+          <div class="d-flex align-items-center">
+            <div class="flex-shrink-0 me-3 pe-2 fs-5">{{ game.type }}</div>
+
+            <!-- 캐릭터 이미지 -->
+            <b-img :src="game.characterImage" alt="Character" class="me-5 rounded-image" style="width: 80px;"></b-img>
+
+            <!-- 특성 이미지 -->
+            <div class="me-5 pe-3 h-100">
+              <b-row>
+                <b-img :src="game.traits[0]" alt="Trait" class="m-0 p-0 me-1 pe-1 rounded-image" style="width: 30px;"></b-img>
+                <b-img :src="game.traits[1]" alt="Trait" class="m-0 p-0 rounded-image" style="width: 30px;"></b-img>
+              </b-row>
+              <b-row class="mt-1">
+                <b-img :src="game.traits[2]" alt="Trait" class="m-0 p-0 me-1 pe-1 rounded-image" style="width: 30px;"></b-img>
+                <b-img :src="game.traits[3]" alt="Trait" class="m-0 p-0 rounded-image" style="width: 30px;"></b-img>
+              </b-row>
+            </div>
+
+
+            <!-- 게임 정보 -->
+            <div class="me-5">
+              <div>{{ game.gameInfo.kills }} / {{ game.gameInfo.deaths }} / {{ game.gameInfo.assists }} ({{ game.participationRate }}%)</div>
+              <div>{{ game.gameInfo.kda }} KDA</div>
+              <div>{{ game.gameInfo.cs }} CS</div>
+            </div>
+
+            <!-- 아이템 정보 -->
+            <div class="me-5">
+              <b-button @click="showItems(game.id)">아이템 보기</b-button>
+            </div>
+
+            <!-- 상세정보1 -->
+            <div class="me-5">
+              <div>{{ game.details.heal }} 힐량</div>
+              <div>{{ game.details.damage }} 준 데미지</div>
+              <div>{{ game.details.takenDamage }} 받은 데미지</div>
+            </div>
+
+            <!-- 상세정보2 -->
+            <div class="me-5">
+              <div>{{ game.details.coins }} 코인량</div>
+              <div>{{ game.details.participation }} 전투참여</div>
+              <div>{{ game.details.vision }} 시야점수</div>
+            </div>
+
+            <!-- 함께한 플레이어 -->
+            <div class="me-4 d-flex flex-column">
+              <div v-for="player in game.team1Players" :key="player.name" class="d-flex align-items-center mb-1">
+                <b-img class="rounded-image" :src="player.image" alt="Player" style="width: 15px;"></b-img>
+                <div class="ml-2" style="font-size: 12px;">{{ player.name }}</div>
+              </div>
+            </div>
+            <div class="d-flex flex-column">
+              <div v-for="player in game.team2Players" :key="player.name" class="d-flex align-items-center mb-1">
+                <b-img class="rounded-image" :src="player.image" alt="Player" style="width: 15px;"></b-img>
+                <div class="ml-2" style="font-size: 12px;">{{ player.name }}</div>
+              </div>
+            </div>
+          </div>
+        </b-list-group-item>
+      </b-list-group>
+    </b-container>
+
+    <!-- Modal for Items -->
+    <b-modal v-model="showItemModal" centered title="아이템 정보" hide-footer>
+      <div v-if="currentGame">
+        <!-- 첫 번째 줄 -->
+        <div class="d-flex justify-content-between mb-2">
+          <b-img
+              v-for="item in currentGame.items.slice(0, 8)"
+              :src="item"
+              :alt="'Item ' + item"
+              :key="item"
+              class="flex-grow-1 pe-2"
+              style="max-width: 12.5%;"
+          ></b-img>
+        </div>
+        <!-- 두 번째 줄 -->
+        <div class="d-flex justify-content-between">
+          <b-img
+              v-for="item in currentGame.items.slice(8, 16)"
+              :src="item"
+              :alt="'Item ' + item"
+              :key="item"
+              class="flex-grow-1 pe-2"
+              style="max-width: 12.5%;"
+          ></b-img>
+        </div>
+      </div>
+    </b-modal>
+
 
   </div>
 </template>
@@ -95,21 +230,88 @@
 <script>
 // import axios from "axios";
 import Header from "./HeaderComponent.vue";
+import LineGraph from "@/components/LineGraph";
 
 export default {
   components: {
-    Header
+    Header,
+    LineGraph,
   },
   data() {
     return {
       activeTab: '모스트 사이퍼', // 예시
       // ... 나머지 데이터 구조
       cypherData: [
-        { 사이퍼: '사이퍼1', 승률: '75%', 게임횟수: '20' },
-        { 사이퍼: '사이퍼2', 승률: '60%', 게임횟수: '15' },
-        { 사이퍼: '사이퍼3', 승률: '55%', 게임횟수: '10' },
-        { 사이퍼: '사이퍼4', 승률: '80%', 게임횟수: '25' },
-      ]
+        {사이퍼: '사이퍼1', 승률: '75%', 게임횟수: '20'},
+        {사이퍼: '사이퍼2', 승률: '60%', 게임횟수: '15'},
+        {사이퍼: '사이퍼3', 승률: '55%', 게임횟수: '10'},
+        {사이퍼: '사이퍼4', 승률: '80%', 게임횟수: '25'},
+        {사이퍼: '사이퍼4', 승률: '80%', 게임횟수: '25'},
+        {사이퍼: '사이퍼4', 승률: '80%', 게임횟수: '25'},
+        {사이퍼: '사이퍼4', 승률: '80%', 게임횟수: '25'},
+        {사이퍼: '사이퍼4', 승률: '80%', 게임횟수: '25'},
+        {사이퍼: '사이퍼4', 승률: '80%', 게임횟수: '25'},
+        {사이퍼: '사이퍼4', 승률: '80%', 게임횟수: '25'},
+      ],
+      games: [{
+        type: "공식전",
+        characterImage: "https://placekitten.com/100/100",
+        traits: [
+          "https://placekitten.com/50/50",
+          "https://placekitten.com/51/51",
+          "https://placekitten.com/52/52",
+          "https://placekitten.com/53/53"
+        ],
+        gameInfo: {
+          kills: 10,
+          deaths: 2,
+          assists: 5,
+          kda: 2.5,
+          cs: 150
+        },
+        items: [
+          "https://placekitten.com/80/80",
+          "https://placekitten.com/81/81",
+          "https://placekitten.com/82/82",
+          "https://placekitten.com/83/83",
+          "https://placekitten.com/84/84",
+          "https://placekitten.com/85/85",
+          "https://placekitten.com/86/86",
+          "https://placekitten.com/87/87",
+          "https://placekitten.com/88/88",
+          "https://placekitten.com/89/89",
+          "https://placekitten.com/90/90",
+          "https://placekitten.com/91/91",
+          "https://placekitten.com/92/92",
+          "https://placekitten.com/93/93",
+          "https://placekitten.com/94/94",
+          "https://placekitten.com/95/95",
+        ],
+        details: {
+          heal: 5000,
+          damage: 15000,
+          takenDamage: 2000,
+          coins: 10000,
+          participation: 70,
+          vision: 12
+        },
+        team1Players: [
+          {image: "https://placekitten.com/90/90", name: "Player1"},
+          {image: "https://placekitten.com/91/91", name: "Player2"},
+          {image: "https://placekitten.com/92/92", name: "Player3"},
+          {image: "https://placekitten.com/93/93", name: "Player4"},
+          {image: "https://placekitten.com/94/94", name: "Player5"},
+        ],
+        team2Players: [
+          {image: "https://placekitten.com/95/95", name: "Player6"},
+          {image: "https://placekitten.com/96/96", name: "Player7"},
+          {image: "https://placekitten.com/97/97", name: "Player8"},
+          {image: "https://placekitten.com/98/98", name: "Player9"},
+          {image: "https://placekitten.com/99/99", name: "Player10"},
+        ]
+      }], // your games data
+      showItemModal: false,
+      currentGame: null,
     }
   },
   methods: {
@@ -129,6 +331,10 @@ export default {
     selectAutocompleteItem(text) {
       this.searchText = text;
       this.isInputFocused = false;
+    },
+    showItems(gameId) {
+      this.currentGame = this.games.find(game => game.id === gameId);
+      this.showItemModal = true;
     }
   },
   mounted() {
@@ -141,6 +347,7 @@ export default {
 <style scoped>
 .container-box {
   border: 1px solid black;
+  box-sizing: border-box;
   padding: 15px; /* 내부 패딩을 조금 추가해줬습니다. */
 }
 
@@ -148,8 +355,17 @@ export default {
   width: 100px;
   height: 100px;
 }
+
 .text-left {
   text-align: left;
+}
+
+.br-1 {
+  border-right: 1px solid black;
+}
+
+.rounded-image {
+  border-radius: 50%; /* 이미지를 동그랗게 만들기 위한 설정 */
 }
 
 </style>
