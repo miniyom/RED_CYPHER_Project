@@ -7,7 +7,7 @@
     <b-container class="container-box my-3 mt-5">
       <b-row>
         <b-col sm="auto" class="p-0">
-          <img src="path_to_profile_image" alt="프로필 이미지" class="img-fluid rounded-circle profile-image">
+          <img src="https://placekitten.com/150/150" alt="프로필 이미지" class="img-fluid rounded-circle profile-image">
         </b-col>
         <b-col class="pl-0 text-left align-self-end">
           <h2 class="mb-2">닉네임</h2>
@@ -51,7 +51,7 @@
                 <h3>공식전</h3>
                 <b-row>
                   <b-col cols="4" class="d-flex align-items-center justify-content-center">
-                    <b-img src="path_to_tier_image.jpg" fluid alt="Tier Image"/>
+                    <b-img src="https://placekitten.com/120/120" fluid alt="Tier Image"/>
                   </b-col>
                   <b-col cols="8">
                     <b-list-group flush>
