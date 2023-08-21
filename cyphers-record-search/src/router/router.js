@@ -3,6 +3,7 @@ import VueRouter from 'vue-router'
 import Main from '@/views/cyphers/MainView.vue'
 import UserList from '@/views/UserList.vue'
 import UserEdit from '@/views/UserEdit.vue'
+import RecordDetailView from "@/views/cyphers/RecordDetailView";
 
 Vue.use(VueRouter)
 
@@ -11,6 +12,11 @@ const routes = [
         path: '/',
         name: 'Main',
         component: Main
+    },
+    {
+        path: '/record/detail',
+        name: 'RecordDetail',
+        component: RecordDetailView
     },
     {
         path: '/user/list',
