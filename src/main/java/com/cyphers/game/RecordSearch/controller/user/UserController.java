@@ -6,6 +6,9 @@ import com.cyphers.game.RecordSearch.cyphers.model.CyphersPlayerResponse;
 import com.cyphers.game.RecordSearch.cyphers.model.enumuration.CyphersItemWordType;
 import com.cyphers.game.RecordSearch.model.CrsUser;
 import com.cyphers.game.RecordSearch.service.user.CrsUserService;
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.info.Info;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -25,6 +28,7 @@ public class UserController {
     private final CrsUserService userService;
     private final CyphersApiService cyphersApiService;
 
+    @Operation(summary = "사용자 추가", description = "사용자 추가를 위한 API를 지원")
     @GetMapping("/add/{userId}")
     public String add(@PathVariable("userId") String userId) {
     	log.info("/add/{}, {}, {}",userId, userId, userId);
