@@ -38,6 +38,7 @@
             <b-tab title="모스트 포지션">
               <!-- 모스트 포지션 내용 -->
               <!-- 그래프 구현은 별도의 라이브러리를 사용해야 함 -->
+              <PieGraph />
             </b-tab>
           </b-tabs>
         </b-col>
@@ -132,7 +133,7 @@
       <b-list-group class="h-100">
         <b-list-group-item v-for="game in games" :key="game.id" class="p-1">
           <!-- 게임 타입 -->
-          <div class="d-flex align-items-center">
+          <div class="d-flex align-items-center" style="justify-content: space-around;">
             <div class="flex-shrink-0 me-3 pe-2 fs-5">{{ game.type }}</div>
 
             <!-- 캐릭터 이미지 -->
@@ -179,17 +180,28 @@
 
             <!-- 함께한 플레이어 -->
             <div class="me-4 d-flex flex-column">
-              <div v-for="player in game.team1Players" :key="player.name" class="d-flex align-items-center mb-1">
-                <b-img class="rounded-image" :src="player.image" alt="Player" style="width: 15px;"></b-img>
-                <div class="ml-2" style="font-size: 12px;">{{ player.name }}</div>
-              </div>
+              <b-row>
+                <b-col>
+                  <div v-for="player in game.team1Players" :key="player.name" class="d-flex align-items-center mb-1">
+                    <b-img class="rounded-image" :src="player.image" alt="Player" style="width: 15px;"></b-img>
+                    <div class="ml-2" style="font-size: 12px;">{{ player.name }}</div>
+                  </div>
+                </b-col>
+                <b-col>
+                  <div v-for="player in game.team2Players" :key="player.name" class="d-flex align-items-center mb-1">
+                    <b-img class="rounded-image" :src="player.image" alt="Player" style="width: 15px;"></b-img>
+                    <div class="ml-2" style="font-size: 12px;">{{ player.name }}</div>
+                  </div>
+                </b-col>
+              </b-row>
+
+
+
             </div>
-            <div class="d-flex flex-column">
-              <div v-for="player in game.team2Players" :key="player.name" class="d-flex align-items-center mb-1">
-                <b-img class="rounded-image" :src="player.image" alt="Player" style="width: 15px;"></b-img>
-                <div class="ml-2" style="font-size: 12px;">{{ player.name }}</div>
-              </div>
-            </div>
+<!--            <div class="d-flex flex-column">-->
+
+<!--            </div>-->
+
           </div>
         </b-list-group-item>
       </b-list-group>
@@ -231,11 +243,13 @@
 // import axios from "axios";
 import Header from "./HeaderComponent.vue";
 import LineGraph from "@/components/LineGraph";
+import PieGraph from "@/components/PieGraph";
 
 export default {
   components: {
     Header,
     LineGraph,
+    PieGraph,
   },
   data() {
     return {
