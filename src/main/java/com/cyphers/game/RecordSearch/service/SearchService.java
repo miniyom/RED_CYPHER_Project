@@ -24,7 +24,11 @@ public class SearchService {
     	Integer limit = 10;
     	CyphersPlayerResponse cyPlayerRes = cyApiService.searchPlayers(word, CyphersPlayerWordType.FULL, limit);
     	for (int i = 0; i < limit; i++) {
-			nicknameList.add(cyPlayerRes.getRows().get(i).getNickname());
+    		try {
+    			nicknameList.add(cyPlayerRes.getRows().get(i).getNickname());
+			} catch (Exception e) {
+				break;
+			}
 		}
         return nicknameList;
     }
