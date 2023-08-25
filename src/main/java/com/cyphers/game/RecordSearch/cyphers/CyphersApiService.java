@@ -28,6 +28,7 @@ import com.cyphers.game.RecordSearch.cyphers.model.CyphersPlayerRanking;
 import com.cyphers.game.RecordSearch.cyphers.model.CyphersPlayerResponse;
 import com.cyphers.game.RecordSearch.cyphers.model.CyphersTsjRanking;
 import com.cyphers.game.RecordSearch.cyphers.model.enumuration.CyphersItemWordType;
+import com.cyphers.game.RecordSearch.cyphers.model.enumuration.CyphersPlayerWordType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.extern.slf4j.Slf4j;
@@ -137,12 +138,12 @@ public class CyphersApiService {
     }
     
     //플레이어 검색
-    public CyphersPlayerResponse searchPlayers(@Required String nickname, CyphersItemWordType wordType, Integer limit) throws Exception {
+    public CyphersPlayerResponse searchPlayers(@Required String nickname, CyphersPlayerWordType wordType, Integer limit) throws Exception {
         Map<String, String> params = new HashMap<>();
         params.put("nickname", nickname);
 
         if (wordType != null) {
-        	if (wordType == CyphersItemWordType.FULL && (nickname.length() > 8 || nickname.length() < 2) ) {
+        	if (wordType == CyphersPlayerWordType.FULL && (nickname.length() > 8 || nickname.length() < 2) ) {
                 throw new IllegalArgumentException("full Search 에서 닉네임 길이는 2자 이상, 8자 이하 여야 합니다.");
             }
             params.put("wordType", wordType.getValue());

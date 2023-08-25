@@ -23,7 +23,7 @@ public class SearchController {
     private SearchService searchService;
 
     @GetMapping("/{nickname}")
-    public List<String> search(@PathVariable("nickname") String nickname) {
+    public List<String> search(@PathVariable("nickname") String nickname) throws Exception {
         return searchService.getNicknameList(nickname).stream()
                 .sorted()       // 일반 String 정렬 순으로 검색 개수가 표시되도록 한다.
                 .limit(5).collect(Collectors.toList());

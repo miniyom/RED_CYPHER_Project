@@ -1,23 +1,25 @@
 package com.cyphers.game.RecordSearch.controller.user;
 
-import com.cyphers.game.RecordSearch.cyphers.CyphersApiService;
-import com.cyphers.game.RecordSearch.cyphers.model.CyphersPlayerInfo;
-import com.cyphers.game.RecordSearch.cyphers.model.CyphersPlayerResponse;
-import com.cyphers.game.RecordSearch.cyphers.model.enumuration.CyphersItemWordType;
-import com.cyphers.game.RecordSearch.model.CrsUser;
-import com.cyphers.game.RecordSearch.service.user.CrsUserService;
-import io.swagger.v3.oas.annotations.OpenAPIDefinition;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.info.Info;
-import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.*;
-
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicReference;
+
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.cyphers.game.RecordSearch.cyphers.CyphersApiService;
+import com.cyphers.game.RecordSearch.cyphers.model.CyphersPlayerInfo;
+import com.cyphers.game.RecordSearch.cyphers.model.CyphersPlayerResponse;
+import com.cyphers.game.RecordSearch.cyphers.model.enumuration.CyphersPlayerWordType;
+import com.cyphers.game.RecordSearch.model.CrsUser;
+import com.cyphers.game.RecordSearch.service.user.CrsUserService;
+
+import io.swagger.v3.oas.annotations.Operation;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequestMapping(value = "/api/user")
@@ -77,7 +79,7 @@ public class UserController {
 
     @GetMapping(value = {"/find/cyphers/{nickname}/{wordType}/{limit}", "/find/cyphers/{nickname}/{wordType}", "/find/cyphers/{nickname}"})
     public CyphersPlayerResponse findCyphersUsers(@PathVariable("nickname") String nickname,
-                                                  @PathVariable(value = "wordType", required = false) CyphersItemWordType wordType,
+                                                  @PathVariable(value = "wordType", required = false) CyphersPlayerWordType wordType,
                                                   @PathVariable(value = "limit", required = false) Integer limit) throws Exception {
         log.info("/find/cyphers , findCyphersUsers, nickname = {} / wordType = {}, limit = {}", nickname, wordType, limit);
         return cyphersApiService.searchPlayers(nickname, wordType, limit);
