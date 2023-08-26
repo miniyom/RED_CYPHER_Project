@@ -32,4 +32,19 @@ public class SearchService {
 		}
         return nicknameList;
     }
+    
+    public List<String> getNicknameListAxios(String word) throws Exception {
+    	List<String> nicknameList = new ArrayList<>();
+    	Integer limit = 10;
+    	CyphersPlayerResponse cyPlayerRes = cyApiService.searchPlayersAxios(word, CyphersPlayerWordType.FULL, limit);
+    	for (int i = 0; i < limit; i++) {
+    		try {
+    			nicknameList.add(cyPlayerRes.getRows().get(i).getNickname());
+			} catch (Exception e) {
+				break;
+			}
+		}
+        return nicknameList;
+    }
+
 }

@@ -23,10 +23,10 @@
           <ul v-if="isInputFocused" class="list-group w-100 position-absolute" style="top: 100%;">
             <li
                 class="list-group-item list-group-item-action"
+                v-for="item in searchData"
+                :key="item.id"
                 @mouseover="onHover"
                 @mouseleave="onLeave"
-                v-for="item in autocompleteItems"
-                :key="item.id"
                 @mousedown="preventBlur = true"
                 @click="selectAutocompleteItem(item.text)">
               {{ item.text }}
@@ -50,11 +50,8 @@ export default {
     return {
       isInputFocused: false,
       searchText: '',
-      autocompleteItems: [
-        { id: 1, text: '아이템 1' },
-        { id: 2, text: '아이템 2' },
-        { id: 3, text: '아이템 3' },
-      ]
+      searchData: [],
+      timeout: null,
     }
   },
   methods: {
@@ -78,23 +75,30 @@ export default {
     submitForm() {
       alert("검색하신 닉네임은 "+this.searchText+"입니다.")
     },
-    handleInput() {
-      if (this.searchText.length >= 2) {
-        this.search();
+    handleInput(e) {
+      this.searchText = e.target.value;
+
+      if (this.searchText.length<2 || this.searchText.length>8) {
+        this.searchData = [];
+        return;
+      } else {
+        this.fetchData();
       }
     },
-    async search() {
-      try {
-        const response = await axios.get('/api/search/${this.searchText}');
-        console.log(this.searchText);
-        this.autocompleteItems = response.data 
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
+
+    fetchData() {
+      axios.get(`/api/search/axios/${this.searchText}`)
+        .then(response => {
+          console.log(this.searchText);
+          this.searchData = [];
+          for (let index = 0; index < response.data.length; index++) {
+            this.searchData.push({'text': response.data[index], 'id' : index});
+          }
+        });
     }
   },
   mounted() {
-
+    
   }
 }
 </script>

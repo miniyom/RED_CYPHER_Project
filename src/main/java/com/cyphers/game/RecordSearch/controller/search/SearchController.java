@@ -28,4 +28,11 @@ public class SearchController {
                 .sorted()       // 일반 String 정렬 순으로 검색 개수가 표시되도록 한다.
                 .limit(5).collect(Collectors.toList());
     }
+    
+    @GetMapping("/axios/{nickname}")
+    public List<String> searchAxios(@PathVariable("nickname") String nickname) throws Exception {
+        return searchService.getNicknameListAxios(nickname).stream()
+                .sorted()       // 일반 String 정렬 순으로 검색 개수가 표시되도록 한다.
+                .limit(5).collect(Collectors.toList());
+    }
 }

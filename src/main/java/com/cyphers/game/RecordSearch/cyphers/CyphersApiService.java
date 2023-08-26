@@ -157,6 +157,20 @@ public class CyphersApiService {
 
         return objectMapper.readValue(get("/cy/players", params), CyphersPlayerResponse.class);
     }
+    
+    public CyphersPlayerResponse searchPlayersAxios(@Required String nickname, CyphersPlayerWordType wordType, Integer limit) throws Exception {
+        Map<String, String> params = new HashMap<>();
+        params.put("nickname", nickname);
+        params.put("wordType", wordType.getValue());
+        if (limit != null) {
+            if (limit < 10 || limit > 200) {
+                throw new IllegalArgumentException("limit은 10 이상, 200 이하까지만 사용할 수 있습니다.");
+            }
+            params.put("limit", limit.toString());
+        }
+
+        return objectMapper.readValue(get("/cy/players", params), CyphersPlayerResponse.class);
+    }
 
     //플레이어 정보 조회
     public CyphersPlayerInfo searchPlayerInfo(@Required String playerId) throws Exception {
