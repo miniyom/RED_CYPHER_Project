@@ -28,6 +28,7 @@ import com.cyphers.game.RecordSearch.cyphers.model.CyphersPlayerRanking;
 import com.cyphers.game.RecordSearch.cyphers.model.CyphersPlayerResponse;
 import com.cyphers.game.RecordSearch.cyphers.model.CyphersTsjRanking;
 import com.cyphers.game.RecordSearch.cyphers.model.enumuration.CyphersItemWordType;
+import com.cyphers.game.RecordSearch.cyphers.model.enumuration.CyphersPlayerWordType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.extern.slf4j.Slf4j;
@@ -137,16 +138,30 @@ public class CyphersApiService {
     }
     
     //플레이어 검색
-    public CyphersPlayerResponse searchPlayers(@Required String nickname, CyphersItemWordType wordType, Integer limit) throws Exception {
+    public CyphersPlayerResponse searchPlayers(@Required String nickname, CyphersPlayerWordType wordType, Integer limit) throws Exception {
         Map<String, String> params = new HashMap<>();
         params.put("nickname", nickname);
 
         if (wordType != null) {
-        	if (wordType == CyphersItemWordType.FULL && (nickname.length() > 8 || nickname.length() < 2) ) {
+        	if (wordType == CyphersPlayerWordType.FULL && (nickname.length() > 8 || nickname.length() < 2) ) {
                 throw new IllegalArgumentException("full Search 에서 닉네임 길이는 2자 이상, 8자 이하 여야 합니다.");
             }
             params.put("wordType", wordType.getValue());
         }
+        if (limit != null) {
+            if (limit < 10 || limit > 200) {
+                throw new IllegalArgumentException("limit은 10 이상, 200 이하까지만 사용할 수 있습니다.");
+            }
+            params.put("limit", limit.toString());
+        }
+
+        return objectMapper.readValue(get("/cy/players", params), CyphersPlayerResponse.class);
+    }
+    
+    public CyphersPlayerResponse searchPlayersAxios(@Required String nickname, CyphersPlayerWordType wordType, Integer limit) throws Exception {
+        Map<String, String> params = new HashMap<>();
+        params.put("nickname", nickname);
+        params.put("wordType", wordType.getValue());
         if (limit != null) {
             if (limit < 10 || limit > 200) {
                 throw new IllegalArgumentException("limit은 10 이상, 200 이하까지만 사용할 수 있습니다.");
