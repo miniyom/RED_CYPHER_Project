@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public enum CyphersGameTypeId {
+public enum CyphersGameType {
 	RATING("rating"),
 	NORMAL("normal"),;
 	

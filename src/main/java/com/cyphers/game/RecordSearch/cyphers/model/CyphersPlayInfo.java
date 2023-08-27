@@ -23,7 +23,7 @@ public class CyphersPlayInfo {
 	private Integer killCount; 
 	private Integer deathCount; 
 	private Integer assistCount; 
-	private Integer attackCount; 
+	private Integer attackPoint;
 	private Integer damagePoint; 
 	private Integer battlePoint; 
 	private Integer sightPoint; 

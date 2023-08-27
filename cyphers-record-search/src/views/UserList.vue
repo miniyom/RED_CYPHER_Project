@@ -27,7 +27,7 @@ export default {
       this.$router.push('/user/add')
     },
     goToEditUser(userId) {
-      this.$router.push(`/user/edit/${userId}`)
+      this.$router.push({ name: `UserEdit`, props: { userId: userId }})
     }
   },
   mounted() {
