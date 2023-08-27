@@ -1,9 +1,10 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Main from '@/views/cyphers/MainView.vue'
+import RecordDetailView from "@/views/cyphers/RecordDetailView.vue";
 import UserList from '@/views/UserList.vue'
 import UserEdit from '@/views/UserEdit.vue'
-import RecordDetailView from "@/views/cyphers/RecordDetailView";
+
 
 Vue.use(VueRouter)
 
@@ -11,12 +12,13 @@ const routes = [
     {
         path: '/',
         name: 'Main',
-        component: Main
+        component: Main,
     },
     {
         path: '/record/detail',
         name: 'RecordDetail',
-        component: RecordDetailView
+        component: RecordDetailView,
+        props: true
     },
     {
         path: '/user/list',
