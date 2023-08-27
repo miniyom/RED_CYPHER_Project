@@ -89,7 +89,7 @@ export default {
           {
             label: '포인트 변경내역',
             backgroundColor: '#f87979',
-            data: [40, 66, 10, 40, 39, 88, 40]
+            data: [40, 66, 10, 40, 39, 500, 40]
           }
         ]
       },
