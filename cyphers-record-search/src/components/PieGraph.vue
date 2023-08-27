@@ -26,7 +26,31 @@ export default {
       },
       options: {
         responsive: true,
-        maintainAspectRatio: false
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false
+          }
+        },
+        scales: {
+          y1: {   // 첫 번째 y 축
+            position: 'left',
+            title: {
+              display: true,
+              text: 'Y1 Axis'
+            }
+          },
+          y2: {   // 두 번째 y 축
+            position: 'right',
+            title: {
+              display: true,
+              text: 'Y2 Axis'
+            },
+            grid: {
+              drawOnChartArea: false // y2에만 격자를 그리지 않음
+            }
+          }
+        }
       }
     }
   }

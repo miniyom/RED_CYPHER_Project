@@ -1,5 +1,6 @@
 package com.cyphers.game.RecordSearch.controller.search;
 
+import com.cyphers.game.RecordSearch.controller.search.model.IoSearchDetailResponse;
 import com.cyphers.game.RecordSearch.service.SearchService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,17 +23,15 @@ public class SearchController {
     @Autowired
     private SearchService searchService;
 
-    @GetMapping("/{nickname}")
-    public List<String> search(@PathVariable("nickname") String nickname) throws Exception {
+    @GetMapping("/auto-complete/{nickname}")
+    public List<String> searchAutoComplete(@PathVariable("nickname") String nickname) throws Exception {
         return searchService.getNicknameList(nickname).stream()
                 .sorted()       // 일반 String 정렬 순으로 검색 개수가 표시되도록 한다.
                 .limit(5).collect(Collectors.toList());
     }
-    
-    @GetMapping("/axios/{nickname}")
-    public List<String> searchAxios(@PathVariable("nickname") String nickname) throws Exception {
-        return searchService.getNicknameListAxios(nickname).stream()
-                .sorted()       // 일반 String 정렬 순으로 검색 개수가 표시되도록 한다.
-                .limit(5).collect(Collectors.toList());
+
+    @GetMapping("/{nickname}")
+    public List<IoSearchDetailResponse> searchDetail(@PathVariable("nickname") String nickname) throws Exception {
+        return searchService.getDetailSearch(nickname);
     }
 }

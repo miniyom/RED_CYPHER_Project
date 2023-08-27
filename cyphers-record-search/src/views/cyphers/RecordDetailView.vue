@@ -38,7 +38,22 @@
             <b-tab title="모스트 포지션">
               <!-- 모스트 포지션 내용 -->
               <!-- 그래프 구현은 별도의 라이브러리를 사용해야 함 -->
-              <PieGraph />
+              <b-col>
+                <b-row>
+                  <PieGraph />
+                </b-row>
+                <b-row>
+                  <b-col>
+                    <b-row>탱커</b-row>
+                    <b-row>서포터</b-row>
+                  </b-col>
+                  <b-col>
+                    <b-row>원거리딜러</b-row>
+                    <b-row>근거리딜러</b-row>
+                  </b-col>
+
+                </b-row>
+              </b-col>
             </b-tab>
           </b-tabs>
         </b-col>

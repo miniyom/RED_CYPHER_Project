@@ -88,7 +88,7 @@ export default {
       }
     },
     fetchData() {
-      axios.get(`/api/search/axios/${this.searchText}`)
+      axios.get(`/api/search/auto-complete/${this.searchText}`)
         .then(response => {
           this.searchData = [];
           for (let index = 0; index < response.data.length; index++) {
