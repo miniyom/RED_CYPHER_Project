@@ -32,12 +32,23 @@ export default {
             display: false
           }
         },
-        layout: {
-          padding: {
-            left: 100,   // 왼쪽 패딩
-            right: 100,  // 오른쪽 패딩
-            top: 20,    // 상단 패딩
-            bottom: 20  // 하단 패딩
+        scales: {
+          y1: {   // 첫 번째 y 축
+            position: 'left',
+            title: {
+              display: true,
+              text: 'Y1 Axis'
+            }
+          },
+          y2: {   // 두 번째 y 축
+            position: 'right',
+            title: {
+              display: true,
+              text: 'Y2 Axis'
+            },
+            grid: {
+              drawOnChartArea: false // y2에만 격자를 그리지 않음
+            }
           }
         }
       }

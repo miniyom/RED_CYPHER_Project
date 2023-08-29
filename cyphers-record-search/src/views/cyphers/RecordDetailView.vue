@@ -40,31 +40,19 @@
               <!-- 그래프 구현은 별도의 라이브러리를 사용해야 함 -->
               <b-col>
                 <b-row>
-                  <PieGraph style="height: 500px;" />
+                  <PieGraph />
                 </b-row>
-                <b-row style="height: 100px;">
-                  <b-col style="height: 100%;">
-                    <b-row style="height: 50%; background-color: #b7d7ef; align-items: center; justify-content: center;">
-                      <img src="/img/tanker.png" alt="탱커" style="height: 80%; width: auto; display: block;"/>
-                      탱커
-                    </b-row>
-                    <b-row style="height: 50%; background-color: #ffecb3; align-items: center; justify-content: center;">
-                      <img src="/img/supporter.png" alt="서포터" style="height: 80%; width: auto; display: block;"/>
-                      서포터
-                    </b-row>
+                <b-row>
+                  <b-col>
+                    <b-row>탱커</b-row>
+                    <b-row>서포터</b-row>
                   </b-col>
-                  <b-col style="height: 100%;">
-                    <b-row style="height: 50%; background-color: #f5d7ee; align-items: center; justify-content: center;">
-                      <img src="/img/ad.png" alt="원거리딜러" style="height: 80%; width: auto; display: block;"/>
-                      원거리딜러
-                    </b-row>
-                    <b-row style="height: 50%; background-color: #ef9a9a; align-items: center; justify-content: center;">
-                      <img src="/img/assassin.png" alt="근거리딜러" style="height: 80%; width: auto; display: block;"/>
-                      근거리딜러
-                    </b-row>
+                  <b-col>
+                    <b-row>원거리딜러</b-row>
+                    <b-row>근거리딜러</b-row>
                   </b-col>
-                </b-row>
 
+                </b-row>
               </b-col>
             </b-tab>
           </b-tabs>
