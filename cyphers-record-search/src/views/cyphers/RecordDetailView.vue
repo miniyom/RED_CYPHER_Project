@@ -259,19 +259,13 @@
 import Header from "./HeaderComponent.vue";
 import LineGraph from "@/components/LineGraph";
 import PieGraph from "@/components/PieGraph";
-// import MainView from "@/views/cyphers/MainView.vue";
 
 export default {
   props: {
-    searchResults: {
-      type: Array,
-      default: () => {
-        return ['list1', 'list2', 'list3', 'list4', 'list5'];
-      }
-    }
+    nickname: String
   },
   created() {
-    console.log("검색 결과 데이터:", this.searchResults);
+    console.log("검색 결과 데이터:", this.nickname);
   },
   components: {
     Header,

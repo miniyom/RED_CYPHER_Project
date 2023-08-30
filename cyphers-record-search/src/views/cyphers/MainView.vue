@@ -97,13 +97,8 @@ export default {
         });
     },
     search() {
-      axios.get(`/api/search/${this.searchText}`)
-        .then(response => {
-        const searchResults = response.data; // API 응답 결과를 저장
-        console.log(searchResults);
-        this.$router.push({ path: "/record/detail", props: { searchResults } });
-        });
-    }
+      this.$router.push({ name: 'RecordDetail', params: { nickname: this.searchText } });
+    },
   },
   mounted() {
     

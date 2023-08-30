@@ -13,8 +13,10 @@ import java.util.List;
 public class IoSearchDetailResponse {
     private String profileCharacterId;
     private String nickname;
-    private LocalDateTime recentlyUpdatedDate;
-    private List<IoSearchDetailMostCypherInfo> mostCypherInfos;
+    //db 설계, 생성 후 그 기록 가져와야함
+    //jpa활용 필요
+    private LocalDateTime recentlyUpdatedDate;	
+    private List<IoSearchDetailMostCypherInfo> mostCypherInfos; //별도 계산식 필요
 
     private String ratingGameTier;
     private Integer ratingWinCount;
