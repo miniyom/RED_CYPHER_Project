@@ -28,8 +28,10 @@ public class IoSearchDetailResponse {
     private Integer normalLoseCount;
     private Integer normalStopCount;
     private Integer normalWinRate;
+    //rp를 따로 받을 수 있는 api가 없음
     private List<IoSearchDetailRatingPointHistoryInfo> ratingPointHistoryInfos;
 
+    //
     private Integer recentlyPlayCount;
     private Integer recentlyWinRate;
     private Float recentlyKda;

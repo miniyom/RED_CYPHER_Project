@@ -30,7 +30,7 @@ public class SearchController {
     }
 
     @GetMapping("/{nickname}")
-    public List<IoSearchDetailResponse> searchDetail(@PathVariable("nickname") String nickname) throws Exception {
+    public IoSearchDetailResponse searchDetail(@PathVariable("nickname") String nickname) throws Exception {
         return searchService.getDetailSearch(nickname);
     }
 }
