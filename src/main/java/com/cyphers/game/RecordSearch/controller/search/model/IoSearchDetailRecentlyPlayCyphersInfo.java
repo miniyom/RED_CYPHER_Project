@@ -15,7 +15,7 @@ public class IoSearchDetailRecentlyPlayCyphersInfo {
     private String characterName;
     private Integer winCount;
     private Integer loseCount;
-    private Integer killCount;
-    private Integer deathCount;
-    private Integer assistCount;
+    private Float killCount;
+    private Float deathCount;
+    private Float assistCount;
 }

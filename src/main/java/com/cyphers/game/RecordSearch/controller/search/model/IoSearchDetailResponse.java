@@ -31,11 +31,10 @@ public class IoSearchDetailResponse {
     //rp를 따로 받을 수 있는 api가 없음
     private List<IoSearchDetailRatingPointHistoryInfo> ratingPointHistoryInfos;
 
-    //
     private Integer recentlyPlayCount;
     private Integer recentlyWinRate;
     private Float recentlyKda;
-    private Integer recentlyGamePoint;
+    private Integer recentlyGamePoint;	//표시할 수치 재구상 필요
     private List<IoSearchDetailRecentlyPlayCyphersInfo> recentlyPlayCyphersInfos;
 
     private List<IoSearchDetailGameRecord> gameRecords;

@@ -4,11 +4,15 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.cyphers.game.RecordSearch.controller.search.model.IoSearchDetailRecentlyPlayCyphersInfo;
 import com.cyphers.game.RecordSearch.controller.search.model.IoSearchDetailResponse;
 import com.cyphers.game.RecordSearch.cyphers.CyphersApiService;
 import com.cyphers.game.RecordSearch.cyphers.model.CyphersMatchingHistory;
@@ -50,6 +54,7 @@ public class SearchService {
     	String playerId = cyApiService.searchPlayers(nickname, CyphersPlayerWordType.MATCH, null)
 				.getRows().get(0).getPlayerId();
     	
+    	
     	//공식전, 일반전 데이터
         CyphersPlayerInfo cyPlayerInfo = cyApiService.searchPlayerInfo(playerId); 
         
@@ -74,6 +79,7 @@ public class SearchService {
 			}
 		}
         
+        
         //최근 게임 데이터
         Integer limit = 10;
         LocalDateTime now = LocalDateTime.now();
@@ -81,10 +87,12 @@ public class SearchService {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         String startDate = twoWeekAgo.format(formatter).toString();
         String endDate = now.format(formatter).toString();
-        Integer recentlyWinCount = 0;
         
         CyphersMatchingHistory cyMatchingHistory = cyApiService.searchMatchingHistory(playerId, CyphersGameType.NORMAL, startDate, endDate, limit);
+        
         ioGameRecords.setRecentlyPlayCount(cyMatchingHistory.getMatches().getRows().size());
+        
+        Integer recentlyWinCount = 0;
         for (int i = 0; i < cyMatchingHistory.getMatches().getRows().size(); i++) {
         	String result = cyMatchingHistory.getMatches().getRows().get(i).getPlayInfo().getResult();
         	if (result.equals("win")) {
@@ -92,6 +100,33 @@ public class SearchService {
 			}
 		}
         ioGameRecords.setRecentlyWinRate(100 * recentlyWinCount / ioGameRecords.getRecentlyPlayCount());
+        
+        Float totalKillCount = 0.0f;
+        Float totalDeathCount = 0.0f;
+        Float totalAssistCount = 0.0f;
+        for (int i = 0; i < cyMatchingHistory.getMatches().getRows().size(); i++) {
+			totalKillCount += cyMatchingHistory.getMatches().getRows().get(i).getPlayInfo().getKillCount();
+			totalDeathCount += cyMatchingHistory.getMatches().getRows().get(i).getPlayInfo().getDeathCount();
+			totalAssistCount += cyMatchingHistory.getMatches().getRows().get(i).getPlayInfo().getAssistCount();
+		}
+        ioGameRecords.setRecentlyKda((totalKillCount + totalAssistCount) / totalDeathCount);
+        
+        List<IoSearchDetailRecentlyPlayCyphersInfo> recentCypherInfo = new ArrayList<>();
+        
+        Map<String, Integer> characterIdMap = new HashMap<>();
+        Integer firstCypher = 0;
+        Integer secondCypher = 0;
+        Integer thirdCypher = 0;
+        for (int i = 0; i < cyMatchingHistory.getMatches().getRows().size(); i++) {
+        	String characterId = cyMatchingHistory.getMatches().getRows().get(i).getPlayInfo().getCharacterId();
+        	characterIdMap.put(characterId, characterIdMap.getOrDefault(characterId, 0) + 1);
+		}
+        Map<String, Integer> sortedCharacterIdMap = new LinkedHashMap<>();
+        characterIdMap.entrySet()
+        .stream()
+        .sorted(Map.Entry.<String, Integer>comparingByValue().reversed())
+        .forEachOrdered(entry -> sortedCharacterIdMap.put(entry.getKey(), entry.getValue()));
+        
         
         return ioGameRecords;
     }
