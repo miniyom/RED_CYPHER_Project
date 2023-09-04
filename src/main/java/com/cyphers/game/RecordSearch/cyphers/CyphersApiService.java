@@ -19,6 +19,7 @@ import org.springframework.stereotype.Component;
 
 import com.cyphers.game.RecordSearch.cyphers.annotation.Required;
 import com.cyphers.game.RecordSearch.cyphers.model.CyphersCharacterRanking;
+import com.cyphers.game.RecordSearch.cyphers.model.CyphersCharacterSearch;
 import com.cyphers.game.RecordSearch.cyphers.model.CyphersItemDetailInfo;
 import com.cyphers.game.RecordSearch.cyphers.model.CyphersItemSearch;
 import com.cyphers.game.RecordSearch.cyphers.model.CyphersMatchingDetails;
@@ -253,6 +254,11 @@ public class CyphersApiService {
     public CyphersItemDetailInfo searchItemDetail(@Required String itemId) throws Exception {
         Map<String, String> params = new HashMap<>();
         return objectMapper.readValue(get("/cy/battleitems/" + itemId, params), CyphersItemDetailInfo.class);
+    }
+    
+    public CyphersCharacterSearch searchCharacter() throws Exception {
+        Map<String, String> params = new HashMap<>();
+        return objectMapper.readValue(get("/cy/characters" , params), CyphersCharacterSearch.class);
     }
     
 }

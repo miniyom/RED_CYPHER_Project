@@ -34,7 +34,7 @@ public class IoSearchDetailResponse {
     private Integer recentlyPlayCount;
     private Integer recentlyWinRate;
     private Float recentlyKda;
-    private Integer recentlyGamePoint;	//표시할 수치 재구상 필요
+    private Integer recentlyAverageSurvivalRate;	//평균 생존률 : 새로 구상한 데이터
     private List<IoSearchDetailRecentlyPlayCyphersInfo> recentlyPlayCyphersInfos;
 
     private List<IoSearchDetailGameRecord> gameRecords;

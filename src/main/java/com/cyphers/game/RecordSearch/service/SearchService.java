@@ -4,18 +4,22 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 
 import com.cyphers.game.RecordSearch.controller.search.model.IoSearchDetailRecentlyPlayCyphersInfo;
 import com.cyphers.game.RecordSearch.controller.search.model.IoSearchDetailResponse;
 import com.cyphers.game.RecordSearch.cyphers.CyphersApiService;
+import com.cyphers.game.RecordSearch.cyphers.model.CyphersCharacterSearch;
 import com.cyphers.game.RecordSearch.cyphers.model.CyphersMatchingHistory;
+import com.cyphers.game.RecordSearch.cyphers.model.CyphersPlayInfo;
 import com.cyphers.game.RecordSearch.cyphers.model.CyphersPlayerInfo;
 import com.cyphers.game.RecordSearch.cyphers.model.CyphersPlayerResponse;
 import com.cyphers.game.RecordSearch.cyphers.model.enumuration.CyphersGameType;
@@ -80,7 +84,7 @@ public class SearchService {
 		}
         
         
-        //최근 게임 데이터
+        //최근 2주간 게임 데이터
         Integer limit = 10;
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime twoWeekAgo = now.minus(2, ChronoUnit.WEEKS); // 게임기록 서치 2주 설정
@@ -105,27 +109,79 @@ public class SearchService {
         Float totalDeathCount = 0.0f;
         Float totalAssistCount = 0.0f;
         for (int i = 0; i < cyMatchingHistory.getMatches().getRows().size(); i++) {
-			totalKillCount += cyMatchingHistory.getMatches().getRows().get(i).getPlayInfo().getKillCount();
-			totalDeathCount += cyMatchingHistory.getMatches().getRows().get(i).getPlayInfo().getDeathCount();
-			totalAssistCount += cyMatchingHistory.getMatches().getRows().get(i).getPlayInfo().getAssistCount();
+        	CyphersPlayInfo cyPlayInfo = cyMatchingHistory.getMatches().getRows().get(i).getPlayInfo();
+			totalKillCount += cyPlayInfo.getKillCount();
+			totalDeathCount += cyPlayInfo.getDeathCount();
+			totalAssistCount += cyPlayInfo.getAssistCount();
 		}
         ioGameRecords.setRecentlyKda((totalKillCount + totalAssistCount) / totalDeathCount);
         
-        List<IoSearchDetailRecentlyPlayCyphersInfo> recentCypherInfo = new ArrayList<>();
-        
-        Map<String, Integer> characterIdMap = new HashMap<>();
-        Integer firstCypher = 0;
-        Integer secondCypher = 0;
-        Integer thirdCypher = 0;
+        Integer avgSurvivalRate = 0;
         for (int i = 0; i < cyMatchingHistory.getMatches().getRows().size(); i++) {
-        	String characterId = cyMatchingHistory.getMatches().getRows().get(i).getPlayInfo().getCharacterId();
-        	characterIdMap.put(characterId, characterIdMap.getOrDefault(characterId, 0) + 1);
+        	Integer playTime = cyMatchingHistory.getMatches().getRows().get(i).getPlayInfo().getPlayTime();
+        	Integer responseTime = cyMatchingHistory.getMatches().getRows().get(i).getPlayInfo().getResponseTime();
+        	
+        	avgSurvivalRate += 100 * (playTime - responseTime) / playTime;
 		}
-        Map<String, Integer> sortedCharacterIdMap = new LinkedHashMap<>();
-        characterIdMap.entrySet()
-        .stream()
-        .sorted(Map.Entry.<String, Integer>comparingByValue().reversed())
-        .forEachOrdered(entry -> sortedCharacterIdMap.put(entry.getKey(), entry.getValue()));
+        ioGameRecords.setRecentlyAverageSurvivalRate(avgSurvivalRate / cyMatchingHistory.getMatches().getRows().size());
+        
+        
+        //최근 2주간 top3 캐릭터 데이터
+        //Pair의 첫번째는 전체 플레이 횟수, 두번째는 이긴 횟수
+        Map<String, Pair<Integer, Integer>> characterIdMap = new HashMap<>();
+        for (int i = 0; i < cyMatchingHistory.getMatches().getRows().size(); i++) {
+        	CyphersPlayInfo cyPlayInfo = cyMatchingHistory.getMatches().getRows().get(i).getPlayInfo();
+        	String characterId = cyPlayInfo.getCharacterId();
+        	Pair<Integer, Integer> playAndWinCount = characterIdMap.getOrDefault(characterId, Pair.of(0, 0));
+        	
+        	characterIdMap.put(characterId, Pair.of(playAndWinCount.getFirst() + 1, 
+        											playAndWinCount.getSecond() + (cyPlayInfo.getResult().equals("win") ? 1 : 0)));
+		}
+        
+        //Top3 캐릭터 선정(플레이 수 기준 내림차순 정렬)
+        List<String> idList = new ArrayList<>();
+        for (String string : characterIdMap.keySet()) {
+			idList.add(string);
+		}
+        Collections.sort(idList, Comparator.comparing(id -> id, (a, b) -> characterIdMap.get(b).getFirst() - characterIdMap.get(a).getFirst()));;
+        
+        //캐릭터 데이터 넣기
+        List<IoSearchDetailRecentlyPlayCyphersInfo> recentCypherRows = new ArrayList<>(3);	//가져오고 싶은 캐릭터 개수 설정
+        CyphersCharacterSearch cyCharacter = cyApiService.searchCharacter();
+        for (int i = 0; i < recentCypherRows.size(); i++) {
+			IoSearchDetailRecentlyPlayCyphersInfo recentCypherInfo = new IoSearchDetailRecentlyPlayCyphersInfo();
+			recentCypherInfo.setCharacterId(idList.get(i));
+			for (int j = 0; j < cyCharacter.getRows().size(); j++) {
+				if (cyCharacter.getRows().get(j).getCharacterId().equals(idList.get(i))) {
+					recentCypherInfo.setCharacterName(cyCharacter.getRows().get(j).getCharacterName());
+					break;
+				}
+			}
+			recentCypherInfo.setWinCount(characterIdMap.get(idList.get(i)).getSecond());
+			recentCypherInfo.setLoseCount(characterIdMap.get(idList.get(i)).getFirst()
+										- characterIdMap.get(idList.get(i)).getSecond());
+			
+			Float avgKillCount = 0.0f;
+			Float avgDeathCount = 0.0f;
+			Float avgAssistCount = 0.0f;
+			Float denominator = 0.0f;
+			for (int j = 0; j < cyMatchingHistory.getMatches().getRows().size(); j++) {
+				CyphersPlayInfo cyPlayInfo = cyMatchingHistory.getMatches().getRows().get(j).getPlayInfo();
+				if (cyPlayInfo.getCharacterId().equals(idList.get(i))) {
+					avgKillCount += cyPlayInfo.getKillCount();
+					avgDeathCount += cyPlayInfo.getDeathCount();
+					avgAssistCount += cyPlayInfo.getAssistCount();
+					denominator++;
+				}
+			}
+			recentCypherInfo.setKillCount(avgKillCount / denominator);
+			recentCypherInfo.setDeathCount(avgDeathCount / denominator);
+			recentCypherInfo.setAssistCount(avgAssistCount / denominator);
+			
+			recentCypherRows.add(recentCypherInfo);
+		}
+        
+        ioGameRecords.setRecentlyPlayCyphersInfos(recentCypherRows);
         
         
         return ioGameRecords;
