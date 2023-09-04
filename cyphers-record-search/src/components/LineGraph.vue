@@ -90,7 +90,12 @@ export default {
             label: '포인트 변경내역',
             backgroundColor: '#f87979',
             data: [40, 66, 10, 40, 39, 500, 40]
-          }
+          },
+          {
+            label: '포인트 변경내역2',
+            backgroundColor: '#f87979',
+            data: [13, 22, 80, 60, 47, 252, 40]
+          },
         ]
       },
       chartOptions: {
