@@ -14,5 +14,6 @@ import lombok.Setter;
 public class CyphersMatches {
 	private CyphersPlayDate date;
 	private String gameTypeId;
+	private String next;
 	private List<CyphersMathedInfo> rows;
 }

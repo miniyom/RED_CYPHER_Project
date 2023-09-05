@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -31,7 +30,7 @@ public class SearchController {
     }
 
     @GetMapping("/{nickname}")
-    public List<IoSearchDetailResponse> searchDetail(@PathVariable("nickname") String nickname) throws Exception {
+    public IoSearchDetailResponse searchDetail(@PathVariable("nickname") String nickname) throws Exception {
         return searchService.getDetailSearch(nickname);
     }
 }

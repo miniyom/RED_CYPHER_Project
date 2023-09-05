@@ -273,6 +273,12 @@ import LineGraph from "@/components/LineGraph";
 import PieGraph from "@/components/PieGraph";
 
 export default {
+  props: {
+    nickname: String
+  },
+  created() {
+    console.log("검색 결과 데이터:", this.nickname);
+  },
   components: {
     Header,
     LineGraph,
@@ -379,7 +385,7 @@ export default {
     }
   },
   mounted() {
-
+    
   }
 }
 </script>

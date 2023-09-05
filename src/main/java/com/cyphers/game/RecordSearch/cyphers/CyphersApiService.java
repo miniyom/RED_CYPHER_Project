@@ -19,6 +19,7 @@ import org.springframework.stereotype.Component;
 
 import com.cyphers.game.RecordSearch.cyphers.annotation.Required;
 import com.cyphers.game.RecordSearch.cyphers.model.CyphersCharacterRanking;
+import com.cyphers.game.RecordSearch.cyphers.model.CyphersCharacterSearch;
 import com.cyphers.game.RecordSearch.cyphers.model.CyphersItemDetailInfo;
 import com.cyphers.game.RecordSearch.cyphers.model.CyphersItemSearch;
 import com.cyphers.game.RecordSearch.cyphers.model.CyphersMatchingDetails;
@@ -27,6 +28,7 @@ import com.cyphers.game.RecordSearch.cyphers.model.CyphersPlayerInfo;
 import com.cyphers.game.RecordSearch.cyphers.model.CyphersPlayerRanking;
 import com.cyphers.game.RecordSearch.cyphers.model.CyphersPlayerResponse;
 import com.cyphers.game.RecordSearch.cyphers.model.CyphersTsjRanking;
+import com.cyphers.game.RecordSearch.cyphers.model.enumuration.CyphersGameType;
 import com.cyphers.game.RecordSearch.cyphers.model.enumuration.CyphersItemWordType;
 import com.cyphers.game.RecordSearch.cyphers.model.enumuration.CyphersPlayerWordType;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -116,9 +118,6 @@ public class CyphersApiService {
         String cyCharacters = getTest("/cy/characters", params);
 //        System.out.println("cyCharacters = " + cyCharacters);
         
-//        String a = CyphersWordType.FULL.value();
-//        System.out.println(a);
-        
     }
 
     // get요청 보내기
@@ -157,20 +156,6 @@ public class CyphersApiService {
 
         return objectMapper.readValue(get("/cy/players", params), CyphersPlayerResponse.class);
     }
-    
-    public CyphersPlayerResponse searchPlayersAxios(@Required String nickname, CyphersPlayerWordType wordType, Integer limit) throws Exception {
-        Map<String, String> params = new HashMap<>();
-        params.put("nickname", nickname);
-        params.put("wordType", wordType.getValue());
-        if (limit != null) {
-            if (limit < 10 || limit > 200) {
-                throw new IllegalArgumentException("limit은 10 이상, 200 이하까지만 사용할 수 있습니다.");
-            }
-            params.put("limit", limit.toString());
-        }
-
-        return objectMapper.readValue(get("/cy/players", params), CyphersPlayerResponse.class);
-    }
 
     //플레이어 정보 조회
     public CyphersPlayerInfo searchPlayerInfo(@Required String playerId) throws Exception {
@@ -180,8 +165,9 @@ public class CyphersApiService {
     }
 
     //플레이어 매칭 기록 조회
-    public CyphersMatchingHistory searchMatchingHistory(@Required String playerId, String gameTypeId, String startDate, String endDate, Integer limit) throws Exception {
+    public CyphersMatchingHistory searchMatchingHistory(@Required String playerId, CyphersGameType gameType, String startDate, String endDate, Integer limit) throws Exception {
         Map<String, String> params = new HashMap<>();
+        String gameTypeId = gameType.getValue();
         params.put("gameTypeId", gameTypeId);
         params.put("startDate", startDate);
         params.put("endDate", endDate);
@@ -268,6 +254,11 @@ public class CyphersApiService {
     public CyphersItemDetailInfo searchItemDetail(@Required String itemId) throws Exception {
         Map<String, String> params = new HashMap<>();
         return objectMapper.readValue(get("/cy/battleitems/" + itemId, params), CyphersItemDetailInfo.class);
+    }
+    
+    public CyphersCharacterSearch searchCharacter() throws Exception {
+        Map<String, String> params = new HashMap<>();
+        return objectMapper.readValue(get("/cy/characters" , params), CyphersCharacterSearch.class);
     }
     
 }

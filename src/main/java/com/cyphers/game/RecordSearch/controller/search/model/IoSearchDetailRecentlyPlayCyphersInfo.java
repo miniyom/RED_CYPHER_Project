@@ -1,9 +1,10 @@
 package com.cyphers.game.RecordSearch.controller.search.model;
 
-import lombok.*;
-
-import java.time.LocalDateTime;
-import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @Setter
@@ -15,7 +16,7 @@ public class IoSearchDetailRecentlyPlayCyphersInfo {
     private String characterName;
     private Integer winCount;
     private Integer loseCount;
-    private Integer killCount;
-    private Integer deathCount;
-    private Integer assistCount;
+    private Float killCount;
+    private Float deathCount;
+    private Float assistCount;
 }
