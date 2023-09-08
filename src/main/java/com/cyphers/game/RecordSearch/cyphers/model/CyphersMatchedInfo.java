@@ -9,10 +9,10 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class CyphersMathedInfo {
+public class CyphersMatchedInfo {
 	private String date;
-	private String matchedId;
+	private String matchId;
 	private CyphersMapInfo map;
 	private CyphersPlayInfo playInfo;
-	private CyphersCharacterPosition postion;
+	private CyphersCharacterPosition position;
 }
