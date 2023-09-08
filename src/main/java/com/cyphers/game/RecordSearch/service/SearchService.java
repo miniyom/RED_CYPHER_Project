@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 
+import com.cyphers.game.RecordSearch.controller.search.model.IoSearchDetailGameRecord;
 import com.cyphers.game.RecordSearch.controller.search.model.IoSearchDetailMostCypherInfo;
 import com.cyphers.game.RecordSearch.controller.search.model.IoSearchDetailMostPositionInfo;
 import com.cyphers.game.RecordSearch.controller.search.model.IoSearchDetailRecentlyPlayCyphersInfo;
@@ -23,10 +24,12 @@ import com.cyphers.game.RecordSearch.controller.search.model.IoSearchDetailWinAn
 import com.cyphers.game.RecordSearch.cyphers.CyphersApiService;
 import com.cyphers.game.RecordSearch.cyphers.model.CyphersCharacterSearch;
 import com.cyphers.game.RecordSearch.cyphers.model.CyphersMatchedInfo;
+import com.cyphers.game.RecordSearch.cyphers.model.CyphersMatchingDetails;
 import com.cyphers.game.RecordSearch.cyphers.model.CyphersMatchingHistory;
 import com.cyphers.game.RecordSearch.cyphers.model.CyphersPlayInfo;
 import com.cyphers.game.RecordSearch.cyphers.model.CyphersPlayerInfo;
 import com.cyphers.game.RecordSearch.cyphers.model.CyphersPlayerResponse;
+import com.cyphers.game.RecordSearch.cyphers.model.CyphersPlayersInGame;
 import com.cyphers.game.RecordSearch.cyphers.model.enumuration.CyphersGameType;
 import com.cyphers.game.RecordSearch.cyphers.model.enumuration.CyphersPlayerWordType;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -60,14 +63,14 @@ public class SearchService {
     public IoSearchDetailResponse getDetailSearch(String nickname) throws Exception {
     	
     	IoSearchDetailResponse ioGameRecords = new IoSearchDetailResponse();
-    	String playerId = cyApiService.searchPlayers(nickname, CyphersPlayerWordType.MATCH, null)
+    	String myPlayerId = cyApiService.searchPlayers(nickname, CyphersPlayerWordType.MATCH, null)
 				.getRows().get(0).getPlayerId();
     	CyphersCharacterSearch cyCharacter = cyApiService.searchCharacter();
         
     	
     	//플레이어 기본정보
-    	String profileCharacterId = cyApiService.searchPlayerInfo(playerId).getRepresent().getCharacterId();
-    	String profileNickname = cyApiService.searchPlayerInfo(playerId).getRepresent().getCharacterName();
+    	String profileCharacterId = cyApiService.searchPlayerInfo(myPlayerId).getRepresent().getCharacterId();
+    	String profileNickname = cyApiService.searchPlayerInfo(myPlayerId).getRepresent().getCharacterName();
     	ioGameRecords.setProfileCharacterId(profileCharacterId);
     	ioGameRecords.setNickname(profileNickname);
     	
@@ -80,7 +83,7 @@ public class SearchService {
         String mostStartDate = ninetyDaysAgo.format(apiSearchFormatter).toString();
         String mostEndDate = now.format(apiSearchFormatter).toString();
         
-        CyphersMatchingHistory mostCyMatchingHistoryRating = cyApiService.searchMatchingHistory(playerId, CyphersGameType.RATING, mostStartDate, mostEndDate, limit);
+        CyphersMatchingHistory mostCyMatchingHistoryRating = cyApiService.searchMatchingHistory(myPlayerId, CyphersGameType.RATING, mostStartDate, mostEndDate, limit);
 
         Map<String, Pair<Integer, Integer>> mostCharacterIdMap = new HashMap<>();	//Pair의 첫번째는 전체 플레이 횟수, 두번째는 이긴 횟수
         for (int i = 0; i < mostCyMatchingHistoryRating.getMatches().getRows().size(); i++) {
@@ -165,7 +168,7 @@ public class SearchService {
         
         
     	//공식전, 일반전 데이터
-        CyphersPlayerInfo cyPlayerInfo = cyApiService.searchPlayerInfo(playerId); 
+        CyphersPlayerInfo cyPlayerInfo = cyApiService.searchPlayerInfo(myPlayerId); 
         
         if (!(cyPlayerInfo.getRecords().size() == 0)) {
         	String gameTypeIdRow0 = cyPlayerInfo.getRecords().get(0).getGameTypeId();	//Rows의 0번째를 가져옴
@@ -195,7 +198,7 @@ public class SearchService {
         LocalDateTime oneWeekAgo = today.minusWeeks(1);
         String winAndLoseStartDate = oneWeekAgo.format(apiSearchFormatter).toString();
         String winAndLoseEndDate = today.format(apiSearchFormatter).toString();
-        CyphersMatchingHistory weeklyCyMatchingHistory = cyApiService.searchMatchingHistory(playerId, CyphersGameType.RATING, winAndLoseStartDate, winAndLoseEndDate, limit);	//limit은 100
+        CyphersMatchingHistory weeklyCyMatchingHistory = cyApiService.searchMatchingHistory(myPlayerId, CyphersGameType.RATING, winAndLoseStartDate, winAndLoseEndDate, limit);	//limit은 100
         
         List<IoSearchDetailWinAndLoseCountHistoryInfo> winAndLoseCountHistoryInfos = new ArrayList<>();
         
@@ -240,7 +243,7 @@ public class SearchService {
         String recentEndDate = now.format(apiSearchFormatter).toString();
         
         
-        CyphersMatchingHistory recentCyMatchingHistoryNormal = cyApiService.searchMatchingHistory(playerId, CyphersGameType.NORMAL, recentStartDate, recentEndDate, limit);	        // limit = 100
+        CyphersMatchingHistory recentCyMatchingHistoryNormal = cyApiService.searchMatchingHistory(myPlayerId, CyphersGameType.NORMAL, recentStartDate, recentEndDate, limit);	        // limit = 100
 
         ioGameRecords.setRecentlyPlayCount(recentCyMatchingHistoryNormal.getMatches().getRows().size());
         
@@ -338,6 +341,65 @@ public class SearchService {
         
         ioGameRecords.setRecentlyPlayCyphersInfos(recentCypherRows);
         
+        
+        //최근 게임기록
+        List<IoSearchDetailGameRecord> gameRecords = new ArrayList<>();
+        limit = 10;	//일단 10개만
+        CyphersMatchingHistory recordCyMatchingHistory = cyApiService.searchMatchingHistory(myPlayerId, CyphersGameType.RATING, null, null, limit); 
+        
+        for (int i = 0; i < recordCyMatchingHistory.getMatches().getRows().size(); i++) {
+            IoSearchDetailGameRecord gameRecord = new IoSearchDetailGameRecord();
+            String matchId = recordCyMatchingHistory.getMatches().getRows().get(i).getMatchId();
+            CyphersMatchingDetails matchingDetail = cyApiService.searchMatchingDetail(matchId);
+            
+            gameRecord.setGameType(CyphersGameType.RATING);
+            
+            List<String> playerNicknames = new ArrayList<>();
+            
+            for (int j = 0; j < matchingDetail.getPlayers().size(); j++) {
+				if (matchingDetail.getPlayers().get(j).getPlayerId().equals(myPlayerId)) {
+					CyphersPlayersInGame player = matchingDetail.getPlayers().get(j);
+					
+					gameRecord.setPlayCharacterId(player.getPlayerId());
+					gameRecord.setPostionName(player.getPosition().getName());
+					List<String> attributeIds = new ArrayList<>();
+					for (int k = 0; k < player.getPosition().getAttribute().size(); k++) {
+						attributeIds.add(player.getPosition().getAttribute().get(k).getId());
+					}
+					
+					gameRecord.setAttributeIds(attributeIds);
+					gameRecord.setKillCount(player.getPlayInfo().getKillCount());
+					gameRecord.setDeathCount(player.getPlayInfo().getDeathCount());
+					gameRecord.setAssistCount(player.getPlayInfo().getAssistCount());
+					
+					Float killCount = gameRecord.getKillCount().floatValue();
+					Float deathCount = gameRecord.getDeathCount().floatValue();
+					Float assistCount = gameRecord.getAssistCount().floatValue();
+					gameRecord.setKda(Math.round((killCount + assistCount) / deathCount * 100) / 100.0f);
+					gameRecord.setCsCount(gameRecord.getCsCount());
+					
+					List<String> itemIds = new ArrayList<>();
+					for (int k = 0; k < player.getItems().size(); k++) {
+						itemIds.add(player.getItems().get(k).getItemId());
+					}
+					gameRecord.setItemIds(itemIds);
+					
+					gameRecord.setHealAmount(player.getPlayInfo().getHealAmount());
+					gameRecord.setAttackPoint(player.getPlayInfo().getAttackPoint());
+					gameRecord.setDamagePoint(player.getPlayInfo().getDamagePoint());
+					gameRecord.setGetCoin(player.getPlayInfo().getGetCoin());
+					gameRecord.setBattlePoint(player.getPlayInfo().getBattlePoint());
+					gameRecord.setSightPoint(player.getPlayInfo().getSightPoint());
+				}
+				playerNicknames.add(matchingDetail.getPlayers().get(j).getNickname());
+			}
+            
+            gameRecord.setPlayerNicknames(playerNicknames);
+            gameRecords.add(gameRecord);
+		}
+        
+        log.info("게임기록 길이: " + gameRecords.size());
+        ioGameRecords.setGameRecords(gameRecords);
         
         return ioGameRecords;
     }

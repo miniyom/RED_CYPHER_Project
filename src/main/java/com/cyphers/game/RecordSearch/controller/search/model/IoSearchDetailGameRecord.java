@@ -15,12 +15,13 @@ public class IoSearchDetailGameRecord {
 
     private CyphersGameType gameType;
     private String playCharacterId;
+    private String postionName;
     private List<String> attributeIds;
 
     private Integer killCount;
     private Integer deathCount;
     private Integer assistCount;
-    private Integer winRate;
+    //private Integer winRate;
     private Float kda;
     private Integer csCount;
 
