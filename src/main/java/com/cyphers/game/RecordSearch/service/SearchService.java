@@ -1,6 +1,5 @@
 package com.cyphers.game.RecordSearch.service;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
@@ -28,6 +27,7 @@ import com.cyphers.game.RecordSearch.cyphers.model.CyphersMatchingDetails;
 import com.cyphers.game.RecordSearch.cyphers.model.CyphersMatchingHistory;
 import com.cyphers.game.RecordSearch.cyphers.model.CyphersPlayInfo;
 import com.cyphers.game.RecordSearch.cyphers.model.CyphersPlayerInfo;
+import com.cyphers.game.RecordSearch.cyphers.model.CyphersPlayerRepresent;
 import com.cyphers.game.RecordSearch.cyphers.model.CyphersPlayerResponse;
 import com.cyphers.game.RecordSearch.cyphers.model.CyphersPlayersInGame;
 import com.cyphers.game.RecordSearch.cyphers.model.enumuration.CyphersGameType;
@@ -63,14 +63,21 @@ public class SearchService {
     public IoSearchDetailResponse getDetailSearch(String nickname) throws Exception {
     	
     	IoSearchDetailResponse ioGameRecords = new IoSearchDetailResponse();
-    	String myPlayerId = cyApiService.searchPlayers(nickname, CyphersPlayerWordType.MATCH, null)
-				.getRows().get(0).getPlayerId();
+    	CyphersPlayerResponse cyPlayerResponse = cyApiService.searchPlayers(nickname, CyphersPlayerWordType.MATCH, null);
+    	String myPlayerId = "";
+		if (cyPlayerResponse.getRows().size() != 0) {
+			myPlayerId = cyPlayerResponse.getRows().get(0).getPlayerId();
+		} else {
+			throw new Exception();
+		}
+		
     	CyphersCharacterSearch cyCharacter = cyApiService.searchCharacter();
         
     	
     	//플레이어 기본정보
-    	String profileCharacterId = cyApiService.searchPlayerInfo(myPlayerId).getRepresent().getCharacterId();
-    	String profileNickname = cyApiService.searchPlayerInfo(myPlayerId).getRepresent().getCharacterName();
+    	CyphersPlayerRepresent cyPlayerRepresent = cyApiService.searchPlayerInfo(myPlayerId).getRepresent();
+    	String profileCharacterId = cyPlayerRepresent.getCharacterId();
+    	String profileNickname = cyPlayerRepresent.getCharacterName();
     	ioGameRecords.setProfileCharacterId(profileCharacterId);
     	ioGameRecords.setNickname(profileNickname);
     	
@@ -170,7 +177,7 @@ public class SearchService {
     	//공식전, 일반전 데이터
         CyphersPlayerInfo cyPlayerInfo = cyApiService.searchPlayerInfo(myPlayerId); 
         
-        if (!(cyPlayerInfo.getRecords().size() == 0)) {
+        if (cyPlayerInfo.getRecords().size() != 0) {
         	String gameTypeIdRow0 = cyPlayerInfo.getRecords().get(0).getGameTypeId();	//Rows의 0번째를 가져옴
         	
         	if (gameTypeIdRow0.equals("rating")) {
@@ -189,43 +196,57 @@ public class SearchService {
                 ioGameRecords.setNormalWinRate(100 * ioGameRecords.getNormalWinCount() / 
                 						(ioGameRecords.getNormalLoseCount() + ioGameRecords.getNormalWinCount()));
 			}
+		} else {
+			ioGameRecords.setRatingGameTier("-");
+			ioGameRecords.setRatingWinCount(0);
+			ioGameRecords.setRatingLoseCount(0);
+			ioGameRecords.setRatingStopCount(0);
+			ioGameRecords.setRatingWinRate(0);
+			ioGameRecords.setNormalWinCount(0);
+			ioGameRecords.setNormalLoseCount(0);
+			ioGameRecords.setNormalStopCount(0);
+			ioGameRecords.setNormalWinRate(0);
 		}
         
         
         //승, 패수 데이터(그래프)
-        LocalDateTime today = LocalDateTime.now();
+        LocalDateTime today = now;
         DateTimeFormatter graphFormatter = DateTimeFormatter.ofPattern("MM-dd");
         LocalDateTime oneWeekAgo = today.minusWeeks(1);
         String winAndLoseStartDate = oneWeekAgo.format(apiSearchFormatter).toString();
         String winAndLoseEndDate = today.format(apiSearchFormatter).toString();
-        CyphersMatchingHistory weeklyCyMatchingHistory = cyApiService.searchMatchingHistory(myPlayerId, CyphersGameType.RATING, winAndLoseStartDate, winAndLoseEndDate, limit);	//limit은 100
+        limit = 100;
+        CyphersMatchingHistory weeklyCyMatchingHistory = cyApiService.searchMatchingHistory(myPlayerId, CyphersGameType.RATING, winAndLoseStartDate, winAndLoseEndDate, limit);	
         
         List<IoSearchDetailWinAndLoseCountHistoryInfo> winAndLoseCountHistoryInfos = new ArrayList<>();
         
+        Map<String, Pair<Integer, Integer>> weeklyCyMatchingHistoryMap = new HashMap<>();	//pair 앞은 승수, 뒤는 패수
+        
+        Integer winCount = 0;
+    	Integer loseCount = 0;
+        for (int i = 0; i < weeklyCyMatchingHistory.getMatches().getRows().size(); i++) {
+        	CyphersMatchedInfo cyMatchedInfo = weeklyCyMatchingHistory.getMatches().getRows().get(i);
+        	
+        	String matchedDate = cyMatchedInfo.getDate();
+        	String[] matchedDateAndTime = matchedDate.split(" ");
+        	
+        	String todayDate = today.format(apiSearchFormatter);
+        	String[] todayDateAndTime = todayDate.split(" ");
+        	
+        	if (matchedDateAndTime[0].equals(todayDateAndTime[0])) {
+        		if (cyMatchedInfo.getPlayInfo().getResult().equals("win")) {
+					winCount++;
+				} else if (cyMatchedInfo.getPlayInfo().getResult().equals("lose")) {
+					loseCount++;
+				}
+			}	//today의 날짜와 matchedInfo의 날짜가 같으면 승패 카운팅
+		}
         while (today.isAfter(oneWeekAgo)) {
         	IoSearchDetailWinAndLoseCountHistoryInfo winAndLoseHisory = new IoSearchDetailWinAndLoseCountHistoryInfo();
         	
         	winAndLoseHisory.setHistoryDate(today.format(graphFormatter));
         	
-        	Integer winCount = 0;
-        	Integer loseCount = 0;
-        	for (int i = 0; i < weeklyCyMatchingHistory.getMatches().getRows().size(); i++) {
-            	CyphersMatchedInfo cyMatchedInfo = weeklyCyMatchingHistory.getMatches().getRows().get(i);
-            	
-            	String matchedDate = cyMatchedInfo.getDate();
-            	String[] matchedDateAndTime = matchedDate.split(" ");
-            	
-            	String todayDate = today.format(apiSearchFormatter);
-            	String[] todayDateAndTime = todayDate.split(" ");
-            	
-            	if (matchedDateAndTime[0].equals(todayDateAndTime[0])) {
-            		if (cyMatchedInfo.getPlayInfo().getResult().equals("win")) {
-						winCount++;
-					} else if (cyMatchedInfo.getPlayInfo().getResult().equals("lose")) {
-						loseCount++;
-					}
-				}	//today의 날짜와 mathedInfo의 날짜가 같으면 승패 카운팅
-			}
+        	
         	winAndLoseHisory.setWinCount(winCount);
         	winAndLoseHisory.setLoseCount(loseCount);
         	
@@ -234,6 +255,39 @@ public class SearchService {
             today = today.minusDays(1); // 하루씩 감소
             
         }
+        
+//        while (today.isAfter(oneWeekAgo)) {
+//        	IoSearchDetailWinAndLoseCountHistoryInfo winAndLoseHisory = new IoSearchDetailWinAndLoseCountHistoryInfo();
+//        	
+//        	winAndLoseHisory.setHistoryDate(today.format(graphFormatter));
+//        	
+//        	Integer winCount = 0;
+//        	Integer loseCount = 0;
+//        	for (int i = 0; i < weeklyCyMatchingHistory.getMatches().getRows().size(); i++) {
+//            	CyphersMatchedInfo cyMatchedInfo = weeklyCyMatchingHistory.getMatches().getRows().get(i);
+//            	
+//            	String matchedDate = cyMatchedInfo.getDate();
+//            	String[] matchedDateAndTime = matchedDate.split(" ");
+//            	
+//            	String todayDate = today.format(apiSearchFormatter);
+//            	String[] todayDateAndTime = todayDate.split(" ");
+//            	
+//            	if (matchedDateAndTime[0].equals(todayDateAndTime[0])) {
+//            		if (cyMatchedInfo.getPlayInfo().getResult().equals("win")) {
+//						winCount++;
+//					} else if (cyMatchedInfo.getPlayInfo().getResult().equals("lose")) {
+//						loseCount++;
+//					}
+//				}	//today의 날짜와 matchedInfo의 날짜가 같으면 승패 카운팅
+//			}
+//        	winAndLoseHisory.setWinCount(winCount);
+//        	winAndLoseHisory.setLoseCount(loseCount);
+//        	
+//        	winAndLoseCountHistoryInfos.add(winAndLoseHisory);      
+//        	
+//            today = today.minusDays(1); // 하루씩 감소
+//            
+//        }
         ioGameRecords.setWinAndLoseCountHistoryInfos(winAndLoseCountHistoryInfos);
         
         
@@ -397,8 +451,6 @@ public class SearchService {
             gameRecord.setPlayerNicknames(playerNicknames);
             gameRecords.add(gameRecord);
 		}
-        
-        log.info("게임기록 길이: " + gameRecords.size());
         ioGameRecords.setGameRecords(gameRecords);
         
         return ioGameRecords;
