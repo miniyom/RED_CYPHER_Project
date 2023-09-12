@@ -21,7 +21,7 @@ public class IoSearchDetailGameRecord {
     private Integer killCount;
     private Integer deathCount;
     private Integer assistCount;
-    //private Integer winRate;
+    private Integer killParticipation;
     private Float kda;
     private Integer csCount;
 

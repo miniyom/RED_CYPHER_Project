@@ -212,6 +212,7 @@ public class SearchService {
         //승, 패수 데이터(그래프)
         LocalDateTime today = now;
         DateTimeFormatter graphFormatter = DateTimeFormatter.ofPattern("MM-dd");
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");	
         LocalDateTime oneWeekAgo = today.minusWeeks(1);
         String winAndLoseStartDate = oneWeekAgo.format(apiSearchFormatter).toString();
         String winAndLoseEndDate = today.format(apiSearchFormatter).toString();
@@ -230,25 +231,22 @@ public class SearchService {
         	String matchedDate = cyMatchedInfo.getDate();
         	String[] matchedDateAndTime = matchedDate.split(" ");
         	
-        	String todayDate = today.format(apiSearchFormatter);
-        	String[] todayDateAndTime = todayDate.split(" ");
+        	Pair<Integer, Integer> winAndLoseCount = weeklyCyMatchingHistoryMap.getOrDefault(matchedDateAndTime[0], Pair.of(0, 0));
         	
-        	if (matchedDateAndTime[0].equals(todayDateAndTime[0])) {
-        		if (cyMatchedInfo.getPlayInfo().getResult().equals("win")) {
-					winCount++;
-				} else if (cyMatchedInfo.getPlayInfo().getResult().equals("lose")) {
-					loseCount++;
-				}
-			}	//today의 날짜와 matchedInfo의 날짜가 같으면 승패 카운팅
+    		if (cyMatchedInfo.getPlayInfo().getResult().equals("win")) {
+    			weeklyCyMatchingHistoryMap.put(matchedDateAndTime[0], Pair.of(winAndLoseCount.getFirst() + 1, winAndLoseCount.getSecond()));
+			} else {
+				weeklyCyMatchingHistoryMap.put(matchedDateAndTime[0], Pair.of(winAndLoseCount.getFirst(), winAndLoseCount.getSecond() + 1));
+			}
 		}
         while (today.isAfter(oneWeekAgo)) {
         	IoSearchDetailWinAndLoseCountHistoryInfo winAndLoseHisory = new IoSearchDetailWinAndLoseCountHistoryInfo();
         	
         	winAndLoseHisory.setHistoryDate(today.format(graphFormatter));
         	
-        	
-        	winAndLoseHisory.setWinCount(winCount);
-        	winAndLoseHisory.setLoseCount(loseCount);
+        	String todayDate = today.format(dateFormatter);
+        	winAndLoseHisory.setWinCount(weeklyCyMatchingHistoryMap.get(todayDate).getFirst());
+        	winAndLoseHisory.setLoseCount(weeklyCyMatchingHistoryMap.get(todayDate).getSecond());
         	
         	winAndLoseCountHistoryInfos.add(winAndLoseHisory);      
         	
@@ -345,8 +343,8 @@ public class SearchService {
         	String characterId = cyPlayInfo.getCharacterId();
         	Pair<Integer, Integer> playAndWinCount = recentCharacterIdMap.getOrDefault(characterId, Pair.of(0, 0));
         	
-        	recentCharacterIdMap.put(characterId, Pair.of(playAndWinCount.getFirst() + 1, 
-        											playAndWinCount.getSecond() + (cyPlayInfo.getResult().equals("win") ? 1 : 0)));
+        	recentCharacterIdMap.put(characterId, 	Pair.of(playAndWinCount.getFirst() + 1, 
+        													playAndWinCount.getSecond() + (cyPlayInfo.getResult().equals("win") ? 1 : 0)));
 		}
         
         List<String> recentIdList = new ArrayList<>();
