@@ -16,4 +16,5 @@ public class CyphersMatches {
 	private String gameTypeId;
 	private String next;
 	private List<CyphersMathedInfo> rows;
+	private String next;
 }
