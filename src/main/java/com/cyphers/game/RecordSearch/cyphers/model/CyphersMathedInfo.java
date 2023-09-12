@@ -11,8 +11,8 @@ import lombok.Setter;
 @NoArgsConstructor
 public class CyphersMathedInfo {
 	private String date;
-	private String matchedId;
+	private String matchId;
 	private CyphersMapInfo map;
 	private CyphersPlayInfo playInfo;
-	private CyphersCharacterPosition postion;
+	private CyphersCharacterPosition position;
 }
