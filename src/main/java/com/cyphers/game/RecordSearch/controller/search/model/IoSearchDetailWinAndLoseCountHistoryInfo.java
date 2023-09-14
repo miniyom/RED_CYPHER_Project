@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Builder
 public class IoSearchDetailWinAndLoseCountHistoryInfo {
-    private String historyDate;
+    private Integer historyDate;
     private Integer winCount;
     private Integer loseCount;
 }

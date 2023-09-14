@@ -21,7 +21,7 @@ public class IoSearchDetailGameRecord {
     private Integer killCount;
     private Integer deathCount;
     private Integer assistCount;
-    private Integer killParticipation;
+    private Integer killParticipation;	//킬 관여율. (나의 킬 + 어시/아군팀 총 킬수)
     private Float kda;
     private Integer csCount;
 

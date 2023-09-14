@@ -1,5 +1,7 @@
 package com.cyphers.game.RecordSearch.cyphers.model;
 
+import java.time.LocalDate;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,7 +12,8 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CyphersMatchedInfo {
-	private String date;
+	private LocalDate date;
+//	private String date;
 	private String matchId;
 	private CyphersMapInfo map;
 	private CyphersPlayInfo playInfo;
