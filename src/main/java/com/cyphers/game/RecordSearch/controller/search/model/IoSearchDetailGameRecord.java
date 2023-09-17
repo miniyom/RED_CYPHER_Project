@@ -15,12 +15,13 @@ public class IoSearchDetailGameRecord {
 
     private CyphersGameType gameType;
     private String playCharacterId;
+    private String postionName;
     private List<String> attributeIds;
 
     private Integer killCount;
     private Integer deathCount;
     private Integer assistCount;
-    private Integer winRate;
+    private Integer killParticipation;	//킬 관여율. (나의 킬 + 어시/아군팀 총 킬수)
     private Float kda;
     private Integer csCount;
 

@@ -1,8 +1,13 @@
 package com.cyphers.game.RecordSearch.study;
 
-import com.cyphers.game.RecordSearch.cyphers.model.CyphersMatchingHistory;
-import com.cyphers.game.RecordSearch.cyphers.model.CyphersMathedInfo;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -11,13 +16,9 @@ import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import com.cyphers.game.RecordSearch.cyphers.model.CyphersMatchedInfo;
+import com.cyphers.game.RecordSearch.cyphers.model.CyphersMatchingHistory;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class Study230913 {
 
@@ -47,7 +48,7 @@ public class Study230913 {
 
         ObjectMapper objectMapper = new ObjectMapper();
 
-        List<CyphersMathedInfo> mathedInfos = new ArrayList<>();
+        List<CyphersMatchedInfo> matchedInfos = new ArrayList<>();
         String next = "";
 
         int limit = 100;
@@ -61,13 +62,13 @@ public class Study230913 {
 //            System.out.println("cyMatchingHistory = " + cyMatchingHistory);
             CyphersMatchingHistory cyphersMatchingHistory = objectMapper.readValue(cyMatchingHistory, CyphersMatchingHistory.class);
 
-            for (CyphersMathedInfo row : cyphersMatchingHistory.getMatches().getRows()) {
-                mathedInfos.add(row);
-                if (mathedInfos.size() >= limit) {
+            for (CyphersMatchedInfo row : cyphersMatchingHistory.getMatches().getRows()) {
+            	matchedInfos.add(row);
+                if (matchedInfos.size() >= limit) {
                     break;
                 }
             }
-            if (mathedInfos.size() >= limit) {
+            if (matchedInfos.size() >= limit) {
                 break;
             }
 //            mathedInfos.addAll(cyphersMatchingHistory.getMatches().getRows());

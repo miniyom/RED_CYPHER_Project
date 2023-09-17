@@ -15,7 +15,8 @@ public class CyphersPlayInfo {
 	private String result;
 	private Boolean random;
 	private Integer partyUserCount;
-	private List<CyphersPartyInfo> partyInfo; 
+	private List<CyphersPartyInfo> partyInfo;
+	private String partyId;
 	private String playTypeName;
 	private String characterId;
 	private String characterName;

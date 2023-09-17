@@ -9,7 +9,8 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class IoSearchDetailRatingPointHistoryInfo {
-    private LocalDateTime historyDate;
-    private Integer point;
+public class IoSearchDetailWinAndLoseCountHistoryInfo {
+    private Integer historyDate;
+    private Integer winCount;
+    private Integer loseCount;
 }

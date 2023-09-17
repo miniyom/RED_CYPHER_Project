@@ -15,8 +15,10 @@ public class IoSearchDetailResponse {
     private String nickname;
     //db 설계, 생성 후 그 기록 가져와야함
     //jpa활용 필요
-    private LocalDateTime recentlyUpdatedDate;	
-    private List<IoSearchDetailMostCypherInfo> mostCypherInfos; //별도 계산식 필요
+    private LocalDateTime recentlyUpdatedDate;
+    
+    private List<IoSearchDetailMostCypherInfo> mostCypherInfos;
+    private IoSearchDetailMostPositionInfo mostPositionInfos;
 
     private String ratingGameTier;
     private Integer ratingWinCount;
@@ -28,8 +30,8 @@ public class IoSearchDetailResponse {
     private Integer normalLoseCount;
     private Integer normalStopCount;
     private Integer normalWinRate;
-    //rp를 따로 받을 수 있는 api가 없음
-    private List<IoSearchDetailRatingPointHistoryInfo> ratingPointHistoryInfos;
+    
+    private List<IoSearchDetailWinAndLoseCountHistoryInfo> winAndLoseCountHistoryInfos;
 
     private Integer recentlyPlayCount;
     private Integer recentlyWinRate;
