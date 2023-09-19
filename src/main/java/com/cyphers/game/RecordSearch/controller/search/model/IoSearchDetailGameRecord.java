@@ -15,7 +15,7 @@ public class IoSearchDetailGameRecord {
 
     private CyphersGameType gameType;
     private String playCharacterId;
-    private String postionName;
+    private String positionName;
     private List<String> attributeIds;
 
     private Integer killCount;
