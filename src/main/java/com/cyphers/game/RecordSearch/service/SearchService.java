@@ -213,11 +213,6 @@ public class SearchService {
         	mostPositionInfo.setSupporterUseRate((100 * supporterUseCount) / mostPositionPlayCount);
         	mostPositionInfo.setMeleeDealerUseRate((100 * meleeDealerUseCount) / mostPositionPlayCount);
         	ioGameRecords.setMostPositionInfos(mostPositionInfo);
-        	log.info("탱커 플레이 횟수 : " + tankerUseCount.toString());
-        	log.info("원딜 플레이 횟수 : " + rangeDealerUseCount.toString());
-        	log.info("서폿 플레이 횟수 : " + supporterUseCount.toString());
-        	log.info("근딜 플레이 횟수 : " + meleeDealerUseCount.toString());
-        	log.info("총 플레이 횟수 : " + mostPositionPlayCount.toString());
 		} 
         
         
@@ -260,7 +255,7 @@ public class SearchService {
 				}
 			}
 		}
-        
+
         
         //승, 패수 데이터(그래프)
         List<IoSearchDetailWinAndLoseCountHistoryInfo> winAndLoseCountHistoryInfos = new ArrayList<>();
@@ -271,8 +266,8 @@ public class SearchService {
         Map<Integer, Pair<Integer, Integer>> cyMatchingHistoryMap = new HashMap<>();	//pair 앞은 승수, 뒤는 패수
         Pair<LocalDate, Integer> matchedDateAndInt = Pair.of(now, WIN_AND_LOSE_KEY);
         
-        IoSearchDetailWinAndLoseCountHistoryInfo defaultWinAndLoseHisory = new IoSearchDetailWinAndLoseCountHistoryInfo();
         for (int i = 0; i <= WIN_AND_LOSE_KEY; i++) {
+            IoSearchDetailWinAndLoseCountHistoryInfo defaultWinAndLoseHisory = new IoSearchDetailWinAndLoseCountHistoryInfo();
         	defaultWinAndLoseHisory.setHistoryDate(i);
         	defaultWinAndLoseHisory.setWinCount(0);
         	defaultWinAndLoseHisory.setLoseCount(0);
@@ -284,24 +279,27 @@ public class SearchService {
         	IoSearchDetailWinAndLoseCountHistoryInfo winAndLoseHisory = new IoSearchDetailWinAndLoseCountHistoryInfo();
 
         	if (!weeklyMatchedInfo.getDate().isEqual(matchedDateAndInt.getFirst())) {
-        		winAndLoseHisory.setHistoryDate(matchedDateAndInt.getSecond());
-    			winAndLoseHisory.setWinCount(cyMatchingHistoryMap.get(matchedDateAndInt.getSecond()).getFirst());
-            	winAndLoseHisory.setLoseCount(cyMatchingHistoryMap.get(matchedDateAndInt.getSecond()).getSecond());
-	        	winAndLoseCountHistoryInfos.set(matchedDateAndInt.getSecond() , winAndLoseHisory);
 	        	matchedDateAndInt = Pair.of(matchedDateAndInt.getFirst().minusDays(1), matchedDateAndInt.getSecond() - 1);	//날짜 및 정수 감소
 	        	if (matchedDateAndInt.getSecond() < 0) {
 					break;
 				}
 			} 
-        	if (weeklyMatchedInfo.getDate().isEqual(matchedDateAndInt.getFirst())) {
+        	//같은날인지 체크하지 않으면, 중간에 빈 날이 그 전날의 기록을 조회해버림. ex) 9/15에 기록이 없으면 9/14의 기록을 참조함.
+        	if (weeklyMatchedInfo.getDate().isEqual(matchedDateAndInt.getFirst()) ) {
         		Pair<Integer, Integer> winAndLoseCount = cyMatchingHistoryMap.get(matchedDateAndInt.getSecond());
         		if (weeklyMatchedInfo.getPlayInfo().getResult().equals("win")) {
         			cyMatchingHistoryMap.put(matchedDateAndInt.getSecond(), Pair.of(winAndLoseCount.getFirst() + 1, winAndLoseCount.getSecond()));
-    			} else {
+    			} 
+        		if (weeklyMatchedInfo.getPlayInfo().getResult().equals("lose") || weeklyMatchedInfo.getPlayInfo().getResult().equals("stop")) {
     				cyMatchingHistoryMap.put(matchedDateAndInt.getSecond(), Pair.of(winAndLoseCount.getFirst(), winAndLoseCount.getSecond() + 1));
-    			}
+				} 
 			} 
+        	winAndLoseHisory.setHistoryDate(matchedDateAndInt.getSecond());
+			winAndLoseHisory.setWinCount(cyMatchingHistoryMap.get(matchedDateAndInt.getSecond()).getFirst());
+        	winAndLoseHisory.setLoseCount(cyMatchingHistoryMap.get(matchedDateAndInt.getSecond()).getSecond());
+        	winAndLoseCountHistoryInfos.set(matchedDateAndInt.getSecond() , winAndLoseHisory);
 		}
+        
         ioGameRecords.setWinAndLoseCountHistoryInfos(winAndLoseCountHistoryInfos);
         
         
