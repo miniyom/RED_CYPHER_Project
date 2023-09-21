@@ -192,23 +192,32 @@ public class SearchService {
     			switch (position) {
 					case "탱커": {
 						tankerUseCount++;
+						break;
 					}
 					case "원거리딜러": {
 	    				rangeDealerUseCount++;
+	    				break;
 					}
 					case "서포터": {
 	    				supporterUseCount++;
+	    				break;
 					}
 					case "근거리딜러": {
 	    				meleeDealerUseCount++;
+	    				break;
 					}
     			}
 			}
-        	mostPositionInfo.setTankerUseRate(100 * tankerUseCount / mostPositionPlayCount);
-        	mostPositionInfo.setRangeDealerUseRate(100 * rangeDealerUseCount / mostPositionPlayCount);
-        	mostPositionInfo.setSupporterUseRate(100 * supporterUseCount / mostPositionPlayCount);
-        	mostPositionInfo.setMeleeDealerUseRate(100 * meleeDealerUseCount / mostPositionPlayCount);
+        	mostPositionInfo.setTankerUseRate((100 * tankerUseCount) / mostPositionPlayCount);
+        	mostPositionInfo.setRangeDealerUseRate((100 * rangeDealerUseCount) / mostPositionPlayCount);
+        	mostPositionInfo.setSupporterUseRate((100 * supporterUseCount) / mostPositionPlayCount);
+        	mostPositionInfo.setMeleeDealerUseRate((100 * meleeDealerUseCount) / mostPositionPlayCount);
         	ioGameRecords.setMostPositionInfos(mostPositionInfo);
+        	log.info("탱커 플레이 횟수 : " + tankerUseCount.toString());
+        	log.info("원딜 플레이 횟수 : " + rangeDealerUseCount.toString());
+        	log.info("서폿 플레이 횟수 : " + supporterUseCount.toString());
+        	log.info("근딜 플레이 횟수 : " + meleeDealerUseCount.toString());
+        	log.info("총 플레이 횟수 : " + mostPositionPlayCount.toString());
 		} 
         
         
@@ -255,11 +264,12 @@ public class SearchService {
         
         //승, 패수 데이터(그래프)
         List<IoSearchDetailWinAndLoseCountHistoryInfo> winAndLoseCountHistoryInfos = new ArrayList<>();
-        LocalDate oneWeekAgo = LocalDate.now().minus(1, ChronoUnit.WEEKS);
-        List<CyphersMatchedInfo> weeklyMatchedInfoRows = filterDataByDate(cyMatchedInfoRows, oneWeekAgo, LocalDate.now());
+        LocalDate now = LocalDate.now();
+        LocalDate oneWeekAgo = now.minus(1, ChronoUnit.WEEKS);
+        List<CyphersMatchedInfo> weeklyMatchedInfoRows = filterDataByDate(cyMatchedInfoRows, oneWeekAgo, now);
         
         Map<Integer, Pair<Integer, Integer>> cyMatchingHistoryMap = new HashMap<>();	//pair 앞은 승수, 뒤는 패수
-        Pair<LocalDate, Integer> matchedDateAndInt = Pair.of(weeklyMatchedInfoRows.get(0).getDate(), WIN_AND_LOSE_KEY);
+        Pair<LocalDate, Integer> matchedDateAndInt = Pair.of(now, WIN_AND_LOSE_KEY);
         
         IoSearchDetailWinAndLoseCountHistoryInfo defaultWinAndLoseHisory = new IoSearchDetailWinAndLoseCountHistoryInfo();
         for (int i = 0; i <= WIN_AND_LOSE_KEY; i++) {
@@ -267,6 +277,7 @@ public class SearchService {
         	defaultWinAndLoseHisory.setWinCount(0);
         	defaultWinAndLoseHisory.setLoseCount(0);
         	winAndLoseCountHistoryInfos.add(defaultWinAndLoseHisory);
+        	cyMatchingHistoryMap.put(i, Pair.of(0, 0));
 		}
         
         for (CyphersMatchedInfo weeklyMatchedInfo : weeklyMatchedInfoRows) {
@@ -274,29 +285,23 @@ public class SearchService {
 
         	if (!weeklyMatchedInfo.getDate().isEqual(matchedDateAndInt.getFirst())) {
         		winAndLoseHisory.setHistoryDate(matchedDateAndInt.getSecond());
-    			winAndLoseHisory.setWinCount(cyMatchingHistoryMap.getOrDefault(matchedDateAndInt.getSecond(), Pair.of(0, 0)).getFirst());
-            	winAndLoseHisory.setLoseCount(cyMatchingHistoryMap.getOrDefault(matchedDateAndInt.getSecond(), Pair.of(0, 0)).getSecond());
+    			winAndLoseHisory.setWinCount(cyMatchingHistoryMap.get(matchedDateAndInt.getSecond()).getFirst());
+            	winAndLoseHisory.setLoseCount(cyMatchingHistoryMap.get(matchedDateAndInt.getSecond()).getSecond());
 	        	winAndLoseCountHistoryInfos.set(matchedDateAndInt.getSecond() , winAndLoseHisory);
 	        	matchedDateAndInt = Pair.of(matchedDateAndInt.getFirst().minusDays(1), matchedDateAndInt.getSecond() - 1);	//날짜 및 정수 감소
+	        	if (matchedDateAndInt.getSecond() < 0) {
+					break;
+				}
 			} 
-        	
-        	Pair<Integer, Integer> winAndLoseCount = cyMatchingHistoryMap.getOrDefault(matchedDateAndInt.getSecond(), Pair.of(0, 0));
-    		if (weeklyMatchedInfo.getPlayInfo().getResult().equals("win")) {
-    			cyMatchingHistoryMap.put(matchedDateAndInt.getSecond(), Pair.of(winAndLoseCount.getFirst() + 1, winAndLoseCount.getSecond()));
-			} else {
-				cyMatchingHistoryMap.put(matchedDateAndInt.getSecond(), Pair.of(winAndLoseCount.getFirst(), winAndLoseCount.getSecond() + 1));
-			}
-    		log.info("게임기록 날짜 : " + matchedDateAndInt.getFirst().toString());
-    		log.info("게임기록 정수 : " + matchedDateAndInt.getSecond().toString());
-    		log.info("승수 : " + cyMatchingHistoryMap.get(matchedDateAndInt.getSecond()).getFirst());
-    		log.info("패수 : " + cyMatchingHistoryMap.get(matchedDateAndInt.getSecond()).getSecond());
+        	if (weeklyMatchedInfo.getDate().isEqual(matchedDateAndInt.getFirst())) {
+        		Pair<Integer, Integer> winAndLoseCount = cyMatchingHistoryMap.get(matchedDateAndInt.getSecond());
+        		if (weeklyMatchedInfo.getPlayInfo().getResult().equals("win")) {
+        			cyMatchingHistoryMap.put(matchedDateAndInt.getSecond(), Pair.of(winAndLoseCount.getFirst() + 1, winAndLoseCount.getSecond()));
+    			} else {
+    				cyMatchingHistoryMap.put(matchedDateAndInt.getSecond(), Pair.of(winAndLoseCount.getFirst(), winAndLoseCount.getSecond() + 1));
+    			}
+			} 
 		}
-        for (IoSearchDetailWinAndLoseCountHistoryInfo winAndLose : winAndLoseCountHistoryInfos) {
-			log.info("날짜 정수 : "+winAndLose.getHistoryDate().toString());
-			log.info("승수 : "+winAndLose.getWinCount().toString());
-			log.info("패수 : "+winAndLose.getLoseCount().toString());
-		}
-        
         ioGameRecords.setWinAndLoseCountHistoryInfos(winAndLoseCountHistoryInfos);
         
         
@@ -436,7 +441,7 @@ public class SearchService {
     	    			} else {
     	    				gameRecord.setKda(PERFECT_KDA);
     	    			}
-    					gameRecord.setCsCount(gameRecord.getCsCount());
+    					gameRecord.setCsCount(playInfo.getDemolisherKillCount() + playInfo.getSentinelKillCount());
     					
     					List<String> itemIds = new ArrayList<>();
     					for (CyphersEquipItems item : playerDataInGame.getItems()) {
@@ -457,9 +462,11 @@ public class SearchService {
                 switch (gameType) {
 					case "rating": {
 						gameRecord.setGameType(CyphersGameType.RATING);
+						break;
 					}
 					case "normal": {
 						gameRecord.setGameType(CyphersGameType.NORMAL);
+						break;
 					}
                 }
                 gameRecord.setPlayerNicknames(playerNicknames);
