@@ -3,7 +3,9 @@ package com.cyphers.game.RecordSearch.cyphers;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.http.HttpEntity;
@@ -22,6 +24,8 @@ import com.cyphers.game.RecordSearch.cyphers.model.CyphersCharacterRanking;
 import com.cyphers.game.RecordSearch.cyphers.model.CyphersCharacterSearch;
 import com.cyphers.game.RecordSearch.cyphers.model.CyphersItemDetailInfo;
 import com.cyphers.game.RecordSearch.cyphers.model.CyphersItemSearch;
+import com.cyphers.game.RecordSearch.cyphers.model.CyphersMatchedInfo;
+import com.cyphers.game.RecordSearch.cyphers.model.CyphersMatches;
 import com.cyphers.game.RecordSearch.cyphers.model.CyphersMatchingDetails;
 import com.cyphers.game.RecordSearch.cyphers.model.CyphersMatchingHistory;
 import com.cyphers.game.RecordSearch.cyphers.model.CyphersPlayerInfo;
@@ -177,8 +181,32 @@ public class CyphersApiService {
             }
             params.put("limit", limit.toString());
         }
-        
-        return objectMapper.readValue(get("/cy/players/" + playerId + "/matches", params), CyphersMatchingHistory.class);
+        List<CyphersMatchedInfo> matchedInfos = new ArrayList<>();
+        CyphersMatchingHistory cyMatchingHistory = new CyphersMatchingHistory();
+        CyphersMatches cyMatches = new CyphersMatches();
+        String next = "";
+
+        while (next != null) {
+            if (!next.equals("")) {
+                params.put("next", next);
+            }
+            CyphersMatchingHistory cyphersMatchingHistory = objectMapper.readValue(get("/cy/players/" + playerId + "/matches", params), CyphersMatchingHistory.class);
+
+            for (CyphersMatchedInfo row : cyphersMatchingHistory.getMatches().getRows()) {
+            	matchedInfos.add(row);
+//                if (matchedInfos.size() >= limit) {
+//                    break;
+//                }
+            }
+//            if (matchedInfos.size() >= limit) {
+//                break;
+//            }
+            
+            next = cyphersMatchingHistory.getMatches().getNext();
+        }
+        cyMatches.setRows(matchedInfos);
+        cyMatchingHistory.setMatches(cyMatches);
+        return cyMatchingHistory;
     }
     
     //매칭 상세정보 조회

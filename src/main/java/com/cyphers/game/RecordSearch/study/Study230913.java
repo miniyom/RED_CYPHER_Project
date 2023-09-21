@@ -59,7 +59,7 @@ public class Study230913 {
                 params.put("next", next);
             }
             String cyMatchingHistory = getTest("/cy/players/" + testPlayerId + "/matches", params);
-//            System.out.println("cyMatchingHistory = " + cyMatchingHistory);
+            System.out.println("cyMatchingHistory = " + cyMatchingHistory);
             CyphersMatchingHistory cyphersMatchingHistory = objectMapper.readValue(cyMatchingHistory, CyphersMatchingHistory.class);
 
             for (CyphersMatchedInfo row : cyphersMatchingHistory.getMatches().getRows()) {
