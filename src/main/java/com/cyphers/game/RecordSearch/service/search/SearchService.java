@@ -1,4 +1,4 @@
-package com.cyphers.game.RecordSearch.service;
+package com.cyphers.game.RecordSearch.service.search;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -30,6 +29,7 @@ import com.cyphers.game.RecordSearch.cyphers.model.CyphersMatchedInfo;
 import com.cyphers.game.RecordSearch.cyphers.model.CyphersMatchingDetails;
 import com.cyphers.game.RecordSearch.cyphers.model.CyphersMatchingHistory;
 import com.cyphers.game.RecordSearch.cyphers.model.CyphersPlayInfo;
+import com.cyphers.game.RecordSearch.cyphers.model.CyphersPlayer;
 import com.cyphers.game.RecordSearch.cyphers.model.CyphersPlayerInfo;
 import com.cyphers.game.RecordSearch.cyphers.model.CyphersPlayerRepresent;
 import com.cyphers.game.RecordSearch.cyphers.model.CyphersPlayerResponse;
@@ -80,14 +80,16 @@ public class SearchService {
 		} 
 		
 		IoSearchDetailResponse ioGameRecords = new IoSearchDetailResponse();
-    	String myPlayerId = cyPlayerResponse.getRows().get(0).getPlayerId();;
+		CyphersPlayer cyPlayer = cyPlayerResponse.getRows().get(0);
+    	String myPlayerId = cyPlayer.getPlayerId();;
     	CyphersCharacterSearch cyCharacter = cyApiService.searchCharacter();
         
     	
     	//플레이어 기본정보
-    	CyphersPlayerRepresent cyPlayerRepresent = cyApiService.searchPlayerInfo(myPlayerId).getRepresent();
+    	CyphersPlayerRepresent cyPlayerRepresent = cyPlayer.getRepresent();
     	String profileCharacterId = cyPlayerRepresent.getCharacterId();
     	String profileNickname = cyPlayerRepresent.getCharacterName();
+    	ioGameRecords.setPlayerId(myPlayerId);
     	ioGameRecords.setProfileCharacterId(profileCharacterId);
     	ioGameRecords.setNickname(profileNickname);
     	
