@@ -1,12 +1,19 @@
 package com.cyphers.game.RecordSearch.model;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
+import com.cyphers.game.RecordSearch.controller.search.model.IoSearchDetailGameRecord;
+import com.cyphers.game.RecordSearch.controller.search.model.IoSearchDetailMostCypherInfo;
 import com.cyphers.game.RecordSearch.controller.search.model.IoSearchDetailMostPositionInfo;
+import com.cyphers.game.RecordSearch.controller.search.model.IoSearchDetailRecentlyPlayCyphersInfo;
+import com.cyphers.game.RecordSearch.controller.search.model.IoSearchDetailWinAndLoseCountHistoryInfo;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -23,9 +30,10 @@ import lombok.ToString;
 @ToString
 @Builder
 @Entity
-@Table(name = "crs_detail_search")
-public class CrsDetailSearch {
+@Table(name = "crs_detail_search_response")
+public class CrsDetailSearchResponse {
 	@Id
+	@Column(name = "PLAYER_ID")
 	private String playerId;
 
 	private String profileCharacterId;
@@ -33,11 +41,11 @@ public class CrsDetailSearch {
 	
 	private LocalDateTime recentlyUpdatedDate;
 	
-	
-//	private List<IoSearchDetailMostCypherInfo> mostCypherInfos;
+	@OneToMany(mappedBy = "crsDetailSearchResponse")
+	private List<CrsMostCypherInfos> mostCypherInfos;
 	@OneToOne
 	@JoinColumn(name = "MPI_ID")
-    private IoSearchDetailMostPositionInfo mostPositionInfos;
+    private CrsMostPositionInfos mostPositionInfos;
 
     private String ratingGameTier;
     private Integer ratingWinCount;
@@ -50,13 +58,16 @@ public class CrsDetailSearch {
     private Integer normalStopCount;
     private Integer normalWinRate;
     
-//    private List<IoSearchDetailWinAndLoseCountHistoryInfo> winAndLoseCountHistoryInfos;
+    @OneToMany(mappedBy = "crsDetailSearchResponse")
+    private List<CrsWinAndLoseCountHistory> winAndLoseCountHistory;
 
     private Integer recentlyPlayCount;
     private Integer recentlyWinRate;
     private Float recentlyKda;
     private Integer recentlyAverageSurvivalRate;	
-//    private List<IoSearchDetailRecentlyPlayCyphersInfo> recentlyPlayCyphersInfos;
+    @OneToMany(mappedBy = "crsDetailSearchResponse")
+    private List<CrsRecentlyPlayCypherInfos> recentlyPlayCyphersInfos;
 
-//    private List<IoSearchDetailGameRecord> gameRecords;
+    @OneToMany(mappedBy = "crsDetailSearchResponse")
+    private List<CrsGameRecord> gameRecords;
 }
