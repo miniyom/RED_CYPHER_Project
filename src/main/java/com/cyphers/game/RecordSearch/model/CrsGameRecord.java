@@ -5,6 +5,7 @@ import java.util.List;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -26,7 +27,8 @@ import lombok.ToString;
 @Entity
 @Table(name = "crs_game_records")
 public class CrsGameRecord {
-	@Id @GeneratedValue
+	@Id 
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "GR_ID")
 	private Long id;
 	
@@ -49,7 +51,7 @@ public class CrsGameRecord {
     private Integer csCount;
 
     @OneToMany
-    @JoinColumn(name = "ATTR_ID")
+    @JoinColumn(name = "ITEM_ID")
     private List<CrsItem> itemIds;
 
     private Integer healAmount;

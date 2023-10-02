@@ -33,8 +33,6 @@ public class UserController {
     @Operation(summary = "사용자 추가", description = "사용자 추가를 위한 API를 지원")
     @GetMapping("/add/{userId}")
     public String add(@PathVariable("userId") String userId) {
-    	log.info("/add/{}, {}, {}",userId, userId, userId);
-    	System.out.println("/add/"+userId+", "+userId+", "+userId);
         userService.register(userId, "test");
         return "사용자 생성이 완료되었습니다. ";
     }
@@ -81,7 +79,6 @@ public class UserController {
     public CyphersPlayerResponse findCyphersUsers(@PathVariable("nickname") String nickname,
                                                   @PathVariable(value = "wordType", required = false) CyphersPlayerWordType wordType,
                                                   @PathVariable(value = "limit", required = false) Integer limit) throws Exception {
-        log.info("/find/cyphers , findCyphersUsers, nickname = {} / wordType = {}, limit = {}", nickname, wordType, limit);
         return cyphersApiService.searchPlayers(nickname, wordType, limit);
     }
 

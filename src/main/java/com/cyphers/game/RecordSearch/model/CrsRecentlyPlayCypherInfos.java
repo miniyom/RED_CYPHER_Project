@@ -3,6 +3,7 @@ package com.cyphers.game.RecordSearch.model;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -23,7 +24,8 @@ import lombok.ToString;
 @Entity
 @Table(name = "crs_recent_cypher_infos")
 public class CrsRecentlyPlayCypherInfos {
-	@Id @GeneratedValue
+	@Id 
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "RCI_ID")
 	private Long id;
 	
