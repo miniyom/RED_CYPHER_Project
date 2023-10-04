@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cyphers.game.RecordSearch.controller.search.model.IoSearchDetailResponse;
-import com.cyphers.game.RecordSearch.service.SearchService;
+import com.cyphers.game.RecordSearch.service.search.SearchService;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

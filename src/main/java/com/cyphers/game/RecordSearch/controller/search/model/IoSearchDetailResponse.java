@@ -11,6 +11,7 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 public class IoSearchDetailResponse {
+    private String playerId;
     private String profileCharacterId;
     private String nickname;
     //db 설계, 생성 후 그 기록 가져와야함
@@ -36,7 +37,7 @@ public class IoSearchDetailResponse {
     private Integer recentlyPlayCount;
     private Integer recentlyWinRate;
     private Float recentlyKda;
-    private Integer recentlyAverageSurvivalRate;	//평균 생존률 : 새로 구상한 데이터
+    private Integer recentlyAverageSurvivalRate;	
     private List<IoSearchDetailRecentlyPlayCyphersInfo> recentlyPlayCyphersInfos;
 
     private List<IoSearchDetailGameRecord> gameRecords;
