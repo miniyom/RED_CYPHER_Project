@@ -3,12 +3,6 @@ package com.cyphers.game.RecordSearch.model;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import com.cyphers.game.RecordSearch.controller.search.model.IoSearchDetailGameRecord;
-import com.cyphers.game.RecordSearch.controller.search.model.IoSearchDetailMostCypherInfo;
-import com.cyphers.game.RecordSearch.controller.search.model.IoSearchDetailMostPositionInfo;
-import com.cyphers.game.RecordSearch.controller.search.model.IoSearchDetailRecentlyPlayCyphersInfo;
-import com.cyphers.game.RecordSearch.controller.search.model.IoSearchDetailWinAndLoseCountHistoryInfo;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;

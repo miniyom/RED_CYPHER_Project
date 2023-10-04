@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cyphers.game.RecordSearch.controller.search.model.IoSearchDetailResponse;
+import com.cyphers.game.RecordSearch.service.search.CrsDetailSearchService;
 import com.cyphers.game.RecordSearch.service.search.SearchService;
 
 import lombok.AllArgsConstructor;
@@ -23,6 +24,8 @@ public class SearchController {
 
     @Autowired
     private SearchService searchService;
+    @Autowired
+    private CrsDetailSearchService crsSearchService;
 
     @GetMapping("/auto-complete/{nickname}")
     public List<String> searchAutoComplete(@PathVariable("nickname") String nickname) throws Exception {
@@ -33,6 +36,8 @@ public class SearchController {
 
     @GetMapping("/{nickname}")
     public IoSearchDetailResponse searchDetail(@PathVariable("nickname") String nickname) throws Exception {
-        return searchService.getDetailSearch(nickname);
+    	IoSearchDetailResponse res = searchService.getDetailSearch(nickname);
+    	crsSearchService.input(res);
+        return res;
     }
 }
