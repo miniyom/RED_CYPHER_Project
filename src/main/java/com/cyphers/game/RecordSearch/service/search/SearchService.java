@@ -416,7 +416,7 @@ public class SearchService {
                 	if (playerDataInGame.getPlayerId().equals(myPlayerId)) {
     					CyphersPlayInfo playInfo = playerDataInGame.getPlayInfo();
     					
-    					gameRecord.setPlayCharacterId(playerDataInGame.getPlayerId());
+    					gameRecord.setPlayCharacterId(playInfo.getCharacterId());
     					gameRecord.setPositionName(playerDataInGame.getPosition().getName());
     					List<String> attributeIds = new ArrayList<>();
     					for (CyphersCharacterAttribute attribute : playerDataInGame.getPosition().getAttribute()) {

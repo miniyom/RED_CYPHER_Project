@@ -3,6 +3,7 @@ package com.cyphers.game.RecordSearch.model;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -35,9 +36,9 @@ public class CrsDetailSearchResponse {
 	
 	private LocalDateTime recentlyUpdatedDate;
 	
-	@OneToMany(mappedBy = "crsDetailSearchResponse")
+	@OneToMany(mappedBy = "crsDetailSearchResponse", cascade = CascadeType.ALL)
 	private List<CrsMostCypherInfos> mostCypherInfos;
-	@OneToOne
+	@OneToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "MPI_ID")
     private CrsMostPositionInfos mostPositionInfos;
 
@@ -52,16 +53,16 @@ public class CrsDetailSearchResponse {
     private Integer normalStopCount;
     private Integer normalWinRate;
     
-    @OneToMany(mappedBy = "crsDetailSearchResponse")
+    @OneToMany(mappedBy = "crsDetailSearchResponse", cascade = CascadeType.ALL)
     private List<CrsWinAndLoseCountHistory> winAndLoseCountHistory;
 
     private Integer recentlyPlayCount;
     private Integer recentlyWinRate;
     private Float recentlyKda;
     private Integer recentlyAverageSurvivalRate;	
-    @OneToMany(mappedBy = "crsDetailSearchResponse")
+    @OneToMany(mappedBy = "crsDetailSearchResponse", cascade = CascadeType.ALL)
     private List<CrsRecentlyPlayCypherInfos> recentlyPlayCyphersInfos;
 
-    @OneToMany(mappedBy = "crsDetailSearchResponse")
+    @OneToMany(mappedBy = "crsDetailSearchResponse", cascade = CascadeType.ALL)
     private List<CrsGameRecord> gameRecords;
 }

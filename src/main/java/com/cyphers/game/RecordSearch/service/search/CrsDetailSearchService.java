@@ -33,21 +33,13 @@ public class CrsDetailSearchService {
 	//데이터 입력
 	public void input(IoSearchDetailResponse detailResponse) {
 		
-		CrsMostPositionInfos positionInfos = CrsMostPositionInfos.builder()
-										.playerId(detailResponse.getPlayerId())
-										.tankerUseRate(detailResponse.getMostPositionInfos().getTankerUseRate())
-										.rangeDealerUseRate(detailResponse.getMostPositionInfos().getRangeDealerUseRate())
-										.supporterUseRate(detailResponse.getMostPositionInfos().getSupporterUseRate())
-										.meleeDealerUseRate(detailResponse.getMostPositionInfos().getMeleeDealerUseRate())
-										.build();
-		
 		CrsDetailSearchResponse response = CrsDetailSearchResponse.builder()
 										.playerId(detailResponse.getPlayerId())
 										.profileCharacterId(detailResponse.getProfileCharacterId())
 										.nickname(detailResponse.getNickname())
 										.recentlyUpdatedDate(LocalDateTime.now())
 										.mostCypherInfos(null)
-										.mostPositionInfos(positionInfos)
+										.mostPositionInfos(null)
 										.ratingGameTier(detailResponse.getRatingGameTier())
 										.ratingWinCount(detailResponse.getRatingWinCount())
 										.ratingLoseCount(detailResponse.getRatingLoseCount())
@@ -67,6 +59,14 @@ public class CrsDetailSearchService {
 										.build();
 										
 		crsDetailSearchRepository.save(response);
+		
+		CrsMostPositionInfos positionInfos = CrsMostPositionInfos.builder()
+										.tankerUseRate(detailResponse.getMostPositionInfos().getTankerUseRate())
+										.rangeDealerUseRate(detailResponse.getMostPositionInfos().getRangeDealerUseRate())
+										.supporterUseRate(detailResponse.getMostPositionInfos().getSupporterUseRate())
+										.meleeDealerUseRate(detailResponse.getMostPositionInfos().getMeleeDealerUseRate())
+										.build();
+		response.setMostPositionInfos(positionInfos);
 		
 		List<CrsMostCypherInfos> mostCypherInfos = new ArrayList<>();
 		for (IoSearchDetailMostCypherInfo ioMostCypherInfo : detailResponse.getMostCypherInfos()) {
@@ -112,6 +112,7 @@ public class CrsDetailSearchService {
 		
 		List<CrsGameRecord> gameRecords = new ArrayList<>();
 		for (IoSearchDetailGameRecord gameRecord : detailResponse.getGameRecords()) {
+			
 			List<CrsAttribute> attributeIds = new ArrayList<>();
 			for (String attributeId : gameRecord.getAttributeIds()) {
 				CrsAttribute crsAttribute = CrsAttribute.builder()

@@ -5,6 +5,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -26,6 +28,10 @@ public class CrsItem {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "ITEM_ID")
 	private Long id;
+	
+	@ManyToOne
+	@JoinColumn(name = "GR_ID")
+	private CrsGameRecord crsGameRecord;
 	
 	@Column(name = "ITEM")
 	private String itemId;

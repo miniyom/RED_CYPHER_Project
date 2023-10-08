@@ -2,6 +2,7 @@ package com.cyphers.game.RecordSearch.model;
 
 import java.util.List;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -39,8 +40,7 @@ public class CrsGameRecord {
 	private String gameType;
     private String playCharacterId;
     private String positionName;
-    @OneToMany
-    @JoinColumn(name = "ATTR_ID")
+    @OneToMany(mappedBy = "crsGameRecord", cascade = CascadeType.ALL)
     private List<CrsAttribute> attributeIds;
 
     private Integer killCount;
@@ -50,8 +50,7 @@ public class CrsGameRecord {
     private Float kda;
     private Integer csCount;
 
-    @OneToMany
-    @JoinColumn(name = "ITEM_ID")
+    @OneToMany(mappedBy = "crsGameRecord", cascade = CascadeType.ALL)
     private List<CrsItem> itemIds;
 
     private Integer healAmount;
@@ -61,7 +60,6 @@ public class CrsGameRecord {
     private Integer battlePoint;
     private Integer sightPoint;
 
-    @OneToMany
-    @JoinColumn(name = "NICKNAME_ID")
+    @OneToMany(mappedBy = "crsGameRecord", cascade = CascadeType.ALL)
     private List<CrsPlayerNickname> playerNicknames;
 }
