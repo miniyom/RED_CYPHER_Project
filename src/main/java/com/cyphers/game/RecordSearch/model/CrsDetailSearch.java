@@ -6,6 +6,7 @@ import java.util.List;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
@@ -25,8 +26,8 @@ import lombok.ToString;
 @ToString
 @Builder
 @Entity
-@Table(name = "crs_detail_search_response")
-public class CrsDetailSearchResponse {
+@Table(name = "crs_detail_search")
+public class CrsDetailSearch {
 	@Id
 	@Column(name = "PLAYER_ID")
 	private String playerId;
@@ -36,10 +37,10 @@ public class CrsDetailSearchResponse {
 	
 	private LocalDateTime recentlyUpdatedDate;
 	
-	@OneToMany(mappedBy = "crsDetailSearchResponse", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "crsDetailSearch", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	private List<CrsMostCypherInfos> mostCypherInfos;
-	@OneToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name = "MPI_ID")
+	
+	@OneToOne(mappedBy = "crsDetailSearch", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private CrsMostPositionInfos mostPositionInfos;
 
     private String ratingGameTier;
@@ -53,16 +54,16 @@ public class CrsDetailSearchResponse {
     private Integer normalStopCount;
     private Integer normalWinRate;
     
-    @OneToMany(mappedBy = "crsDetailSearchResponse", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "crsDetailSearch", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<CrsWinAndLoseCountHistory> winAndLoseCountHistory;
 
     private Integer recentlyPlayCount;
     private Integer recentlyWinRate;
     private Float recentlyKda;
     private Integer recentlyAverageSurvivalRate;	
-    @OneToMany(mappedBy = "crsDetailSearchResponse", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "crsDetailSearch", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<CrsRecentlyPlayCypherInfos> recentlyPlayCyphersInfos;
 
-    @OneToMany(mappedBy = "crsDetailSearchResponse", cascade = CascadeType.ALL)
-    private List<CrsGameRecord> gameRecords;
+//    @OneToMany(mappedBy = "crsDetailSearchResponse", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+//    private List<CrsGameRecord> gameRecords;
 }

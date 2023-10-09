@@ -11,29 +11,29 @@ import com.cyphers.game.RecordSearch.controller.search.model.IoSearchDetailMostC
 import com.cyphers.game.RecordSearch.controller.search.model.IoSearchDetailRecentlyPlayCyphersInfo;
 import com.cyphers.game.RecordSearch.controller.search.model.IoSearchDetailResponse;
 import com.cyphers.game.RecordSearch.controller.search.model.IoSearchDetailWinAndLoseCountHistoryInfo;
-import com.cyphers.game.RecordSearch.model.CrsAttribute;
-import com.cyphers.game.RecordSearch.model.CrsDetailSearchResponse;
-import com.cyphers.game.RecordSearch.model.CrsGameRecord;
-import com.cyphers.game.RecordSearch.model.CrsItem;
+import com.cyphers.game.RecordSearch.model.CrsDetailSearch;
 import com.cyphers.game.RecordSearch.model.CrsMostCypherInfos;
 import com.cyphers.game.RecordSearch.model.CrsMostPositionInfos;
-import com.cyphers.game.RecordSearch.model.CrsPlayerNickname;
 import com.cyphers.game.RecordSearch.model.CrsRecentlyPlayCypherInfos;
 import com.cyphers.game.RecordSearch.model.CrsWinAndLoseCountHistory;
+import com.cyphers.game.RecordSearch.model.gameRecord.CrsAttribute;
+import com.cyphers.game.RecordSearch.model.gameRecord.CrsGameRecord;
+import com.cyphers.game.RecordSearch.model.gameRecord.CrsItem;
+import com.cyphers.game.RecordSearch.model.gameRecord.CrsPlayerNickname;
 import com.cyphers.game.RecordSearch.service.search.repository.CrsDetailSearchRepository;
 
 import lombok.AllArgsConstructor;
 
 @Service
 @AllArgsConstructor
-public class CrsDetailSearchService {
+public class CrsSearchService {
 
 	private final CrsDetailSearchRepository crsDetailSearchRepository;
 	
 	//데이터 입력
 	public void input(IoSearchDetailResponse detailResponse) {
 		
-		CrsDetailSearchResponse response = CrsDetailSearchResponse.builder()
+		CrsDetailSearch response = CrsDetailSearch.builder()
 										.playerId(detailResponse.getPlayerId())
 										.profileCharacterId(detailResponse.getProfileCharacterId())
 										.nickname(detailResponse.getNickname())
@@ -55,12 +55,13 @@ public class CrsDetailSearchService {
 										.recentlyKda(detailResponse.getRecentlyKda())
 										.recentlyAverageSurvivalRate(detailResponse.getRecentlyAverageSurvivalRate())
 										.recentlyPlayCyphersInfos(null)
-										.gameRecords(null)
+//										.gameRecords(null)
 										.build();
 										
 		crsDetailSearchRepository.save(response);
 		
 		CrsMostPositionInfos positionInfos = CrsMostPositionInfos.builder()
+										.crsDetailSearch(response)
 										.tankerUseRate(detailResponse.getMostPositionInfos().getTankerUseRate())
 										.rangeDealerUseRate(detailResponse.getMostPositionInfos().getRangeDealerUseRate())
 										.supporterUseRate(detailResponse.getMostPositionInfos().getSupporterUseRate())
@@ -71,7 +72,7 @@ public class CrsDetailSearchService {
 		List<CrsMostCypherInfos> mostCypherInfos = new ArrayList<>();
 		for (IoSearchDetailMostCypherInfo ioMostCypherInfo : detailResponse.getMostCypherInfos()) {
 			CrsMostCypherInfos crsCypherInfos = CrsMostCypherInfos.builder()
-										.crsDetailSearchResponse(response)
+										.crsDetailSearch(response)
 										.characterId(ioMostCypherInfo.getCharacterId())
 										.characterName(ioMostCypherInfo.getCharacterName())
 										.winRate(ioMostCypherInfo.getWinRate())
@@ -85,7 +86,7 @@ public class CrsDetailSearchService {
 		List<CrsWinAndLoseCountHistory> outcomeHistory = new ArrayList<>();
 		for (IoSearchDetailWinAndLoseCountHistoryInfo outcomeHistoryInfo : detailResponse.getWinAndLoseCountHistoryInfos()) {
 			CrsWinAndLoseCountHistory crsOutcomeHistory = CrsWinAndLoseCountHistory.builder()
-													.crsDetailSearchResponse(response)
+													.crsDetailSearch(response)
 													.historyDate(outcomeHistoryInfo.getHistoryDate())
 													.winCount(outcomeHistoryInfo.getWinCount())
 													.loseCount(outcomeHistoryInfo.getLoseCount())
@@ -97,7 +98,7 @@ public class CrsDetailSearchService {
 		List<CrsRecentlyPlayCypherInfos> recentCypherinfos = new ArrayList<>();
 		for (IoSearchDetailRecentlyPlayCyphersInfo recentCypherInfo : detailResponse.getRecentlyPlayCyphersInfos()) {
 			CrsRecentlyPlayCypherInfos crsRecentCypherInfo = CrsRecentlyPlayCypherInfos.builder()
-														.crsDetailSearchResponse(response)
+														.crsDetailSearch(response)
 														.characterId(recentCypherInfo.getCharacterId())
 														.characterName(recentCypherInfo.getCharacterName())
 														.winCount(recentCypherInfo.getWinCount())
@@ -110,61 +111,68 @@ public class CrsDetailSearchService {
 		}
 		response.setRecentlyPlayCyphersInfos(recentCypherinfos);
 		
-		List<CrsGameRecord> gameRecords = new ArrayList<>();
-		for (IoSearchDetailGameRecord gameRecord : detailResponse.getGameRecords()) {
-			
-			List<CrsAttribute> attributeIds = new ArrayList<>();
-			for (String attributeId : gameRecord.getAttributeIds()) {
-				CrsAttribute crsAttribute = CrsAttribute.builder()
-										.attributeId(attributeId)
-										.build();
-				attributeIds.add(crsAttribute);
-			}
-			List<CrsItem> items = new ArrayList<>();
-			for (String item : gameRecord.getItemIds()) {
-				CrsItem crsItem = CrsItem.builder()
-								.itemId(item)
-								.build();
-				items.add(crsItem);
-			}
-			List<CrsPlayerNickname> nicknames = new ArrayList<>();
-			for (String nickname : gameRecord.getPlayerNicknames()) {
-				CrsPlayerNickname crsNickname = CrsPlayerNickname.builder()
-											.playerNickname(nickname)
-											.build();
-				nicknames.add(crsNickname);
-			}
-			
-			CrsGameRecord crsGameRecord = CrsGameRecord.builder()
-									.crsDetailSearchResponse(response)
-									.gameType(gameRecord.getGameType().getValue())
-									.playCharacterId(gameRecord.getPlayCharacterId())
-									.positionName(gameRecord.getPositionName())
-									.attributeIds(attributeIds)
-									.killCount(gameRecord.getKillCount())
-									.deathCount(gameRecord.getDeathCount())
-									.assistCount(gameRecord.getAssistCount())
-									.killParticipation(gameRecord.getKillParticipation())
-									.kda(gameRecord.getKda())
-									.csCount(gameRecord.getCsCount())
-									.itemIds(items)
-									.healAmount(gameRecord.getHealAmount())
-									.attackPoint(gameRecord.getAttackPoint())
-									.damagePoint(gameRecord.getDamagePoint())
-									.getCoin(gameRecord.getGetCoin())
-									.battlePoint(gameRecord.getBattlePoint())
-									.sightPoint(gameRecord.getSightPoint())
-									.playerNicknames(nicknames)
-									.build();
-			gameRecords.add(crsGameRecord);
-		}
-		response.setGameRecords(gameRecords);
+//		List<CrsGameRecord> gameRecords = new ArrayList<>();
+//		for (IoSearchDetailGameRecord gameRecord : detailResponse.getGameRecords()) {
+//			
+//			CrsGameRecord crsGameRecord = CrsGameRecord.builder()
+//									.crsDetailSearchResponse(response)
+//									.gameType(gameRecord.getGameType().getValue())
+//									.playCharacterId(gameRecord.getPlayCharacterId())
+//									.positionName(gameRecord.getPositionName())
+//									.attributeIds(null)
+//									.killCount(gameRecord.getKillCount())
+//									.deathCount(gameRecord.getDeathCount())
+//									.assistCount(gameRecord.getAssistCount())
+//									.killParticipation(gameRecord.getKillParticipation())
+//									.kda(gameRecord.getKda())
+//									.csCount(gameRecord.getCsCount())
+//									.itemIds(null)
+//									.healAmount(gameRecord.getHealAmount())
+//									.attackPoint(gameRecord.getAttackPoint())
+//									.damagePoint(gameRecord.getDamagePoint())
+//									.getCoin(gameRecord.getGetCoin())
+//									.battlePoint(gameRecord.getBattlePoint())
+//									.sightPoint(gameRecord.getSightPoint())
+//									.playerNicknames(null)
+//									.build();
+//			
+//			List<CrsAttribute> attributeIds = new ArrayList<>();
+//			for (String attributeId : gameRecord.getAttributeIds()) {
+//				CrsAttribute crsAttribute = CrsAttribute.builder()
+//										.attributeId(attributeId)
+//										.crsGameRecord(crsGameRecord)
+//										.build();
+//				attributeIds.add(crsAttribute);
+//			}
+//			List<CrsItem> items = new ArrayList<>();
+//			for (String item : gameRecord.getItemIds()) {
+//				CrsItem crsItem = CrsItem.builder()
+//								.itemId(item)
+//								.build();
+//				items.add(crsItem);
+//			}
+//			List<CrsPlayerNickname> nicknames = new ArrayList<>();
+//			for (String nickname : gameRecord.getPlayerNicknames()) {
+//				CrsPlayerNickname crsNickname = CrsPlayerNickname.builder()
+//											.playerNickname(nickname)
+//											.crsGameRecord(crsGameRecord)
+//											.build();
+//				nicknames.add(crsNickname);
+//			}
+//			
+//			crsGameRecord.setAttributeIds(attributeIds);
+//			crsGameRecord.setItemIds(items);
+//			crsGameRecord.setPlayerNicknames(nicknames);
+//			
+//			gameRecords.add(crsGameRecord);
+//		}
+//		response.setGameRecords(gameRecords);
 		
 		crsDetailSearchRepository.save(response);
 		
 	}
 	
-	public void update(CrsDetailSearchResponse crsDetailResponse) {
+	public void upsert(CrsDetailSearch crsDetailResponse) {
 		crsDetailResponse.setRecentlyUpdatedDate(LocalDateTime.now());
 		crsDetailSearchRepository.save(crsDetailResponse);
 	}

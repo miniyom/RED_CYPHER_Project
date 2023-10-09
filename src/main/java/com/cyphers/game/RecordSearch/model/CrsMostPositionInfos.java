@@ -5,6 +5,9 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.PrimaryKeyJoinColumn;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -26,6 +29,10 @@ public class CrsMostPositionInfos {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "MPI_ID")
 	private Long id;
+	
+	@OneToOne
+	@JoinColumn(name = "PLAYER_ID")
+	private CrsDetailSearch crsDetailSearch;
 	
 	private Integer tankerUseRate;
 	private Integer rangeDealerUseRate;

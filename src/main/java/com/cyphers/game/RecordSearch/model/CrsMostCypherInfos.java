@@ -31,7 +31,7 @@ public class CrsMostCypherInfos {
 	
 	@ManyToOne
 	@JoinColumn(name = "PLAYER_ID")
-	private CrsDetailSearchResponse crsDetailSearchResponse;
+	private CrsDetailSearch crsDetailSearch;
 	
 	private String characterId;
     private String characterName;
