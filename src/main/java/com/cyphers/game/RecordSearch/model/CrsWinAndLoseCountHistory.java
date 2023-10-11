@@ -31,7 +31,7 @@ public class CrsWinAndLoseCountHistory {
 	
 	@ManyToOne
 	@JoinColumn(name = "PLAYER_ID")
-	private CrsDetailSearchResponse crsDetailSearchResponse;
+	private CrsDetailSearch crsDetailSearch;
 	
 	private Integer historyDate;
     private Integer winCount;

@@ -1,9 +1,13 @@
-package com.cyphers.game.RecordSearch.model;
+package com.cyphers.game.RecordSearch.model.gameRecord;
 
 import java.util.List;
 
+import com.cyphers.game.RecordSearch.model.CrsDetailSearch;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -34,13 +38,12 @@ public class CrsGameRecord {
 	
 	@ManyToOne
 	@JoinColumn(name = "PLAYER_ID")
-	private CrsDetailSearchResponse crsDetailSearchResponse;
+	private CrsDetailSearch crsDetailSearch;
 
 	private String gameType;
     private String playCharacterId;
     private String positionName;
-    @OneToMany
-    @JoinColumn(name = "ATTR_ID")
+    @OneToMany(mappedBy = "crsGameRecord", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<CrsAttribute> attributeIds;
 
     private Integer killCount;
@@ -50,8 +53,7 @@ public class CrsGameRecord {
     private Float kda;
     private Integer csCount;
 
-    @OneToMany
-    @JoinColumn(name = "ITEM_ID")
+    @OneToMany(mappedBy = "crsGameRecord", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<CrsItem> itemIds;
 
     private Integer healAmount;
@@ -61,7 +63,6 @@ public class CrsGameRecord {
     private Integer battlePoint;
     private Integer sightPoint;
 
-    @OneToMany
-    @JoinColumn(name = "NICKNAME_ID")
+    @OneToMany(mappedBy = "crsGameRecord", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<CrsPlayerNickname> playerNicknames;
 }

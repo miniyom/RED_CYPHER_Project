@@ -13,6 +13,4 @@ import java.util.List;
 @NoArgsConstructor
 public class CyphersPlayerResponse {
     private List<CyphersPlayer> rows;
-
-
 }
