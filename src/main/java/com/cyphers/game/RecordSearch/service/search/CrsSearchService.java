@@ -3,6 +3,7 @@ package com.cyphers.game.RecordSearch.service.search;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
@@ -21,6 +22,7 @@ import com.cyphers.game.RecordSearch.model.gameRecord.CrsGameRecord;
 import com.cyphers.game.RecordSearch.model.gameRecord.CrsItem;
 import com.cyphers.game.RecordSearch.model.gameRecord.CrsPlayerNickname;
 import com.cyphers.game.RecordSearch.service.search.repository.CrsDetailSearchRepository;
+import com.cyphers.game.RecordSearch.service.user.repository.CrsUserRepository;
 
 import lombok.AllArgsConstructor;
 
@@ -172,8 +174,12 @@ public class CrsSearchService {
 		
 	}
 	
-	public void upsert(CrsDetailSearch crsDetailResponse) {
-		crsDetailResponse.setRecentlyUpdatedDate(LocalDateTime.now());
-		crsDetailSearchRepository.save(crsDetailResponse);
+	public Optional<CrsDetailSearch> getDetailSearch(String nickname) {
+		return crsDetailSearchRepository.findByNickname(nickname);
+	}
+	
+	public void renewal(CrsDetailSearch crsDetailSearch) {
+		crsDetailSearch.setRecentlyUpdatedDate(LocalDateTime.now());
+		crsDetailSearchRepository.save(crsDetailSearch);
 	}
 }

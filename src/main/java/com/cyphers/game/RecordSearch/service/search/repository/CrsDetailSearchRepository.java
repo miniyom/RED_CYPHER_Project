@@ -9,4 +9,5 @@ import com.cyphers.game.RecordSearch.model.CrsDetailSearch;
 public interface CrsDetailSearchRepository extends JpaRepository<CrsDetailSearch, String> {
 
 	Optional<CrsDetailSearch> findByPlayerId(String playerId);
+	Optional<CrsDetailSearch> findByNickname(String nickname);
 }

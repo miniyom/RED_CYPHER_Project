@@ -1,7 +1,5 @@
 package com.cyphers.game.RecordSearch.controller.search.model;
 
-import java.util.List;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -13,8 +11,8 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class GameRecordsVO {
-	
-	private List<IoSearchDetailGameRecord> gameRecords;
-	
+public class WinAndLoseCountHistoryResponse {
+	private Integer historyDate;
+    private Integer winCount;
+    private Integer loseCount;
 }

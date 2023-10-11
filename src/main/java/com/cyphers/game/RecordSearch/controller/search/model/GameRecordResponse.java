@@ -13,8 +13,8 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class SearchDetailResponseDTO {
-	private IoSearchDetailResponse detailResponse;
-
-    private List<IoSearchDetailGameRecord> gameRecords;
+public class GameRecordResponse {
+	
+	private List<IoSearchDetailGameRecord> gameRecords;
+	
 }

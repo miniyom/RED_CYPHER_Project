@@ -14,7 +14,7 @@ import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import com.cyphers.game.RecordSearch.controller.search.model.GameRecordsVO;
+import com.cyphers.game.RecordSearch.controller.search.model.GameRecordResponse;
 import com.cyphers.game.RecordSearch.controller.search.model.IoSearchDetailGameRecord;
 import com.cyphers.game.RecordSearch.controller.search.model.IoSearchDetailMostCypherInfo;
 import com.cyphers.game.RecordSearch.controller.search.model.IoSearchDetailMostPositionInfo;
@@ -86,9 +86,8 @@ public class SearchService {
 		CyphersCharacterSearch cyCharacter = cyApiService.searchCharacter();
 
 		// 플레이어 기본정보
-		CyphersPlayerRepresent cyPlayerRepresent = cyPlayer.getRepresent();
-		String profileCharacterId = cyPlayerRepresent.getCharacterId();
-		String profileNickname = cyPlayerRepresent.getCharacterName();
+		String profileCharacterId = cyPlayer.getRepresent().getCharacterId();
+		String profileNickname = cyPlayer.getNickname();
 		ioGameRecords.setPlayerId(myPlayerId);
 		ioGameRecords.setProfileCharacterId(profileCharacterId);
 		ioGameRecords.setNickname(profileNickname);
@@ -483,8 +482,8 @@ public class SearchService {
 		return ioGameRecords;
 	}
 
-	public GameRecordsVO getGameRecords(String nickname) throws Exception {
-		GameRecordsVO gameRecordsVo = new GameRecordsVO();
+	public GameRecordResponse getGameRecords(String nickname) throws Exception {
+		GameRecordResponse gameRecordsVo = new GameRecordResponse();
 		
 		CyphersPlayerResponse cyPlayerResponse = cyApiService.searchPlayers(nickname, CyphersPlayerWordType.MATCH,
 				null);
