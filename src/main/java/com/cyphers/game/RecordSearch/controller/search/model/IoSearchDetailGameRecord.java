@@ -1,10 +1,11 @@
 package com.cyphers.game.RecordSearch.controller.search.model;
 
-import com.cyphers.game.RecordSearch.cyphers.model.enumuration.CyphersGameType;
 import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+
+import com.cyphers.game.RecordSearch.openapi.model.enumuration.CyphersGameType;
 
 @Getter
 @Setter

@@ -19,22 +19,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.cyphers.game.RecordSearch.cyphers.annotation.Required;
-import com.cyphers.game.RecordSearch.cyphers.model.CyphersCharacterRanking;
-import com.cyphers.game.RecordSearch.cyphers.model.CyphersCharacterSearch;
-import com.cyphers.game.RecordSearch.cyphers.model.CyphersItemDetailInfo;
-import com.cyphers.game.RecordSearch.cyphers.model.CyphersItemSearch;
-import com.cyphers.game.RecordSearch.cyphers.model.CyphersMatchedInfo;
-import com.cyphers.game.RecordSearch.cyphers.model.CyphersMatches;
-import com.cyphers.game.RecordSearch.cyphers.model.CyphersMatchingDetails;
-import com.cyphers.game.RecordSearch.cyphers.model.CyphersMatchingHistory;
-import com.cyphers.game.RecordSearch.cyphers.model.CyphersPlayerInfo;
-import com.cyphers.game.RecordSearch.cyphers.model.CyphersPlayerRanking;
-import com.cyphers.game.RecordSearch.cyphers.model.CyphersPlayerResponse;
-import com.cyphers.game.RecordSearch.cyphers.model.CyphersTsjRanking;
-import com.cyphers.game.RecordSearch.cyphers.model.enumuration.CyphersGameType;
-import com.cyphers.game.RecordSearch.cyphers.model.enumuration.CyphersItemWordType;
-import com.cyphers.game.RecordSearch.cyphers.model.enumuration.CyphersPlayerWordType;
+import com.cyphers.game.RecordSearch.annotation.Required;
+import com.cyphers.game.RecordSearch.openapi.model.CyphersCharacterRanking;
+import com.cyphers.game.RecordSearch.openapi.model.CyphersCharacterSearch;
+import com.cyphers.game.RecordSearch.openapi.model.CyphersItemDetailInfo;
+import com.cyphers.game.RecordSearch.openapi.model.CyphersItemSearch;
+import com.cyphers.game.RecordSearch.openapi.model.CyphersMatchedInfo;
+import com.cyphers.game.RecordSearch.openapi.model.CyphersMatches;
+import com.cyphers.game.RecordSearch.openapi.model.CyphersMatchingDetails;
+import com.cyphers.game.RecordSearch.openapi.model.CyphersMatchingHistory;
+import com.cyphers.game.RecordSearch.openapi.model.CyphersPlayerInfo;
+import com.cyphers.game.RecordSearch.openapi.model.CyphersPlayerRanking;
+import com.cyphers.game.RecordSearch.openapi.model.CyphersPlayerResponse;
+import com.cyphers.game.RecordSearch.openapi.model.CyphersTsjRanking;
+import com.cyphers.game.RecordSearch.openapi.model.enumuration.CyphersGameType;
+import com.cyphers.game.RecordSearch.openapi.model.enumuration.CyphersItemWordType;
+import com.cyphers.game.RecordSearch.openapi.model.enumuration.CyphersPlayerWordType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.extern.slf4j.Slf4j;
@@ -93,7 +93,7 @@ public class CyphersApiService {
         params.put("limit", testLimit.toString());
         
         String cyPlayer = getTest("/cy/players", params);
-        System.out.println("cyPlayer = " + cyPlayer);
+//        System.out.println("cyPlayer = " + cyPlayer);
         
         String cyPlayerInfo = getTest("/cy/players/" + testPlayerId, params);
 //        System.out.println("cyPlayerInfo = " + cyPlayerInfo);
@@ -216,10 +216,17 @@ public class CyphersApiService {
     }
     
     //통합 랭킹 조회
-    //playerId가 있으면 해당 플레이어의 랭킹, 없으면 1위부터 limit까지 나열
-    public CyphersPlayerRanking searchPlayerRanking(@Required String playerId) throws Exception {
+    //playerId가 있으면 해당 플레이어의 랭킹, 없으면 offset부터 limit까지 나열
+    public CyphersPlayerRanking searchPlayerRanking(@Required String playerId, Integer offset, Integer limit) throws Exception {
         Map<String, String> params = new HashMap<>();
         params.put("playerId", playerId);
+        params.put("offset", offset.toString());
+        if (limit != null) {
+            if (limit < 10 || limit > 1000) {
+                throw new IllegalArgumentException("limit은 10 이상, 1000 이하까지만 사용할 수 있습니다.");
+            }
+            params.put("limit", limit.toString());
+        }
         return objectMapper.readValue(get("/cy/ranking/ratingPoint", params), CyphersPlayerRanking.class);
     }
     public CyphersPlayerRanking searchRanking(Integer limit) throws Exception {

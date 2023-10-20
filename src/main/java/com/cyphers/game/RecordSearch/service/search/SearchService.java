@@ -22,22 +22,22 @@ import com.cyphers.game.RecordSearch.controller.search.model.IoSearchDetailRecen
 import com.cyphers.game.RecordSearch.controller.search.model.IoSearchDetailResponse;
 import com.cyphers.game.RecordSearch.controller.search.model.IoSearchDetailWinAndLoseCountHistoryInfo;
 import com.cyphers.game.RecordSearch.cyphers.CyphersApiService;
-import com.cyphers.game.RecordSearch.cyphers.model.CyphersCharacterAttribute;
-import com.cyphers.game.RecordSearch.cyphers.model.CyphersCharacterInfo;
-import com.cyphers.game.RecordSearch.cyphers.model.CyphersCharacterSearch;
-import com.cyphers.game.RecordSearch.cyphers.model.CyphersEquipItems;
-import com.cyphers.game.RecordSearch.cyphers.model.CyphersMatchedInfo;
-import com.cyphers.game.RecordSearch.cyphers.model.CyphersMatchingDetails;
-import com.cyphers.game.RecordSearch.cyphers.model.CyphersMatchingHistory;
-import com.cyphers.game.RecordSearch.cyphers.model.CyphersPlayInfo;
-import com.cyphers.game.RecordSearch.cyphers.model.CyphersPlayer;
-import com.cyphers.game.RecordSearch.cyphers.model.CyphersPlayerInfo;
-import com.cyphers.game.RecordSearch.cyphers.model.CyphersPlayerRepresent;
-import com.cyphers.game.RecordSearch.cyphers.model.CyphersPlayerResponse;
-import com.cyphers.game.RecordSearch.cyphers.model.CyphersPlayersInGame;
-import com.cyphers.game.RecordSearch.cyphers.model.CyphersRecords;
-import com.cyphers.game.RecordSearch.cyphers.model.enumuration.CyphersGameType;
-import com.cyphers.game.RecordSearch.cyphers.model.enumuration.CyphersPlayerWordType;
+import com.cyphers.game.RecordSearch.openapi.model.CyphersCharacterAttribute;
+import com.cyphers.game.RecordSearch.openapi.model.CyphersCharacterInfo;
+import com.cyphers.game.RecordSearch.openapi.model.CyphersCharacterSearch;
+import com.cyphers.game.RecordSearch.openapi.model.CyphersEquipItems;
+import com.cyphers.game.RecordSearch.openapi.model.CyphersMatchedInfo;
+import com.cyphers.game.RecordSearch.openapi.model.CyphersMatchingDetails;
+import com.cyphers.game.RecordSearch.openapi.model.CyphersMatchingHistory;
+import com.cyphers.game.RecordSearch.openapi.model.CyphersPlayInfo;
+import com.cyphers.game.RecordSearch.openapi.model.CyphersPlayer;
+import com.cyphers.game.RecordSearch.openapi.model.CyphersPlayerInfo;
+import com.cyphers.game.RecordSearch.openapi.model.CyphersPlayerRepresent;
+import com.cyphers.game.RecordSearch.openapi.model.CyphersPlayerResponse;
+import com.cyphers.game.RecordSearch.openapi.model.CyphersPlayersInGame;
+import com.cyphers.game.RecordSearch.openapi.model.CyphersRecords;
+import com.cyphers.game.RecordSearch.openapi.model.enumuration.CyphersGameType;
+import com.cyphers.game.RecordSearch.openapi.model.enumuration.CyphersPlayerWordType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.extern.slf4j.Slf4j;
@@ -483,7 +483,7 @@ public class SearchService {
 	}
 
 	public GameRecordResponse getGameRecords(String nickname) throws Exception {
-		GameRecordResponse gameRecordsVo = new GameRecordResponse();
+		GameRecordResponse gameRecordsInfo = new GameRecordResponse();
 		
 		CyphersPlayerResponse cyPlayerResponse = cyApiService.searchPlayers(nickname, CyphersPlayerWordType.MATCH,
 				null);
@@ -519,7 +519,7 @@ public class SearchService {
 		Collections.sort(cyMatchedInfoRows, comparator);
 		
 		List<IoSearchDetailGameRecord> gameRecords = new ArrayList<>();
-		gameRecordsVo.setGameRecords(Collections.emptyList());
+		gameRecordsInfo.setGameRecords(Collections.emptyList());
 
 		if (cyMatchedInfoRows.size() != 0) {
 
@@ -594,11 +594,11 @@ public class SearchService {
 				gameRecord.setPlayerNicknames(playerNicknames);
 				gameRecords.add(gameRecord);
 
-				gameRecordsVo.setGameRecords(gameRecords);
+				gameRecordsInfo.setGameRecords(gameRecords);
 			}
 
 		}
-		return gameRecordsVo;
+		return gameRecordsInfo;
 	}
 
 	// 데이터 필터링 메소드

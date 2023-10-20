@@ -11,10 +11,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cyphers.game.RecordSearch.cyphers.CyphersApiService;
-import com.cyphers.game.RecordSearch.cyphers.model.CyphersPlayerInfo;
-import com.cyphers.game.RecordSearch.cyphers.model.CyphersPlayerResponse;
-import com.cyphers.game.RecordSearch.cyphers.model.enumuration.CyphersPlayerWordType;
 import com.cyphers.game.RecordSearch.model.CrsUser;
+import com.cyphers.game.RecordSearch.openapi.model.CyphersPlayerInfo;
+import com.cyphers.game.RecordSearch.openapi.model.CyphersPlayerResponse;
+import com.cyphers.game.RecordSearch.openapi.model.enumuration.CyphersPlayerWordType;
 import com.cyphers.game.RecordSearch.service.user.CrsUserService;
 
 import io.swagger.v3.oas.annotations.Operation;

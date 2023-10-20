@@ -57,7 +57,7 @@ public class SearchController {
 //    }
     
     @GetMapping("/{nickname}")
-    public SearchDetailResponse searchDetail(@PathVariable("nickname") String nickname) throws Exception {
+    public SearchDetailResponse getSearchDetail(@PathVariable("nickname") String nickname) throws Exception {
     	Optional<CrsDetailSearch> cds = crsSearchService.getDetailSearch(nickname);
     	GameRecordResponse gameRecordResponse = searchService.getGameRecords(nickname);
     	
