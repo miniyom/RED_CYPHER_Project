@@ -16,8 +16,8 @@ import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 
-import com.cyphers.game.RecordSearch.cyphers.model.CyphersMatchedInfo;
-import com.cyphers.game.RecordSearch.cyphers.model.CyphersMatchingHistory;
+import com.cyphers.game.RecordSearch.openapi.model.CyphersMatchedInfo;
+import com.cyphers.game.RecordSearch.openapi.model.CyphersMatchingHistory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class Study230913 {

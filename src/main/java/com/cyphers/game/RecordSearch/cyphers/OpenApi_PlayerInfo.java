@@ -13,7 +13,7 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 import org.springframework.stereotype.Component;
 
-import com.cyphers.game.RecordSearch.cyphers.model.CyphersPlayerInfo;
+import com.cyphers.game.RecordSearch.openapi.model.CyphersPlayerInfo;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Component
