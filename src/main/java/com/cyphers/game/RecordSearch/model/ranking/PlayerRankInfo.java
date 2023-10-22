@@ -16,6 +16,6 @@ public class PlayerRankInfo {
 	private Integer rank;
 	private String nickname;
 	private String clanName;
-	private String grade;
+	private Integer grade;
 	private Integer ratingPoint;
 }

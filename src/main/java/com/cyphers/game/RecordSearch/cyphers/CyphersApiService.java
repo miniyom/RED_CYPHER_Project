@@ -217,20 +217,14 @@ public class CyphersApiService {
     
     //통합 랭킹 조회
     //playerId가 있으면 해당 플레이어의 랭킹, 없으면 offset부터 limit까지 나열
-    public CyphersPlayerRanking searchPlayerRanking(@Required String playerId, Integer offset, Integer limit) throws Exception {
+    public CyphersPlayerRanking searchPlayerRanking(@Required String playerId) throws Exception {
         Map<String, String> params = new HashMap<>();
         params.put("playerId", playerId);
-        params.put("offset", offset.toString());
-        if (limit != null) {
-            if (limit < 10 || limit > 1000) {
-                throw new IllegalArgumentException("limit은 10 이상, 1000 이하까지만 사용할 수 있습니다.");
-            }
-            params.put("limit", limit.toString());
-        }
         return objectMapper.readValue(get("/cy/ranking/ratingPoint", params), CyphersPlayerRanking.class);
     }
-    public CyphersPlayerRanking searchRanking(Integer limit) throws Exception {
+    public CyphersPlayerRanking searchRankingList(Integer offset, Integer limit) throws Exception {
         Map<String, String> params = new HashMap<>();
+        params.put("offset", offset.toString());
         if (limit != null) {
             if (limit < 10 || limit > 1000) {
                 throw new IllegalArgumentException("limit은 10 이상, 1000 이하까지만 사용할 수 있습니다.");
