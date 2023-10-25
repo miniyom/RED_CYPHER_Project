@@ -21,7 +21,6 @@ import com.cyphers.game.RecordSearch.controller.search.model.IoSearchDetailMostP
 import com.cyphers.game.RecordSearch.controller.search.model.IoSearchDetailRecentlyPlayCyphersInfo;
 import com.cyphers.game.RecordSearch.controller.search.model.IoSearchDetailResponse;
 import com.cyphers.game.RecordSearch.controller.search.model.IoSearchDetailWinAndLoseCountHistoryInfo;
-import com.cyphers.game.RecordSearch.cyphers.CyphersApiService;
 import com.cyphers.game.RecordSearch.openapi.model.CyphersCharacterAttribute;
 import com.cyphers.game.RecordSearch.openapi.model.CyphersCharacterInfo;
 import com.cyphers.game.RecordSearch.openapi.model.CyphersCharacterSearch;
@@ -38,6 +37,7 @@ import com.cyphers.game.RecordSearch.openapi.model.CyphersPlayersInGame;
 import com.cyphers.game.RecordSearch.openapi.model.CyphersRecords;
 import com.cyphers.game.RecordSearch.openapi.model.enumuration.CyphersGameType;
 import com.cyphers.game.RecordSearch.openapi.model.enumuration.CyphersPlayerWordType;
+import com.cyphers.game.RecordSearch.openapi.service.CyphersApiService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.extern.slf4j.Slf4j;

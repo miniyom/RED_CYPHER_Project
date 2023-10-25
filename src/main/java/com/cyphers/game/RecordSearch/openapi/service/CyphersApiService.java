@@ -1,4 +1,4 @@
-package com.cyphers.game.RecordSearch.cyphers;
+package com.cyphers.game.RecordSearch.openapi.service;
 
 import java.io.IOException;
 import java.net.URI;

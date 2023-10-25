@@ -1,4 +1,4 @@
-package com.cyphers.game.RecordSearch.cyphers;
+package com.cyphers.game.RecordSearch.openapi.service;
 
 import com.cyphers.game.RecordSearch.openapi.model.CyphersPlayerResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
