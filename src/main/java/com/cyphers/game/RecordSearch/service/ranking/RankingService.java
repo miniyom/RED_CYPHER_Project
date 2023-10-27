@@ -20,8 +20,6 @@ import lombok.extern.slf4j.Slf4j;
 public class RankingService {
 
 	@Autowired
-	ObjectMapper objectmapper;
-	@Autowired
 	CyphersApiService cyApiService;
 	
 	public PlayerRankInfo getPlayerRankInfo(String nickname) throws Exception {
