@@ -22,7 +22,7 @@ public class RateStatsController {
 	@Autowired
 	private RateStatsService rateStatsService;
 	
-	@GetMapping("/statistics/winRate")
+	@GetMapping("/winRate")
 	public List<WinRateStatsInfo> getWinRateStats() throws Exception {
 		return rateStatsService.getWinRateStats();
 	}

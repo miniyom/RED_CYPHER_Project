@@ -79,7 +79,7 @@ public class RateStatsService {
 			WinRateStatsInfo wrStatsInfo = new WinRateStatsInfo();
 			Float numerator = characterMap.get(character).floatValue();
 			Integer denominator = matchIdList.size();
-			Float winRate = 100 * numerator/denominator;
+			Float winRate = Math.round(100 * (100 * numerator/denominator)) / 100.0f;
 			wrStatsInfo.setWinRate(winRate);
 			wrStatsInfo.setCharacterName(character);
 			winRateStats.add(wrStatsInfo);
