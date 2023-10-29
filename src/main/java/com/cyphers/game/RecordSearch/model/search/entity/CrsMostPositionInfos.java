@@ -1,4 +1,4 @@
-package com.cyphers.game.RecordSearch.model.gameRecord;
+package com.cyphers.game.RecordSearch.model.search.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -6,7 +6,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.PrimaryKeyJoinColumn;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,17 +23,20 @@ import lombok.ToString;
 @ToString
 @Builder
 @Entity
-@Table(name = "crs_attributes")
-public class CrsAttribute {
-	@Id 
+@Table(name = "crs_most_position_infos")
+public class CrsMostPositionInfos {
+	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "ATTR_ID")
+	@Column(name = "MPI_ID")
 	private Long id;
 	
-	@ManyToOne
-	@JoinColumn(name = "GR_ID")
-	private CrsGameRecord crsGameRecord;
+	@OneToOne
+	@JoinColumn(name = "PLAYER_ID")
+	private CrsDetailSearch crsDetailSearch;
 	
-	@Column(name = "ATTRIBUTE")
-	private String attributeId;
+	private Integer tankerUseRate;
+	private Integer rangeDealerUseRate;
+	private Integer supporterUseRate;
+	private Integer meleeDealerUseRate;
+
 }

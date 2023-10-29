@@ -7,22 +7,16 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
-import com.cyphers.game.RecordSearch.controller.search.model.IoSearchDetailGameRecord;
-import com.cyphers.game.RecordSearch.controller.search.model.IoSearchDetailMostCypherInfo;
-import com.cyphers.game.RecordSearch.controller.search.model.IoSearchDetailRecentlyPlayCyphersInfo;
-import com.cyphers.game.RecordSearch.controller.search.model.IoSearchDetailResponse;
-import com.cyphers.game.RecordSearch.controller.search.model.IoSearchDetailWinAndLoseCountHistoryInfo;
-import com.cyphers.game.RecordSearch.model.CrsDetailSearch;
-import com.cyphers.game.RecordSearch.model.CrsMostCypherInfos;
-import com.cyphers.game.RecordSearch.model.CrsMostPositionInfos;
-import com.cyphers.game.RecordSearch.model.CrsRecentlyPlayCypherInfos;
-import com.cyphers.game.RecordSearch.model.CrsWinAndLoseCountHistory;
-import com.cyphers.game.RecordSearch.model.gameRecord.CrsAttribute;
-import com.cyphers.game.RecordSearch.model.gameRecord.CrsGameRecord;
-import com.cyphers.game.RecordSearch.model.gameRecord.CrsItem;
-import com.cyphers.game.RecordSearch.model.gameRecord.CrsPlayerNickname;
+import com.cyphers.game.RecordSearch.model.search.IoSearchDetailMostCypherInfo;
+import com.cyphers.game.RecordSearch.model.search.IoSearchDetailRecentlyPlayCyphersInfo;
+import com.cyphers.game.RecordSearch.model.search.IoSearchDetailResponse;
+import com.cyphers.game.RecordSearch.model.search.IoSearchDetailWinAndLoseCountHistoryInfo;
+import com.cyphers.game.RecordSearch.model.search.entity.CrsDetailSearch;
+import com.cyphers.game.RecordSearch.model.search.entity.CrsMostCypherInfos;
+import com.cyphers.game.RecordSearch.model.search.entity.CrsMostPositionInfos;
+import com.cyphers.game.RecordSearch.model.search.entity.CrsRecentlyPlayCypherInfos;
+import com.cyphers.game.RecordSearch.model.search.entity.CrsWinAndLoseCountHistory;
 import com.cyphers.game.RecordSearch.service.search.repository.CrsDetailSearchRepository;
-import com.cyphers.game.RecordSearch.service.user.repository.CrsUserRepository;
 
 import lombok.AllArgsConstructor;
 
@@ -112,63 +106,6 @@ public class CrsSearchService {
 			recentCypherinfos.add(crsRecentCypherInfo);
 		}
 		response.setRecentlyPlayCyphersInfos(recentCypherinfos);
-		
-//		List<CrsGameRecord> gameRecords = new ArrayList<>();
-//		for (IoSearchDetailGameRecord gameRecord : detailResponse.getGameRecords()) {
-//			
-//			CrsGameRecord crsGameRecord = CrsGameRecord.builder()
-//									.crsDetailSearchResponse(response)
-//									.gameType(gameRecord.getGameType().getValue())
-//									.playCharacterId(gameRecord.getPlayCharacterId())
-//									.positionName(gameRecord.getPositionName())
-//									.attributeIds(null)
-//									.killCount(gameRecord.getKillCount())
-//									.deathCount(gameRecord.getDeathCount())
-//									.assistCount(gameRecord.getAssistCount())
-//									.killParticipation(gameRecord.getKillParticipation())
-//									.kda(gameRecord.getKda())
-//									.csCount(gameRecord.getCsCount())
-//									.itemIds(null)
-//									.healAmount(gameRecord.getHealAmount())
-//									.attackPoint(gameRecord.getAttackPoint())
-//									.damagePoint(gameRecord.getDamagePoint())
-//									.getCoin(gameRecord.getGetCoin())
-//									.battlePoint(gameRecord.getBattlePoint())
-//									.sightPoint(gameRecord.getSightPoint())
-//									.playerNicknames(null)
-//									.build();
-//			
-//			List<CrsAttribute> attributeIds = new ArrayList<>();
-//			for (String attributeId : gameRecord.getAttributeIds()) {
-//				CrsAttribute crsAttribute = CrsAttribute.builder()
-//										.attributeId(attributeId)
-//										.crsGameRecord(crsGameRecord)
-//										.build();
-//				attributeIds.add(crsAttribute);
-//			}
-//			List<CrsItem> items = new ArrayList<>();
-//			for (String item : gameRecord.getItemIds()) {
-//				CrsItem crsItem = CrsItem.builder()
-//								.itemId(item)
-//								.build();
-//				items.add(crsItem);
-//			}
-//			List<CrsPlayerNickname> nicknames = new ArrayList<>();
-//			for (String nickname : gameRecord.getPlayerNicknames()) {
-//				CrsPlayerNickname crsNickname = CrsPlayerNickname.builder()
-//											.playerNickname(nickname)
-//											.crsGameRecord(crsGameRecord)
-//											.build();
-//				nicknames.add(crsNickname);
-//			}
-//			
-//			crsGameRecord.setAttributeIds(attributeIds);
-//			crsGameRecord.setItemIds(items);
-//			crsGameRecord.setPlayerNicknames(nicknames);
-//			
-//			gameRecords.add(crsGameRecord);
-//		}
-//		response.setGameRecords(gameRecords);
 		
 		crsDetailSearchRepository.save(response);
 		

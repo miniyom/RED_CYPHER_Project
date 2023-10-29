@@ -1,4 +1,4 @@
-package com.cyphers.game.RecordSearch.model.gameRecord;
+package com.cyphers.game.RecordSearch.model.search.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -22,17 +22,20 @@ import lombok.ToString;
 @ToString
 @Builder
 @Entity
-@Table(name = "crs_items")
-public class CrsItem {
+@Table(name = "crs_most_cypher_infos")
+public class CrsMostCypherInfos {
 	@Id 
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "ITEM_ID")
+	@Column(name = "MCI_ID")
 	private Long id;
 	
 	@ManyToOne
-	@JoinColumn(name = "GR_ID")
-	private CrsGameRecord crsGameRecord;
+	@JoinColumn(name = "PLAYER_ID")
+	private CrsDetailSearch crsDetailSearch;
 	
-	@Column(name = "ITEM")
-	private String itemId;
+	private String characterId;
+    private String characterName;
+    private Integer winRate;
+    private Integer playCount;
+    private Float kda;
 }

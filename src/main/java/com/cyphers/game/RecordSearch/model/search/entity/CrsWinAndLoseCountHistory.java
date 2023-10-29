@@ -1,4 +1,4 @@
-package com.cyphers.game.RecordSearch.model;
+package com.cyphers.game.RecordSearch.model.search.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

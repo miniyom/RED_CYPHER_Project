@@ -1,4 +1,4 @@
-package com.cyphers.game.RecordSearch.controller.search.model;
+package com.cyphers.game.RecordSearch.model.search;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

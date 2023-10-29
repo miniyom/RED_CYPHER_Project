@@ -1,4 +1,4 @@
-package com.cyphers.game.RecordSearch.model;
+package com.cyphers.game.RecordSearch.model.search.entity;
 
 import java.time.LocalDateTime;
 import java.util.List;

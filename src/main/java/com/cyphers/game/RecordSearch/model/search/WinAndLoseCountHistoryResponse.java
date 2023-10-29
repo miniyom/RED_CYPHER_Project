@@ -1,4 +1,4 @@
-package com.cyphers.game.RecordSearch.controller.search.model;
+package com.cyphers.game.RecordSearch.model.search;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,12 +11,8 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class RecentlyPlayCypherInfoResponse {
-	private String characterId;
-    private String characterName;
+public class WinAndLoseCountHistoryResponse {
+	private Integer historyDate;
     private Integer winCount;
     private Integer loseCount;
-    private Float killCount;
-    private Float deathCount;
-    private Float assistCount;
 }

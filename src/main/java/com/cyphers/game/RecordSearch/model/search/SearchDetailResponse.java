@@ -1,9 +1,9 @@
-package com.cyphers.game.RecordSearch.controller.search.model;
+package com.cyphers.game.RecordSearch.model.search;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-import com.cyphers.game.RecordSearch.model.CrsMostPositionInfos;
+import com.cyphers.game.RecordSearch.model.search.entity.CrsMostPositionInfos;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

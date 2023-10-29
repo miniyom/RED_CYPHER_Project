@@ -7,8 +7,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cyphers.game.RecordSearch.model.stats.PickRateStatsInfo;
 import com.cyphers.game.RecordSearch.model.stats.WinRateStatsInfo;
-import com.cyphers.game.RecordSearch.service.stats.RateStatsService;
+import com.cyphers.game.RecordSearch.service.stats.StatsService;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,14 +18,18 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping(value = "/api/stats")
 @AllArgsConstructor
 @Slf4j
-public class RateStatsController {
+public class StatsController {
 	
 	@Autowired
-	private RateStatsService rateStatsService;
+	private StatsService rateStatsService;
 	
 	@GetMapping("/winRate")
 	public List<WinRateStatsInfo> getWinRateStats() throws Exception {
 		return rateStatsService.getWinRateStats();
 	}
 
+	@GetMapping("/pickRate")
+	public List<PickRateStatsInfo> getPickRateStats() throws Exception {
+		return rateStatsService.getPickRateStats();
+	}
 }
