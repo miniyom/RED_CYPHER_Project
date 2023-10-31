@@ -132,7 +132,7 @@ public class SearchController {
     public SearchDetailResponse renewalDetail(@PathVariable("nickname") String nickname) throws Exception {
     	
 		IoSearchDetailResponse detailSearch = searchService.getDetailSearch(nickname);
-    	crsSearchService.input(detailSearch);
+    	crsSearchService.insert(detailSearch);
     	Optional<CrsDetailSearch> cds = crsSearchService.getDetailSearch(nickname);
     	SearchDetailResponse res = new SearchDetailResponse();
     	if (cds.isEmpty()) {

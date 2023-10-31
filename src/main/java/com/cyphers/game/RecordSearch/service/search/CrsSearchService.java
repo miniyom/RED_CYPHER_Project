@@ -27,7 +27,7 @@ public class CrsSearchService {
 	private final CrsDetailSearchRepository crsDetailSearchRepository;
 	
 	//데이터 입력
-	public void input(IoSearchDetailResponse detailResponse) {
+	public void insert(IoSearchDetailResponse detailResponse) {
 		
 		CrsDetailSearch response = CrsDetailSearch.builder()
 										.playerId(detailResponse.getPlayerId())
