@@ -1,6 +1,8 @@
 package com.cyphers.game.RecordSearch.service.search;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -31,7 +33,6 @@ import com.cyphers.game.RecordSearch.openapi.model.CyphersMatchingHistory;
 import com.cyphers.game.RecordSearch.openapi.model.CyphersPlayInfo;
 import com.cyphers.game.RecordSearch.openapi.model.CyphersPlayer;
 import com.cyphers.game.RecordSearch.openapi.model.CyphersPlayerInfo;
-import com.cyphers.game.RecordSearch.openapi.model.CyphersPlayerRepresent;
 import com.cyphers.game.RecordSearch.openapi.model.CyphersPlayerResponse;
 import com.cyphers.game.RecordSearch.openapi.model.CyphersPlayersInGame;
 import com.cyphers.game.RecordSearch.openapi.model.CyphersRecords;
@@ -56,6 +57,13 @@ public class SearchService {
 	final static Integer RECENT_CYPHER_LENGTH = 3; // 최근 2주간 데이터에서 보여줄 캐릭터 개수
 	final static Float PERFECT_KDA = -1.0f; // kda에서 death수가 0일 경우 리턴할 값
 	final static Integer WIN_AND_LOSE_KEY = 6; // 승패 그래프에서 보여줄 데이터 키(0~6, 총 7개)
+	
+	//매칭기록 조회시 시간 설정
+	LocalDateTime now = LocalDateTime.now();
+	LocalDateTime ninetyDaysAgo = now.minusDays(90);
+	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+	String startDate = ninetyDaysAgo.format(formatter);
+	String endDate = now.format(formatter);
 
 	public List<String> getNicknameList(String nickname) throws Exception {
 		List<String> nicknameList = new ArrayList<>();
@@ -91,12 +99,13 @@ public class SearchService {
 		ioGameRecords.setPlayerId(myPlayerId);
 		ioGameRecords.setProfileCharacterId(profileCharacterId);
 		ioGameRecords.setNickname(profileNickname);
+		
 
 		// 현재 시즌 공식전, 일반전 기록 가져오기
 		CyphersMatchingHistory cyMatchingHistoryRating = cyApiService.searchMatchingHistory(myPlayerId,
-				CyphersGameType.RATING, null, null, API_LIMIT);
+				CyphersGameType.RATING, startDate, endDate, API_LIMIT);
 		CyphersMatchingHistory cyMatchingHistoryNormal = cyApiService.searchMatchingHistory(myPlayerId,
-				CyphersGameType.NORMAL, null, null, API_LIMIT);
+				CyphersGameType.NORMAL, startDate, endDate, API_LIMIT);
 
 		List<CyphersMatchedInfo> cyMatchedInfoRows = new ArrayList<>(); // 각 기능에서 쓰일 리스트
 
@@ -259,12 +268,12 @@ public class SearchService {
 
 		// 승, 패수 데이터(그래프)
 		List<IoSearchDetailWinAndLoseCountHistoryInfo> winAndLoseCountHistoryInfos = new ArrayList<>();
-		LocalDate now = LocalDate.now();
-		LocalDate oneWeekAgo = now.minus(1, ChronoUnit.WEEKS);
-		List<CyphersMatchedInfo> weeklyMatchedInfoRows = filterDataByDate(cyMatchedInfoRows, oneWeekAgo, now);
+		LocalDate today = LocalDate.now();
+		LocalDate oneWeekAgo = today.minus(1, ChronoUnit.WEEKS);
+		List<CyphersMatchedInfo> weeklyMatchedInfoRows = filterDataByDate(cyMatchedInfoRows, oneWeekAgo, today);
 
 		Map<Integer, Pair<Integer, Integer>> cyMatchingHistoryMap = new HashMap<>(); // pair 앞은 승수, 뒤는 패수
-		Pair<LocalDate, Integer> matchedDateAndInt = Pair.of(now, WIN_AND_LOSE_KEY);
+		Pair<LocalDate, Integer> matchedDateAndInt = Pair.of(today, WIN_AND_LOSE_KEY);
 
 		for (int i = 0; i <= WIN_AND_LOSE_KEY; i++) {
 			IoSearchDetailWinAndLoseCountHistoryInfo defaultWinAndLoseHisory = new IoSearchDetailWinAndLoseCountHistoryInfo();
@@ -414,9 +423,9 @@ public class SearchService {
 
 		// 현재 시즌 공식전, 일반전 기록 가져오기
 		CyphersMatchingHistory cyMatchingHistoryRating = cyApiService.searchMatchingHistory(myPlayerId,
-				CyphersGameType.RATING, null, null, API_LIMIT);
+				CyphersGameType.RATING, startDate, endDate, API_LIMIT);
 		CyphersMatchingHistory cyMatchingHistoryNormal = cyApiService.searchMatchingHistory(myPlayerId,
-				CyphersGameType.NORMAL, null, null, API_LIMIT);
+				CyphersGameType.NORMAL, startDate, endDate, API_LIMIT);
 
 		List<CyphersMatchedInfo> cyMatchedInfoRows = new ArrayList<>(); // 각 기능에서 쓰일 리스트
 

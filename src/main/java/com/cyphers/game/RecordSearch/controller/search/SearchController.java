@@ -57,7 +57,7 @@ public class SearchController {
     public SearchDetailDTO renewalDetail(@PathVariable("nickname") String nickname) throws Exception {
     	
 		IoSearchDetailResponse detailSearch = searchService.getDetailSearch(nickname);
-    	crsSearchService.insert(detailSearch);
+    	crsSearchService.upsert(detailSearch);
     	SearchDetailDTO searchDetailDTO = crsSearchService.getDetailSearch(nickname);
     	
         return searchDetailDTO;
