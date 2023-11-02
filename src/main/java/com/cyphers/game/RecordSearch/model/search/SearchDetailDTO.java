@@ -1,23 +1,29 @@
 package com.cyphers.game.RecordSearch.model.search;
 
-import lombok.*;
-
 import java.time.LocalDateTime;
 import java.util.List;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class IoSearchDetailResponse {
-    private String playerId;
-    private String profileCharacterId;
-    private String nickname;
-    private LocalDateTime recentlyUpdatedDate;
-    
-    private List<IoSearchDetailMostCypherInfo> mostCypherInfos;
-    private IoSearchDetailMostPositionInfo mostPositionInfos;
+public class SearchDetailDTO {
+
+	private String playerId;
+	private String profileCharacterId;
+	private String nickname;
+	
+	private LocalDateTime recentlyUpdatedDate;
+	
+	private List<MostCypherInfoResponse> mostCypherInfos;
+    private MostPositionInfoResponse mostPositionInfos;
 
     private String ratingGameTier;
     private Integer ratingWinCount;
@@ -30,13 +36,13 @@ public class IoSearchDetailResponse {
     private Integer normalStopCount;
     private Integer normalWinRate;
     
-    private List<IoSearchDetailWinAndLoseCountHistoryInfo> winAndLoseCountHistoryInfos;
+    private List<WinAndLoseCountHistoryResponse> winAndLoseCountHistory;
 
     private Integer recentlyPlayCount;
     private Integer recentlyWinRate;
     private Float recentlyKda;
     private Integer recentlyAverageSurvivalRate;	
-    private List<IoSearchDetailRecentlyPlayCyphersInfo> recentlyPlayCyphersInfos;
-
-//    private List<IoSearchDetailGameRecord> gameRecords;
+    
+    private List<RecentlyPlayCypherInfoResponse> recentlyPlayCyphersInfos;
+    
 }

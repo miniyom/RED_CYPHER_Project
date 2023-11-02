@@ -11,6 +11,11 @@ import com.cyphers.game.RecordSearch.model.search.IoSearchDetailMostCypherInfo;
 import com.cyphers.game.RecordSearch.model.search.IoSearchDetailRecentlyPlayCyphersInfo;
 import com.cyphers.game.RecordSearch.model.search.IoSearchDetailResponse;
 import com.cyphers.game.RecordSearch.model.search.IoSearchDetailWinAndLoseCountHistoryInfo;
+import com.cyphers.game.RecordSearch.model.search.MostCypherInfoResponse;
+import com.cyphers.game.RecordSearch.model.search.MostPositionInfoResponse;
+import com.cyphers.game.RecordSearch.model.search.RecentlyPlayCypherInfoResponse;
+import com.cyphers.game.RecordSearch.model.search.SearchDetailDTO;
+import com.cyphers.game.RecordSearch.model.search.WinAndLoseCountHistoryResponse;
 import com.cyphers.game.RecordSearch.model.search.entity.CrsDetailSearch;
 import com.cyphers.game.RecordSearch.model.search.entity.CrsMostCypherInfos;
 import com.cyphers.game.RecordSearch.model.search.entity.CrsMostPositionInfos;
@@ -18,15 +23,16 @@ import com.cyphers.game.RecordSearch.model.search.entity.CrsRecentlyPlayCypherIn
 import com.cyphers.game.RecordSearch.model.search.entity.CrsWinAndLoseCountHistory;
 import com.cyphers.game.RecordSearch.service.search.repository.CrsDetailSearchRepository;
 
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 
 @Service
+@Transactional
 @AllArgsConstructor
 public class CrsSearchService {
 
 	private final CrsDetailSearchRepository crsDetailSearchRepository;
 	
-	//데이터 입력
 	public void insert(IoSearchDetailResponse detailResponse) {
 		
 		CrsDetailSearch response = CrsDetailSearch.builder()
@@ -111,12 +117,74 @@ public class CrsSearchService {
 		
 	}
 	
-	public Optional<CrsDetailSearch> getDetailSearch(String nickname) {
-		return crsDetailSearchRepository.findByNickname(nickname);
+	public SearchDetailDTO getDetailSearch(String nickname) throws Exception {
+		Optional<CrsDetailSearch> crsDetailSearch = crsDetailSearchRepository.findByNickname(nickname);
+		if (crsDetailSearch.isEmpty()) {
+			throw new Exception("닉네임이 존재하지 않습니다.");
+		}
+		CrsDetailSearch cds = crsDetailSearch.get();
+		SearchDetailDTO sdDTO = new SearchDetailDTO();
+		
+		sdDTO.setPlayerId(cds.getPlayerId());
+		sdDTO.setProfileCharacterId(cds.getProfileCharacterId());
+		sdDTO.setNickname(cds.getNickname());
+		sdDTO.setRecentlyUpdatedDate(cds.getRecentlyUpdatedDate());
+    	List<MostCypherInfoResponse> mostCypherResponse = new ArrayList<>();
+    	for (CrsMostCypherInfos crsMostCypher : cds.getMostCypherInfos()) {
+    		MostCypherInfoResponse mres = new MostCypherInfoResponse();
+    		mres.setCharacterId(crsMostCypher.getCharacterId());
+    		mres.setCharacterName(crsMostCypher.getCharacterName());
+    		mres.setWinRate(crsMostCypher.getWinRate());
+    		mres.setPlayCount(crsMostCypher.getPlayCount());
+    		mres.setKda(crsMostCypher.getKda());
+    		mostCypherResponse.add(mres);
+		}
+    	sdDTO.setMostCypherInfos(mostCypherResponse);
+    	MostPositionInfoResponse mostPositionResponse = new MostPositionInfoResponse();
+    	CrsMostPositionInfos crsMostPosition = cds.getMostPositionInfos();
+    	mostPositionResponse.setTankerUseRate(crsMostPosition.getTankerUseRate());
+    	mostPositionResponse.setRangeDealerUseRate(crsMostPosition.getRangeDealerUseRate());
+    	mostPositionResponse.setSupporterUseRate(crsMostPosition.getSupporterUseRate());
+    	mostPositionResponse.setMeleeDealerUseRate(crsMostPosition.getMeleeDealerUseRate());
+    	sdDTO.setMostPositionInfos(mostPositionResponse);
+    	sdDTO.setRatingGameTier(cds.getRatingGameTier());
+    	sdDTO.setRatingWinCount(cds.getRatingWinCount());
+    	sdDTO.setRatingLoseCount(cds.getRatingLoseCount());
+    	sdDTO.setRatingStopCount(cds.getRatingStopCount());
+    	sdDTO.setRatingWinRate(cds.getRatingWinRate());
+    	sdDTO.setNormalWinCount(cds.getNormalWinCount());
+    	sdDTO.setNormalLoseCount(cds.getNormalLoseCount());
+    	sdDTO.setNormalStopCount(cds.getNormalStopCount());
+    	sdDTO.setNormalWinRate(cds.getNormalWinRate());
+    	List<WinAndLoseCountHistoryResponse> outcomeResponse = new ArrayList<>();
+    	for (CrsWinAndLoseCountHistory crsOutcome : cds.getWinAndLoseCountHistory()) {
+    		WinAndLoseCountHistoryResponse wres = new WinAndLoseCountHistoryResponse();
+    		wres.setHistoryDate(crsOutcome.getHistoryDate());
+    		wres.setWinCount(crsOutcome.getWinCount());
+    		wres.setLoseCount(crsOutcome.getLoseCount());
+    		outcomeResponse.add(wres);
+		}
+    	sdDTO.setWinAndLoseCountHistory(outcomeResponse);
+    	sdDTO.setRecentlyPlayCount(cds.getRecentlyPlayCount());
+    	sdDTO.setRecentlyWinRate(cds.getRecentlyWinRate());
+    	sdDTO.setRecentlyKda(cds.getRecentlyKda());
+    	sdDTO.setRecentlyAverageSurvivalRate(cds.getRecentlyAverageSurvivalRate());
+    	List<RecentlyPlayCypherInfoResponse> recentCypherResponse = new ArrayList<>();
+    	for (CrsRecentlyPlayCypherInfos crsRecentCypher : cds.getRecentlyPlayCyphersInfos()) {
+    		RecentlyPlayCypherInfoResponse rcres = new RecentlyPlayCypherInfoResponse();
+    		rcres.setCharacterId(crsRecentCypher.getCharacterId());
+    		rcres.setCharacterName(crsRecentCypher.getCharacterName());
+    		rcres.setWinCount(crsRecentCypher.getWinCount());
+    		rcres.setLoseCount(crsRecentCypher.getLoseCount());
+    		rcres.setKillCount(crsRecentCypher.getKillCount());
+    		rcres.setDeathCount(crsRecentCypher.getDeathCount());
+    		rcres.setAssistCount(crsRecentCypher.getAssistCount());
+    		recentCypherResponse.add(rcres);
+		}
+    	sdDTO.setRecentlyPlayCyphersInfos(recentCypherResponse);
+    	
+		return sdDTO;
 	}
 	
-	public void renewal(CrsDetailSearch crsDetailSearch) {
-		crsDetailSearch.setRecentlyUpdatedDate(LocalDateTime.now());
-		crsDetailSearchRepository.save(crsDetailSearch);
-	}
+	
 }
