@@ -1,5 +1,6 @@
 package com.cyphers.game.RecordSearch.service.search;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,17 +13,14 @@ import com.cyphers.game.RecordSearch.model.search.IoSearchDetailRecentlyPlayCyph
 import com.cyphers.game.RecordSearch.model.search.IoSearchDetailResponse;
 import com.cyphers.game.RecordSearch.model.search.IoSearchDetailWinAndLoseCountHistoryInfo;
 import com.cyphers.game.RecordSearch.model.search.MostCypherInfoResponse;
-import com.cyphers.game.RecordSearch.model.search.MostPositionInfoResponse;
 import com.cyphers.game.RecordSearch.model.search.RecentlyPlayCypherInfoResponse;
 import com.cyphers.game.RecordSearch.model.search.SearchDetailDTO;
 import com.cyphers.game.RecordSearch.model.search.WinAndLoseCountHistoryResponse;
 import com.cyphers.game.RecordSearch.model.search.entity.CrsDetailSearch;
 import com.cyphers.game.RecordSearch.model.search.entity.CrsMostCypherInfos;
-import com.cyphers.game.RecordSearch.model.search.entity.CrsMostPositionInfos;
 import com.cyphers.game.RecordSearch.model.search.entity.CrsRecentlyPlayCypherInfos;
 import com.cyphers.game.RecordSearch.model.search.entity.CrsWinAndLoseCountHistory;
 import com.cyphers.game.RecordSearch.service.search.repository.CrsDetailSearchRepository;
-import com.cyphers.game.RecordSearch.service.search.repository.CrsMostPositionInfosRepository;
 
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
@@ -37,47 +35,62 @@ public class CrsSearchService {
 	private final EntityManager em;
 	
 	public void upsert(IoSearchDetailResponse detailResponse) {
-		CrsDetailSearch temp = crsDetailSearchRepository.findByPlayerId(detailResponse.getPlayerId()).get();
+//		CrsDetailSearch temp = crsDetailSearchRepository.findByPlayerId(detailResponse.getPlayerId()).get();
 		
-		CrsDetailSearch response = em.find(CrsDetailSearch.class, temp.getPlayerId());
+//		CrsDetailSearch response = em.find(CrsDetailSearch.class, temp.getPlayerId());
+		CrsDetailSearch response = crsDetailSearchRepository.findByPlayerId(detailResponse.getPlayerId()).get();
 		
 		if (response == null) {
 			insert(detailResponse);
 			return;
 		}
 		
-		response = CrsDetailSearch.builder()
-				.playerId(detailResponse.getPlayerId()) 
-				.profileCharacterId(detailResponse.getProfileCharacterId())
-				.nickname(detailResponse.getNickname())
-				.recentlyUpdatedDate(LocalDateTime.now())
-				.mostCypherInfos(null)
-				.mostPositionInfos(null)
-				.ratingGameTier(detailResponse.getRatingGameTier())
-				.ratingWinCount(detailResponse.getRatingWinCount())
-				.ratingLoseCount(detailResponse.getRatingLoseCount())
-				.ratingStopCount(detailResponse.getRatingStopCount())
-				.ratingWinRate(detailResponse.getRatingWinRate())
-				.normalWinCount(detailResponse.getNormalWinCount())
-				.normalLoseCount(detailResponse.getNormalLoseCount())
-				.normalStopCount(detailResponse.getNormalStopCount())
-				.normalWinRate(detailResponse.getNormalWinRate())
-				.winAndLoseCountHistory(null)
-				.recentlyPlayCount(detailResponse.getRecentlyPlayCount())
-				.recentlyWinRate(detailResponse.getRecentlyWinRate())
-				.recentlyKda(detailResponse.getRecentlyKda())
-				.recentlyAverageSurvivalRate(detailResponse.getRecentlyAverageSurvivalRate())
-				.recentlyPlayCyphersInfos(null)
-				.build();
-		CrsMostPositionInfos positionInfos = CrsMostPositionInfos.builder()
-				.crsDetailSearch(response)
-				.tankerUseRate(detailResponse.getMostPositionInfos().getTankerUseRate())
-				.rangeDealerUseRate(detailResponse.getMostPositionInfos().getRangeDealerUseRate())
-				.supporterUseRate(detailResponse.getMostPositionInfos().getSupporterUseRate())
-				.meleeDealerUseRate(detailResponse.getMostPositionInfos().getMeleeDealerUseRate())
-				.build();
-		response.setMostPositionInfos(positionInfos);
-
+		response.setPlayerId(detailResponse.getPlayerId());
+		response.setProfileCharacterId(detailResponse.getProfileCharacterId());
+		response.setNickname(detailResponse.getNickname());
+		response.setRecentlyUpdatedDate(LocalDateTime.now());
+		response.setTankerUseRate(detailResponse.getMostPositionInfos().getTankerUseRate());
+		response.setRangeDealerUseRate(detailResponse.getMostPositionInfos().getRangeDealerUseRate());
+		response.setSupporterUseRate(detailResponse.getMostPositionInfos().getSupporterUseRate());
+		response.setMeleeDealerUseRate(detailResponse.getMostPositionInfos().getMeleeDealerUseRate());
+		response.setRatingGameTier(detailResponse.getRatingGameTier());
+		response.setRatingWinCount(detailResponse.getRatingWinCount());
+		response.setRatingLoseCount(detailResponse.getRatingLoseCount());
+		response.setRatingStopCount(detailResponse.getRatingStopCount());
+		response.setRatingWinRate(detailResponse.getRatingWinRate());
+		response.setNormalWinCount(detailResponse.getNormalWinCount());
+		response.setNormalLoseCount(detailResponse.getNormalLoseCount());
+		response.setNormalStopCount(detailResponse.getNormalStopCount());
+		response.setNormalWinRate(detailResponse.getNormalWinRate());
+		response.setRecentlyPlayCount(detailResponse.getRecentlyPlayCount());
+		response.setRecentlyWinRate(detailResponse.getRecentlyWinRate());
+		response.setRecentlyKda(detailResponse.getRecentlyKda());
+		response.setRecentlyAverageSurvivalRate(detailResponse.getRecentlyAverageSurvivalRate());
+		
+//		response = CrsDetailSearch.builder()
+//				.playerId(detailResponse.getPlayerId()) 
+//				.profileCharacterId(detailResponse.getProfileCharacterId())
+//				.nickname(detailResponse.getNickname())
+//				.recentlyUpdatedDate(LocalDateTime.now())
+//				.mostCypherInfos(null)
+//				.mostPositionInfos(null)
+//				.ratingGameTier(detailResponse.getRatingGameTier())
+//				.ratingWinCount(detailResponse.getRatingWinCount())
+//				.ratingLoseCount(detailResponse.getRatingLoseCount())
+//				.ratingStopCount(detailResponse.getRatingStopCount())
+//				.ratingWinRate(detailResponse.getRatingWinRate())
+//				.normalWinCount(detailResponse.getNormalWinCount())
+//				.normalLoseCount(detailResponse.getNormalLoseCount())
+//				.normalStopCount(detailResponse.getNormalStopCount())
+//				.normalWinRate(detailResponse.getNormalWinRate())
+//				.winAndLoseCountHistory(null)
+//				.recentlyPlayCount(detailResponse.getRecentlyPlayCount())
+//				.recentlyWinRate(detailResponse.getRecentlyWinRate())
+//				.recentlyKda(detailResponse.getRecentlyKda())
+//				.recentlyAverageSurvivalRate(detailResponse.getRecentlyAverageSurvivalRate())
+//				.recentlyPlayCyphersInfos(null)
+//				.build();
+		
 		List<CrsMostCypherInfos> mostCypherInfos = new ArrayList<>();
 		for (IoSearchDetailMostCypherInfo ioMostCypherInfo : detailResponse.getMostCypherInfos()) {
 			CrsMostCypherInfos crsCypherInfos = CrsMostCypherInfos.builder()
@@ -120,6 +133,8 @@ public class CrsSearchService {
 		}
 		response.setRecentlyPlayCyphersInfos(recentCypherinfos);
 		
+		crsDetailSearchRepository.save(response);
+		
 	}
 	
 	public void insert(IoSearchDetailResponse detailResponse) {
@@ -130,7 +145,6 @@ public class CrsSearchService {
 								.nickname(detailResponse.getNickname())
 								.recentlyUpdatedDate(LocalDateTime.now())
 								.mostCypherInfos(null)
-								.mostPositionInfos(null)
 								.ratingGameTier(detailResponse.getRatingGameTier())
 								.ratingWinCount(detailResponse.getRatingWinCount())
 								.ratingLoseCount(detailResponse.getRatingLoseCount())
@@ -150,16 +164,6 @@ public class CrsSearchService {
 								.build();
 										
 		crsDetailSearchRepository.save(response);
-		
-		
-		CrsMostPositionInfos positionInfos = CrsMostPositionInfos.builder()
-										.crsDetailSearch(response)
-										.tankerUseRate(detailResponse.getMostPositionInfos().getTankerUseRate())
-										.rangeDealerUseRate(detailResponse.getMostPositionInfos().getRangeDealerUseRate())
-										.supporterUseRate(detailResponse.getMostPositionInfos().getSupporterUseRate())
-										.meleeDealerUseRate(detailResponse.getMostPositionInfos().getMeleeDealerUseRate())
-										.build();
-		response.setMostPositionInfos(positionInfos);
 		
 		List<CrsMostCypherInfos> mostCypherInfos = new ArrayList<>();
 		for (IoSearchDetailMostCypherInfo ioMostCypherInfo : detailResponse.getMostCypherInfos()) {
@@ -214,6 +218,8 @@ public class CrsSearchService {
 		}
 		CrsDetailSearch cds = crsDetailSearch.get();
 		
+		String renewalTime = getRenewalTime(cds.getRecentlyUpdatedDate());
+		
     	List<MostCypherInfoResponse> mostCypherResponse = new ArrayList<>();
     	for (CrsMostCypherInfos crsMostCypher : cds.getMostCypherInfos()) {
     		MostCypherInfoResponse mres = new MostCypherInfoResponse();
@@ -224,12 +230,6 @@ public class CrsSearchService {
     		mres.setKda(crsMostCypher.getKda());
     		mostCypherResponse.add(mres);
 		}
-    	MostPositionInfoResponse mostPositionResponse = new MostPositionInfoResponse();
-    	CrsMostPositionInfos crsMostPosition = cds.getMostPositionInfos();
-    	mostPositionResponse.setTankerUseRate(crsMostPosition.getTankerUseRate());
-    	mostPositionResponse.setRangeDealerUseRate(crsMostPosition.getRangeDealerUseRate());
-    	mostPositionResponse.setSupporterUseRate(crsMostPosition.getSupporterUseRate());
-    	mostPositionResponse.setMeleeDealerUseRate(crsMostPosition.getMeleeDealerUseRate());
     	List<WinAndLoseCountHistoryResponse> outcomeResponse = new ArrayList<>();
     	for (CrsWinAndLoseCountHistory crsOutcome : cds.getWinAndLoseCountHistory()) {
     		WinAndLoseCountHistoryResponse wres = new WinAndLoseCountHistoryResponse();
@@ -251,12 +251,16 @@ public class CrsSearchService {
     		recentCypherResponse.add(rcres);
 		}
     	SearchDetailDTO sdDTO = SearchDetailDTO.builder()
+    		.renewalTime(renewalTime)
 			.playerId(cds.getPlayerId())
 			.profileCharacterId(cds.getProfileCharacterId())
 			.nickname(cds.getNickname())
 			.recentlyUpdatedDate(cds.getRecentlyUpdatedDate())
 			.mostCypherInfos(mostCypherResponse)
-			.mostPositionInfos(mostPositionResponse)
+			.tankerUseRate(cds.getTankerUseRate())
+	    	.rangeDealerUseRate(cds.getRangeDealerUseRate())
+	    	.supporterUseRate(cds.getSupporterUseRate())
+	    	.meleeDealerUseRate(cds.getMeleeDealerUseRate())
 			.ratingGameTier(cds.getRatingGameTier())
 			.ratingWinCount(cds.getRatingWinCount())
 			.ratingLoseCount(cds.getRatingLoseCount())
@@ -277,5 +281,29 @@ public class CrsSearchService {
 		return sdDTO;
 	}
 	
-	
+	public String getRenewalTime(LocalDateTime recentTime) {
+		LocalDateTime now = LocalDateTime.now();
+		Duration duration = Duration.between(recentTime, now);
+		long term = duration.getSeconds();
+		if (term < 60) {
+			return term + "초 전";
+		}
+		if (term > 60 && term < 60 * 60) {
+			return term / 60 + "분 전";
+		}
+		if (term > 60 * 60 && term < 60 * 60 * 24) {
+			return term / (60 * 60) + "시간 전";
+		}
+		if (term > 60 * 60 * 24 && term < 60 * 60 * 24 * 30) {
+			return term / (60 * 60 * 24) + "일 전";
+		}
+		if (term > 60 * 60 * 24 * 30 && term < 60 * 60 * 24 * 30 * 12) {
+			return term / (60 * 60 * 24 * 30) + "개월 전";
+		}
+		if (term > 60 * 60 * 24 * 30 * 12) {
+			return term / (60 * 60 * 24 * 30 * 12) + "년 전";		
+		}
+		
+		return "닉네임 정보가 없습니다";
+	}
 }

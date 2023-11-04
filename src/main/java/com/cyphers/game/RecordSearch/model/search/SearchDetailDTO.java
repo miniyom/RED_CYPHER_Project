@@ -15,6 +15,8 @@ import lombok.Setter;
 @NoArgsConstructor
 @Builder
 public class SearchDetailDTO {
+	
+	private String renewalTime;
 
 	private String playerId;
 	private String profileCharacterId;
@@ -23,7 +25,11 @@ public class SearchDetailDTO {
 	private LocalDateTime recentlyUpdatedDate;
 	
 	private List<MostCypherInfoResponse> mostCypherInfos;
-    private MostPositionInfoResponse mostPositionInfos;
+	
+	private Integer tankerUseRate;
+	private Integer rangeDealerUseRate;
+	private Integer supporterUseRate;
+	private Integer meleeDealerUseRate;
 
     private String ratingGameTier;
     private Integer ratingWinCount;

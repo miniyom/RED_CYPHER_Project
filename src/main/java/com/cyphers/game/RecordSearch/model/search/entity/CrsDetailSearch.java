@@ -36,11 +36,13 @@ public class CrsDetailSearch {
 	
 	private LocalDateTime recentlyUpdatedDate;
 	
+	private Integer tankerUseRate;
+	private Integer rangeDealerUseRate;
+	private Integer supporterUseRate;
+	private Integer meleeDealerUseRate;
+	
 	@OneToMany(mappedBy = "crsDetailSearch", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	private List<CrsMostCypherInfos> mostCypherInfos;
-	
-	@OneToOne(mappedBy = "crsDetailSearch", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private CrsMostPositionInfos mostPositionInfos;
 
     private String ratingGameTier;
     private Integer ratingWinCount;
