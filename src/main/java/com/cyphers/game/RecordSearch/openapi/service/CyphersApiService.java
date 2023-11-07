@@ -199,12 +199,13 @@ public class CyphersApiService {
     }
     
     //플레이어 게임기록 조회
-    public List<CyphersRecords> searchGameRecords(@Required String playerId, CyphersGameType gameType, String startDate, String endDate, Integer limit, String next) throws Exception {
+    public CyphersMatches searchGameRecords(@Required String playerId, CyphersGameType gameType, String startDate, String endDate, Integer limit, String next) throws Exception {
         Map<String, String> params = new HashMap<>();
         String gameTypeId = gameType.getValue();
         params.put("gameTypeId", gameTypeId);
         params.put("startDate", startDate);
         params.put("endDate", endDate);
+        params.put("next", next);
         if (limit != null) {
             if (limit < 10 || limit > 100) {
                 throw new IllegalArgumentException("limit은 10 이상, 100 이하까지만 사용할 수 있습니다.");
@@ -212,24 +213,17 @@ public class CyphersApiService {
             params.put("limit", limit.toString());
         }
         List<CyphersMatchedInfo> matchedInfos = new ArrayList<>();
-        CyphersMatchingHistory cyMatchingHistory = new CyphersMatchingHistory();
         CyphersMatches cyMatches = new CyphersMatches();
 
-        while (next != null && limit == null) {
-            if (!next.equals("")) {
-                params.put("next", next);
-            }
-            CyphersMatchingHistory cyphersMatchingHistory = objectMapper.readValue(get("/cy/players/" + playerId + "/matches", params), CyphersMatchingHistory.class);
+        CyphersMatchingHistory cyphersMatchingHistory = objectMapper.readValue(get("/cy/players/" + playerId + "/matches", params), CyphersMatchingHistory.class);
 
-            for (CyphersMatchedInfo row : cyphersMatchingHistory.getMatches().getRows()) {
-            	matchedInfos.add(row);
-            }
-            
-            next = cyphersMatchingHistory.getMatches().getNext();
+        for (CyphersMatchedInfo row : cyphersMatchingHistory.getMatches().getRows()) {
+        	matchedInfos.add(row);
         }
+        
         cyMatches.setRows(matchedInfos);
-        cyMatchingHistory.setMatches(cyMatches);
-        return null;
+        cyMatches.setNext(cyphersMatchingHistory.getMatches().getNext());
+        return cyMatches;
     }
     
     //매칭 상세정보 조회

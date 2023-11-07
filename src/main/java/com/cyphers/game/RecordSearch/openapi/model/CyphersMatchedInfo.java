@@ -1,6 +1,6 @@
 package com.cyphers.game.RecordSearch.openapi.model;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -15,7 +15,7 @@ import lombok.Setter;
 @NoArgsConstructor
 public class CyphersMatchedInfo {
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm")
-	private LocalDate date;
+	private LocalDateTime date;
 	private String matchId;
 	private CyphersMapInfo map;
 	private CyphersPlayInfo playInfo;

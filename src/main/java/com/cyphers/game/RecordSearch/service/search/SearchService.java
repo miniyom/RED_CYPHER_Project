@@ -28,6 +28,7 @@ import com.cyphers.game.RecordSearch.openapi.model.CyphersCharacterInfo;
 import com.cyphers.game.RecordSearch.openapi.model.CyphersCharacterSearch;
 import com.cyphers.game.RecordSearch.openapi.model.CyphersEquipItems;
 import com.cyphers.game.RecordSearch.openapi.model.CyphersMatchedInfo;
+import com.cyphers.game.RecordSearch.openapi.model.CyphersMatches;
 import com.cyphers.game.RecordSearch.openapi.model.CyphersMatchingDetails;
 import com.cyphers.game.RecordSearch.openapi.model.CyphersMatchingHistory;
 import com.cyphers.game.RecordSearch.openapi.model.CyphersPlayInfo;
@@ -39,6 +40,7 @@ import com.cyphers.game.RecordSearch.openapi.model.CyphersRecords;
 import com.cyphers.game.RecordSearch.openapi.model.enumuration.CyphersGameType;
 import com.cyphers.game.RecordSearch.openapi.model.enumuration.CyphersPlayerWordType;
 import com.cyphers.game.RecordSearch.openapi.service.CyphersApiService;
+import com.cyphers.game.RecordSearch.utils.ApiDate;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.extern.slf4j.Slf4j;
@@ -52,19 +54,12 @@ public class SearchService {
 	@Autowired
 	CyphersApiService cyApiService;
 
-	final static Integer API_LIMIT = 100; // 매칭기록 조회 api에서 정해진 limit
+	final static Integer RECORDS_LIMIT = 20; // 한번에 가져올 기록의 개수
 	final static Integer MOST_CYPHER_LENGTH = 10; // 모스트 사이퍼에서 보여줄 캐릭터 개수
 	final static Integer RECENT_CYPHER_LENGTH = 3; // 최근 2주간 데이터에서 보여줄 캐릭터 개수
 	final static Float PERFECT_KDA = -1.0f; // kda에서 death수가 0일 경우 리턴할 값
 	final static Integer WIN_AND_LOSE_KEY = 6; // 승패 그래프에서 보여줄 데이터 키(0~6, 총 7개)
 	
-	//매칭기록 조회시 시간 설정
-	final static LocalDateTime NOW = LocalDateTime.now();
-	final static LocalDateTime ONE_WEEKS_AGO = NOW.minusWeeks(1);
-	final static LocalDateTime NINETY_DAYS_AGO = NOW.minusDays(90);
-	final static LocalDateTime HALF_YEARS_AGO = NINETY_DAYS_AGO.minusDays(90);
-	final static DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-
 	public List<String> getNicknameList(String nickname) throws Exception {
 		List<String> nicknameList = new ArrayList<>();
 		Integer limit = 10;
@@ -246,8 +241,8 @@ public class SearchService {
 
 		// 승, 패수 데이터(그래프)
 		List<IoSearchDetailWinAndLoseCountHistoryInfo> winAndLoseCountHistoryInfos = new ArrayList<>();
-		LocalDate today = NOW.toLocalDate();
-		LocalDate oneWeekAgo = ONE_WEEKS_AGO.toLocalDate();
+		LocalDate today = LocalDate.now();
+		LocalDate oneWeekAgo = today.minusWeeks(1);
 		List<CyphersMatchedInfo> weeklyMatchedInfoRows = filterDataByDate(cyMatchedInfoRows, oneWeekAgo, today);
 
 		Map<Integer, Pair<Integer, Integer>> cyMatchingHistoryMap = new HashMap<>(); // pair 앞은 승수, 뒤는 패수
@@ -264,8 +259,8 @@ public class SearchService {
 
 		for (CyphersMatchedInfo weeklyMatchedInfo : weeklyMatchedInfoRows) {
 			IoSearchDetailWinAndLoseCountHistoryInfo winAndLoseHisory = new IoSearchDetailWinAndLoseCountHistoryInfo();
-
-			if (!weeklyMatchedInfo.getDate().isEqual(matchedDateAndInt.getFirst())) {
+			LocalDate weeklyMatchedDate = weeklyMatchedInfo.getDate().toLocalDate();
+			if (!weeklyMatchedDate.isEqual(matchedDateAndInt.getFirst())) {
 				matchedDateAndInt = Pair.of(matchedDateAndInt.getFirst().minusDays(1),
 						matchedDateAndInt.getSecond() - 1); // 날짜 및 정수 감소
 				if (matchedDateAndInt.getSecond() < 0) {
@@ -273,7 +268,7 @@ public class SearchService {
 				}
 			}
 			// 같은날인지 체크하지 않으면, 중간에 빈 날이 그 전날의 기록을 조회해버림. ex) 9/15에 기록이 없으면 9/14의 기록을 참조함.
-			if (weeklyMatchedInfo.getDate().isEqual(matchedDateAndInt.getFirst())) {
+			if (weeklyMatchedDate.isEqual(matchedDateAndInt.getFirst())) {
 				Pair<Integer, Integer> winAndLoseCount = cyMatchingHistoryMap.get(matchedDateAndInt.getSecond());
 				if (weeklyMatchedInfo.getPlayInfo().getResult().equals("win")) {
 					cyMatchingHistoryMap.put(matchedDateAndInt.getSecond(),
@@ -486,17 +481,14 @@ public class SearchService {
 	
 	// 현재 시즌 공식전, 일반전 기록 가져오기
 	public List<CyphersMatchedInfo> getMatchedInfos(String playerId) throws Exception {
-		String now = NOW.format(FORMATTER);
-		String ninetyDaysAgo = NINETY_DAYS_AGO.format(FORMATTER);
-		String halfYearsAgo = HALF_YEARS_AGO.format(FORMATTER);
 		CyphersMatchingHistory cyMatchingHistoryRating = cyApiService.searchMatchingHistory(playerId,
-				CyphersGameType.RATING, ninetyDaysAgo, now);
+				CyphersGameType.RATING, ApiDate.NINETY_DAYS_AGO, ApiDate.NOW);
 		CyphersMatchingHistory cyMatchingHistoryRating2 = cyApiService.searchMatchingHistory(playerId,
-				CyphersGameType.RATING, halfYearsAgo, ninetyDaysAgo);
+				CyphersGameType.RATING, ApiDate.HALF_YEARS_AGO, ApiDate.NINETY_DAYS_AGO);
 		CyphersMatchingHistory cyMatchingHistoryNormal = cyApiService.searchMatchingHistory(playerId,
-				CyphersGameType.NORMAL, ninetyDaysAgo, now);
+				CyphersGameType.NORMAL, ApiDate.NINETY_DAYS_AGO, ApiDate.NOW);
 		CyphersMatchingHistory cyMatchingHistoryNormal2 = cyApiService.searchMatchingHistory(playerId,
-				CyphersGameType.NORMAL, halfYearsAgo, ninetyDaysAgo);
+				CyphersGameType.NORMAL, ApiDate.HALF_YEARS_AGO, ApiDate.NINETY_DAYS_AGO);
 
 		List<CyphersMatchedInfo> matchedInfos = new ArrayList<>(); // 각 기능에서 쓰일 리스트
 
@@ -516,13 +508,19 @@ public class SearchService {
 		Comparator<CyphersMatchedInfo> comparator = new Comparator<CyphersMatchedInfo>() {
 			@Override
 			public int compare(CyphersMatchedInfo cy1, CyphersMatchedInfo cy2) {
-				LocalDate dateTime1 = cy1.getDate();
-				LocalDate dateTime2 = cy2.getDate();
+				LocalDateTime dateTime1 = cy1.getDate();
+				LocalDateTime dateTime2 = cy2.getDate();
 				return dateTime2.compareTo(dateTime1);
 			}
 		};
 		Collections.sort(matchedInfos, comparator);
 		return matchedInfos;
+	}
+	
+	public CyphersMatches getMatches(String playerId, String startDate, String endDate, String next) throws Exception {
+		CyphersMatches cyMatches = cyApiService.searchGameRecords(playerId, CyphersGameType.RATING, startDate, endDate, RECORDS_LIMIT, next);
+		
+		return cyMatches;
 	}
 
 	// 데이터 필터링 메소드
@@ -530,7 +528,7 @@ public class SearchService {
 			LocalDate endDate) {
 		List<CyphersMatchedInfo> filteredData = new ArrayList<>();
 		for (CyphersMatchedInfo data : dataList) {
-			LocalDate dataDate = data.getDate();
+			LocalDate dataDate = data.getDate().toLocalDate();
 			if (!dataDate.isBefore(startDate) && !dataDate.isAfter(endDate)) {
 				filteredData.add(data);
 			}

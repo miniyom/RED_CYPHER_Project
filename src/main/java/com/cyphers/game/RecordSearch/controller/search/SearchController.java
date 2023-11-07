@@ -53,6 +53,12 @@ public class SearchController {
         return res;
     }
     
+    @GetMapping("/gamerecords/{nickname}/{next}")
+    public GameRecordResponse getGameRecords(@PathVariable("nickname") String nickname, @PathVariable("nickname") String next) throws Exception {
+    	
+    	return null;
+    }
+    
     @GetMapping("/renewal/{nickname}")
     public SearchDetailDTO renewalDetail(@PathVariable("nickname") String nickname) throws Exception {
     	
