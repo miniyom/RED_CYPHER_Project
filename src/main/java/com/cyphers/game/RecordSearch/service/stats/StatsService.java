@@ -52,7 +52,7 @@ public class StatsService {
 		LocalDateTime startDate = endDate.minusWeeks(2);
 		for (String playerId : rankerPlayerIds) {
 			//playerId로 하나하나 가져와서 matchId다 집어넣음 -> 1위부터 10위까지 record를 모두 긁어옴.
-			CyphersMatches matches = cyApiService.searchMatchingHistory(playerId, CyphersGameType.RATING, startDate.toString(), endDate.toString(), null).getMatches();
+			CyphersMatches matches = cyApiService.searchMatchingHistory(playerId, CyphersGameType.RATING, startDate.toString(), endDate.toString()).getMatches();
 			//record에 있는 플레이 캐릭터와 승패여부를 담음.
 			for (CyphersMatchedInfo cyMatchedInfo : matches.getRows()) {
 				CyphersPlayInfo playInfo = cyMatchedInfo.getPlayInfo();
@@ -99,7 +99,7 @@ public class StatsService {
 		//1위부터 10위까지 RECORDS 다 가져와야함
 		for (String playerId : rankerPlayerIds) {
 			//playerId로 하나하나 가져와서 matchId다 집어넣음 -> 1위부터 10위까지 게임을 모두 긁어옴.
-			CyphersMatches matches = cyApiService.searchMatchingHistory(playerId, CyphersGameType.RATING, startDate.toString(), endDate.toString(), null).getMatches();
+			CyphersMatches matches = cyApiService.searchMatchingHistory(playerId, CyphersGameType.RATING, startDate.toString(), endDate.toString()).getMatches();
 			for (CyphersMatchedInfo match : matches.getRows()) {
 				matchIds.add(match.getMatchId());
 			}

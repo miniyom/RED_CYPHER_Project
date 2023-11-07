@@ -35,9 +35,7 @@ public class CrsSearchService {
 	private final EntityManager em;
 	
 	public void upsert(IoSearchDetailResponse detailResponse) {
-//		CrsDetailSearch temp = crsDetailSearchRepository.findByPlayerId(detailResponse.getPlayerId()).get();
 		
-//		CrsDetailSearch response = em.find(CrsDetailSearch.class, temp.getPlayerId());
 		CrsDetailSearch response = crsDetailSearchRepository.findByPlayerId(detailResponse.getPlayerId()).get();
 		
 		if (response == null) {
@@ -66,30 +64,6 @@ public class CrsSearchService {
 		response.setRecentlyWinRate(detailResponse.getRecentlyWinRate());
 		response.setRecentlyKda(detailResponse.getRecentlyKda());
 		response.setRecentlyAverageSurvivalRate(detailResponse.getRecentlyAverageSurvivalRate());
-		
-//		response = CrsDetailSearch.builder()
-//				.playerId(detailResponse.getPlayerId()) 
-//				.profileCharacterId(detailResponse.getProfileCharacterId())
-//				.nickname(detailResponse.getNickname())
-//				.recentlyUpdatedDate(LocalDateTime.now())
-//				.mostCypherInfos(null)
-//				.mostPositionInfos(null)
-//				.ratingGameTier(detailResponse.getRatingGameTier())
-//				.ratingWinCount(detailResponse.getRatingWinCount())
-//				.ratingLoseCount(detailResponse.getRatingLoseCount())
-//				.ratingStopCount(detailResponse.getRatingStopCount())
-//				.ratingWinRate(detailResponse.getRatingWinRate())
-//				.normalWinCount(detailResponse.getNormalWinCount())
-//				.normalLoseCount(detailResponse.getNormalLoseCount())
-//				.normalStopCount(detailResponse.getNormalStopCount())
-//				.normalWinRate(detailResponse.getNormalWinRate())
-//				.winAndLoseCountHistory(null)
-//				.recentlyPlayCount(detailResponse.getRecentlyPlayCount())
-//				.recentlyWinRate(detailResponse.getRecentlyWinRate())
-//				.recentlyKda(detailResponse.getRecentlyKda())
-//				.recentlyAverageSurvivalRate(detailResponse.getRecentlyAverageSurvivalRate())
-//				.recentlyPlayCyphersInfos(null)
-//				.build();
 		
 		List<CrsMostCypherInfos> mostCypherInfos = new ArrayList<>();
 		for (IoSearchDetailMostCypherInfo ioMostCypherInfo : detailResponse.getMostCypherInfos()) {
@@ -160,7 +134,6 @@ public class CrsSearchService {
 								.recentlyKda(detailResponse.getRecentlyKda())
 								.recentlyAverageSurvivalRate(detailResponse.getRecentlyAverageSurvivalRate())
 								.recentlyPlayCyphersInfos(null)
-//										.gameRecords(null)
 								.build();
 										
 		crsDetailSearchRepository.save(response);

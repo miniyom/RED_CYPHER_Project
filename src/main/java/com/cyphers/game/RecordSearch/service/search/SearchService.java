@@ -59,11 +59,11 @@ public class SearchService {
 	final static Integer WIN_AND_LOSE_KEY = 6; // 승패 그래프에서 보여줄 데이터 키(0~6, 총 7개)
 	
 	//매칭기록 조회시 시간 설정
-	LocalDateTime now = LocalDateTime.now();
-	LocalDateTime ninetyDaysAgo = now.minusDays(90);
-	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-	String startDate = ninetyDaysAgo.format(formatter);
-	String endDate = now.format(formatter);
+	final static LocalDateTime NOW = LocalDateTime.now();
+	final static LocalDateTime ONE_WEEKS_AGO = NOW.minusWeeks(1);
+	final static LocalDateTime NINETY_DAYS_AGO = NOW.minusDays(90);
+	final static LocalDateTime HALF_YEARS_AGO = NINETY_DAYS_AGO.minusDays(90);
+	final static DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
 	public List<String> getNicknameList(String nickname) throws Exception {
 		List<String> nicknameList = new ArrayList<>();
@@ -101,29 +101,7 @@ public class SearchService {
 		ioGameRecords.setNickname(profileNickname);
 		
 
-		// 현재 시즌 공식전, 일반전 기록 가져오기
-		CyphersMatchingHistory cyMatchingHistoryRating = cyApiService.searchMatchingHistory(myPlayerId,
-				CyphersGameType.RATING, startDate, endDate, API_LIMIT);
-		CyphersMatchingHistory cyMatchingHistoryNormal = cyApiService.searchMatchingHistory(myPlayerId,
-				CyphersGameType.NORMAL, startDate, endDate, API_LIMIT);
-
-		List<CyphersMatchedInfo> cyMatchedInfoRows = new ArrayList<>(); // 각 기능에서 쓰일 리스트
-
-		for (CyphersMatchedInfo cyMatchedInfoRating : cyMatchingHistoryRating.getMatches().getRows()) {
-			cyMatchedInfoRows.add(cyMatchedInfoRating);
-		}
-		for (CyphersMatchedInfo cyMatchedInfoNormal : cyMatchingHistoryNormal.getMatches().getRows()) {
-			cyMatchedInfoRows.add(cyMatchedInfoNormal);
-		}
-		Comparator<CyphersMatchedInfo> comparator = new Comparator<CyphersMatchedInfo>() {
-			@Override
-			public int compare(CyphersMatchedInfo cy1, CyphersMatchedInfo cy2) {
-				LocalDate dateTime1 = cy1.getDate();
-				LocalDate dateTime2 = cy2.getDate();
-				return dateTime2.compareTo(dateTime1);
-			}
-		};
-		Collections.sort(cyMatchedInfoRows, comparator);
+		List<CyphersMatchedInfo> cyMatchedInfoRows = getMatchedInfos(myPlayerId); // 각 기능에서 쓰일 리스트
 
 		Map<String, Pair<Integer, Integer>> characterIdMap = new HashMap<>(); // Pair의 첫번째는 전체 플레이 횟수, 두번째는 이긴 횟수
 		for (CyphersMatchedInfo cyMatchedInfo : cyMatchedInfoRows) {
@@ -268,8 +246,8 @@ public class SearchService {
 
 		// 승, 패수 데이터(그래프)
 		List<IoSearchDetailWinAndLoseCountHistoryInfo> winAndLoseCountHistoryInfos = new ArrayList<>();
-		LocalDate today = LocalDate.now();
-		LocalDate oneWeekAgo = today.minus(1, ChronoUnit.WEEKS);
+		LocalDate today = NOW.toLocalDate();
+		LocalDate oneWeekAgo = ONE_WEEKS_AGO.toLocalDate();
 		List<CyphersMatchedInfo> weeklyMatchedInfoRows = filterDataByDate(cyMatchedInfoRows, oneWeekAgo, today);
 
 		Map<Integer, Pair<Integer, Integer>> cyMatchingHistoryMap = new HashMap<>(); // pair 앞은 승수, 뒤는 패수
@@ -421,29 +399,7 @@ public class SearchService {
 
 		String myPlayerId = cyPlayerResponse.getRows().get(0).getPlayerId();
 
-		// 현재 시즌 공식전, 일반전 기록 가져오기
-		CyphersMatchingHistory cyMatchingHistoryRating = cyApiService.searchMatchingHistory(myPlayerId,
-				CyphersGameType.RATING, startDate, endDate, API_LIMIT);
-		CyphersMatchingHistory cyMatchingHistoryNormal = cyApiService.searchMatchingHistory(myPlayerId,
-				CyphersGameType.NORMAL, startDate, endDate, API_LIMIT);
-
-		List<CyphersMatchedInfo> cyMatchedInfoRows = new ArrayList<>(); // 각 기능에서 쓰일 리스트
-
-		for (CyphersMatchedInfo cyMatchedInfoRating : cyMatchingHistoryRating.getMatches().getRows()) {
-			cyMatchedInfoRows.add(cyMatchedInfoRating);
-		}
-		for (CyphersMatchedInfo cyMatchedInfoNormal : cyMatchingHistoryNormal.getMatches().getRows()) {
-			cyMatchedInfoRows.add(cyMatchedInfoNormal);
-		}
-		Comparator<CyphersMatchedInfo> comparator = new Comparator<CyphersMatchedInfo>() {
-			@Override
-			public int compare(CyphersMatchedInfo cy1, CyphersMatchedInfo cy2) {
-				LocalDate dateTime1 = cy1.getDate();
-				LocalDate dateTime2 = cy2.getDate();
-				return dateTime2.compareTo(dateTime1);
-			}
-		};
-		Collections.sort(cyMatchedInfoRows, comparator);
+		List<CyphersMatchedInfo> cyMatchedInfoRows = getMatchedInfos(myPlayerId); 
 		
 		List<IoSearchDetailGameRecord> gameRecords = new ArrayList<>();
 		gameRecordsInfo.setGameRecords(Collections.emptyList());
@@ -526,6 +482,47 @@ public class SearchService {
 
 		}
 		return gameRecordsInfo;
+	}
+	
+	// 현재 시즌 공식전, 일반전 기록 가져오기
+	public List<CyphersMatchedInfo> getMatchedInfos(String playerId) throws Exception {
+		String now = NOW.format(FORMATTER);
+		String ninetyDaysAgo = NINETY_DAYS_AGO.format(FORMATTER);
+		String halfYearsAgo = HALF_YEARS_AGO.format(FORMATTER);
+		CyphersMatchingHistory cyMatchingHistoryRating = cyApiService.searchMatchingHistory(playerId,
+				CyphersGameType.RATING, ninetyDaysAgo, now);
+		CyphersMatchingHistory cyMatchingHistoryRating2 = cyApiService.searchMatchingHistory(playerId,
+				CyphersGameType.RATING, halfYearsAgo, ninetyDaysAgo);
+		CyphersMatchingHistory cyMatchingHistoryNormal = cyApiService.searchMatchingHistory(playerId,
+				CyphersGameType.NORMAL, ninetyDaysAgo, now);
+		CyphersMatchingHistory cyMatchingHistoryNormal2 = cyApiService.searchMatchingHistory(playerId,
+				CyphersGameType.NORMAL, halfYearsAgo, ninetyDaysAgo);
+
+		List<CyphersMatchedInfo> matchedInfos = new ArrayList<>(); // 각 기능에서 쓰일 리스트
+
+		for (CyphersMatchedInfo cyMatchedInfoRating : cyMatchingHistoryRating.getMatches().getRows()) {
+			matchedInfos.add(cyMatchedInfoRating);
+		}
+		for (CyphersMatchedInfo cyMatchedInfoRating2 : cyMatchingHistoryRating2.getMatches().getRows()) {
+			matchedInfos.add(cyMatchedInfoRating2);
+		}
+		for (CyphersMatchedInfo cyMatchedInfoNormal : cyMatchingHistoryNormal.getMatches().getRows()) {
+			matchedInfos.add(cyMatchedInfoNormal);
+		}
+		for (CyphersMatchedInfo cyMatchedInfoNormal2 : cyMatchingHistoryNormal2.getMatches().getRows()) {
+			matchedInfos.add(cyMatchedInfoNormal2);
+		}
+		
+		Comparator<CyphersMatchedInfo> comparator = new Comparator<CyphersMatchedInfo>() {
+			@Override
+			public int compare(CyphersMatchedInfo cy1, CyphersMatchedInfo cy2) {
+				LocalDate dateTime1 = cy1.getDate();
+				LocalDate dateTime2 = cy2.getDate();
+				return dateTime2.compareTo(dateTime1);
+			}
+		};
+		Collections.sort(matchedInfos, comparator);
+		return matchedInfos;
 	}
 
 	// 데이터 필터링 메소드

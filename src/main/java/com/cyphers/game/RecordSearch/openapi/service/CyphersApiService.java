@@ -31,6 +31,7 @@ import com.cyphers.game.RecordSearch.openapi.model.CyphersMatchingHistory;
 import com.cyphers.game.RecordSearch.openapi.model.CyphersPlayerInfo;
 import com.cyphers.game.RecordSearch.openapi.model.CyphersPlayerRanking;
 import com.cyphers.game.RecordSearch.openapi.model.CyphersPlayerResponse;
+import com.cyphers.game.RecordSearch.openapi.model.CyphersRecords;
 import com.cyphers.game.RecordSearch.openapi.model.CyphersTsjRanking;
 import com.cyphers.game.RecordSearch.openapi.model.enumuration.CyphersGameType;
 import com.cyphers.game.RecordSearch.openapi.model.enumuration.CyphersItemWordType;
@@ -169,7 +170,36 @@ public class CyphersApiService {
     }
 
     //플레이어 매칭 기록 조회
-    public CyphersMatchingHistory searchMatchingHistory(@Required String playerId, CyphersGameType gameType, String startDate, String endDate, Integer limit) throws Exception {
+    public CyphersMatchingHistory searchMatchingHistory(@Required String playerId, CyphersGameType gameType, String startDate, String endDate) throws Exception {
+        Map<String, String> params = new HashMap<>();
+        String gameTypeId = gameType.getValue();
+        params.put("gameTypeId", gameTypeId);
+        params.put("startDate", startDate);
+        params.put("endDate", endDate);
+        List<CyphersMatchedInfo> matchedInfos = new ArrayList<>();
+        CyphersMatchingHistory cyMatchingHistory = new CyphersMatchingHistory();
+        CyphersMatches cyMatches = new CyphersMatches();
+        String next = "";
+
+        while (next != null) {
+            if (!next.equals("")) {
+                params.put("next", next);
+            }
+            CyphersMatchingHistory cyphersMatchingHistory = objectMapper.readValue(get("/cy/players/" + playerId + "/matches", params), CyphersMatchingHistory.class);
+
+            for (CyphersMatchedInfo row : cyphersMatchingHistory.getMatches().getRows()) {
+            	matchedInfos.add(row);
+            }
+            
+            next = cyphersMatchingHistory.getMatches().getNext();
+        }
+        cyMatches.setRows(matchedInfos);
+        cyMatchingHistory.setMatches(cyMatches);
+        return cyMatchingHistory;
+    }
+    
+    //플레이어 게임기록 조회
+    public List<CyphersRecords> searchGameRecords(@Required String playerId, CyphersGameType gameType, String startDate, String endDate, Integer limit, String next) throws Exception {
         Map<String, String> params = new HashMap<>();
         String gameTypeId = gameType.getValue();
         params.put("gameTypeId", gameTypeId);
@@ -184,9 +214,8 @@ public class CyphersApiService {
         List<CyphersMatchedInfo> matchedInfos = new ArrayList<>();
         CyphersMatchingHistory cyMatchingHistory = new CyphersMatchingHistory();
         CyphersMatches cyMatches = new CyphersMatches();
-        String next = "";
 
-        while (next != null) {
+        while (next != null && limit == null) {
             if (!next.equals("")) {
                 params.put("next", next);
             }
@@ -194,19 +223,13 @@ public class CyphersApiService {
 
             for (CyphersMatchedInfo row : cyphersMatchingHistory.getMatches().getRows()) {
             	matchedInfos.add(row);
-//                if (matchedInfos.size() >= limit) {
-//                    break;
-//                }
             }
-//            if (matchedInfos.size() >= limit) {
-//                break;
-//            }
             
             next = cyphersMatchingHistory.getMatches().getNext();
         }
         cyMatches.setRows(matchedInfos);
         cyMatchingHistory.setMatches(cyMatches);
-        return cyMatchingHistory;
+        return null;
     }
     
     //매칭 상세정보 조회
