@@ -16,6 +16,7 @@ import lombok.Setter;
 public class GameRecordResponse {
 	
 	private String next;
+	private String playerId;
 	
 	private List<IoSearchDetailGameRecord> gameRecords;
 	

@@ -14,6 +14,7 @@ import com.cyphers.game.RecordSearch.openapi.model.enumuration.CyphersGameType;
 @Builder
 public class IoSearchDetailGameRecord {
 
+	private String playDate;
     private CyphersGameType gameType;
     private String playCharacterId;
     private String positionName;

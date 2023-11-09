@@ -14,7 +14,7 @@ import com.cyphers.game.RecordSearch.model.search.IoSearchDetailResponse;
 import com.cyphers.game.RecordSearch.model.search.IoSearchDetailWinAndLoseCountHistoryInfo;
 import com.cyphers.game.RecordSearch.model.search.MostCypherInfoResponse;
 import com.cyphers.game.RecordSearch.model.search.RecentlyPlayCypherInfoResponse;
-import com.cyphers.game.RecordSearch.model.search.SearchDetailDTO;
+import com.cyphers.game.RecordSearch.model.search.SearchDetailResponse;
 import com.cyphers.game.RecordSearch.model.search.WinAndLoseCountHistoryResponse;
 import com.cyphers.game.RecordSearch.model.search.entity.CrsDetailSearch;
 import com.cyphers.game.RecordSearch.model.search.entity.CrsMostCypherInfos;
@@ -184,7 +184,7 @@ public class CrsSearchService {
 		
 	}
 	
-	public SearchDetailDTO getDetailSearch(String nickname) throws Exception {
+	public SearchDetailResponse getDetailSearch(String nickname) throws Exception {
 		Optional<CrsDetailSearch> crsDetailSearch = crsDetailSearchRepository.findByNickname(nickname);
 		if (crsDetailSearch.isEmpty()) {
 			throw new Exception("닉네임이 존재하지 않습니다.");
@@ -223,7 +223,7 @@ public class CrsSearchService {
     		rcres.setAssistCount(crsRecentCypher.getAssistCount());
     		recentCypherResponse.add(rcres);
 		}
-    	SearchDetailDTO sdDTO = SearchDetailDTO.builder()
+    	SearchDetailResponse sdDTO = SearchDetailResponse.builder()
     		.renewalTime(renewalTime)
 			.playerId(cds.getPlayerId())
 			.profileCharacterId(cds.getProfileCharacterId())

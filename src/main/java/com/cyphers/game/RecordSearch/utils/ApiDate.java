@@ -9,7 +9,7 @@ public class ApiDate {
 	private static LocalDateTime oneWeeksAgo = now.minusWeeks(1);
 	private static LocalDateTime ninetyDaysAgo = now.minusDays(90);
 	private static LocalDateTime halfYearsAgo = ninetyDaysAgo.minusDays(90);
-	private static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+	private static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 	
 	public final static String NOW = now.format(formatter); 
 	public final static String ONE_WEEKS_AGO = oneWeeksAgo.format(formatter); 

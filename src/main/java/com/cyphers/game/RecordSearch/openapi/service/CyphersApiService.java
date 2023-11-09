@@ -28,10 +28,10 @@ import com.cyphers.game.RecordSearch.openapi.model.CyphersMatchedInfo;
 import com.cyphers.game.RecordSearch.openapi.model.CyphersMatches;
 import com.cyphers.game.RecordSearch.openapi.model.CyphersMatchingDetails;
 import com.cyphers.game.RecordSearch.openapi.model.CyphersMatchingHistory;
+import com.cyphers.game.RecordSearch.openapi.model.CyphersPlayDate;
 import com.cyphers.game.RecordSearch.openapi.model.CyphersPlayerInfo;
 import com.cyphers.game.RecordSearch.openapi.model.CyphersPlayerRanking;
 import com.cyphers.game.RecordSearch.openapi.model.CyphersPlayerResponse;
-import com.cyphers.game.RecordSearch.openapi.model.CyphersRecords;
 import com.cyphers.game.RecordSearch.openapi.model.CyphersTsjRanking;
 import com.cyphers.game.RecordSearch.openapi.model.enumuration.CyphersGameType;
 import com.cyphers.game.RecordSearch.openapi.model.enumuration.CyphersItemWordType;
@@ -199,13 +199,13 @@ public class CyphersApiService {
     }
     
     //플레이어 게임기록 조회
-    public CyphersMatches searchGameRecords(@Required String playerId, CyphersGameType gameType, String startDate, String endDate, Integer limit, String next) throws Exception {
+    public CyphersMatches searchGameRecords(@Required String playerId, CyphersGameType gameType, String startDate, String endDate, Integer limit) throws Exception {
         Map<String, String> params = new HashMap<>();
         String gameTypeId = gameType.getValue();
         params.put("gameTypeId", gameTypeId);
         params.put("startDate", startDate);
         params.put("endDate", endDate);
-        params.put("next", next);
+        
         if (limit != null) {
             if (limit < 10 || limit > 100) {
                 throw new IllegalArgumentException("limit은 10 이상, 100 이하까지만 사용할 수 있습니다.");
@@ -220,7 +220,23 @@ public class CyphersApiService {
         for (CyphersMatchedInfo row : cyphersMatchingHistory.getMatches().getRows()) {
         	matchedInfos.add(row);
         }
-        
+        cyMatches.setRows(matchedInfos);
+        cyMatches.setNext(cyphersMatchingHistory.getMatches().getNext());
+        cyMatches.setGameTypeId(gameTypeId);
+        return cyMatches;
+    }
+    
+    public CyphersMatches searchGameRecords(@Required String playerId, String next) throws Exception {
+    	Map<String, String> params = new HashMap<>();
+    	params.put("next", next);
+    	List<CyphersMatchedInfo> matchedInfos = new ArrayList<>();
+        CyphersMatches cyMatches = new CyphersMatches();
+
+        CyphersMatchingHistory cyphersMatchingHistory = objectMapper.readValue(get("/cy/players/" + playerId + "/matches", params), CyphersMatchingHistory.class);
+
+        for (CyphersMatchedInfo row : cyphersMatchingHistory.getMatches().getRows()) {
+        	matchedInfos.add(row);
+        }
         cyMatches.setRows(matchedInfos);
         cyMatches.setNext(cyphersMatchingHistory.getMatches().getNext());
         return cyMatches;

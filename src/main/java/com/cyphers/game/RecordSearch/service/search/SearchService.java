@@ -2,7 +2,6 @@ package com.cyphers.game.RecordSearch.service.search;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -75,8 +74,7 @@ public class SearchService {
 
 	public IoSearchDetailResponse getDetailSearch(String nickname) throws Exception {
 
-		CyphersPlayerResponse cyPlayerResponse = cyApiService.searchPlayers(nickname, CyphersPlayerWordType.MATCH,
-				null);
+		CyphersPlayerResponse cyPlayerResponse = cyApiService.searchPlayers(nickname, CyphersPlayerWordType.MATCH, null);
 
 		if (CollectionUtils.isEmpty(cyPlayerResponse.getRows())) {
 			throw new Exception("닉네임 정보가 없습니다.");
@@ -381,27 +379,43 @@ public class SearchService {
 
 		return ioGameRecords;
 	}
+	
+	public CyphersMatches getGameRecordsNext(String playerId, String next) throws Exception {
 
-	public GameRecordResponse getGameRecords(String nickname) throws Exception {
-		GameRecordResponse gameRecordsInfo = new GameRecordResponse();
+		CyphersMatches cyMatches = cyApiService.searchGameRecords(playerId, next);
+		return cyMatches;
 		
-		CyphersPlayerResponse cyPlayerResponse = cyApiService.searchPlayers(nickname, CyphersPlayerWordType.MATCH,
-				null);
+	}
+	
+	public CyphersMatches getGameRecordsFirst(String nickname, CyphersGameType gameType, String startDate, String endDate) throws Exception {
+		
+		CyphersPlayerResponse cyPlayerResponse = cyApiService.searchPlayers(nickname, CyphersPlayerWordType.MATCH, null);
 
 		if (CollectionUtils.isEmpty(cyPlayerResponse.getRows())) {
 			throw new Exception("닉네임 정보가 없습니다.");
 		}
-
 		String myPlayerId = cyPlayerResponse.getRows().get(0).getPlayerId();
+		CyphersMatches cyMatches = cyApiService.searchGameRecords(myPlayerId, gameType, startDate, endDate, RECORDS_LIMIT);
+		return cyMatches;
+	}
 
-		List<CyphersMatchedInfo> cyMatchedInfoRows = getMatchedInfos(myPlayerId); 
+	public GameRecordResponse getGameRecords(CyphersMatches cyMatches, String playerId) throws Exception {
+			
+		GameRecordResponse gameRecordsInfo = new GameRecordResponse();
+		
+		List<CyphersMatchedInfo> cyMatchedInfos = cyMatches.getRows();
 		
 		List<IoSearchDetailGameRecord> gameRecords = new ArrayList<>();
 		gameRecordsInfo.setGameRecords(Collections.emptyList());
+		gameRecordsInfo.setNext("no more records");
+		if (cyMatches.getNext() != null) {
+			gameRecordsInfo.setNext(cyMatches.getNext());
+		}
+		gameRecordsInfo.setPlayerId(playerId);
 
-		if (cyMatchedInfoRows.size() != 0) {
+		if (cyMatchedInfos.size() != 0) {
 
-			for (CyphersMatchedInfo matchedInfo : cyMatchedInfoRows) {
+			for (CyphersMatchedInfo matchedInfo : cyMatchedInfos) {
 				IoSearchDetailGameRecord gameRecord = new IoSearchDetailGameRecord();
 				String matchId = matchedInfo.getMatchId();
 				CyphersMatchingDetails matchingDetail = cyApiService.searchMatchingDetail(matchId);
@@ -413,7 +427,7 @@ public class SearchService {
 				List<String> playerNicknames = new ArrayList<>();
 
 				for (CyphersPlayersInGame playerDataInGame : matchingDetail.getPlayers()) {
-					if (playerDataInGame.getPlayerId().equals(myPlayerId)) {
+					if (playerDataInGame.getPlayerId().equals(playerId)) {
 						CyphersPlayInfo playInfo = playerDataInGame.getPlayInfo();
 
 						gameRecord.setPlayCharacterId(playInfo.getCharacterId());
@@ -460,15 +474,16 @@ public class SearchService {
 				}
 				String gameType = matchingDetail.getGameTypeId();
 				switch (gameType) {
-				case "rating": {
-					gameRecord.setGameType(CyphersGameType.RATING);
-					break;
+					case "rating": {
+						gameRecord.setGameType(CyphersGameType.RATING);
+						break;
+					}
+					case "normal": {
+						gameRecord.setGameType(CyphersGameType.NORMAL);
+						break;
+					}
 				}
-				case "normal": {
-					gameRecord.setGameType(CyphersGameType.NORMAL);
-					break;
-				}
-				}
+				gameRecord.setPlayDate(matchingDetail.getDate());
 				gameRecord.setPlayerNicknames(playerNicknames);
 				gameRecords.add(gameRecord);
 
@@ -504,7 +519,6 @@ public class SearchService {
 		for (CyphersMatchedInfo cyMatchedInfoNormal2 : cyMatchingHistoryNormal2.getMatches().getRows()) {
 			matchedInfos.add(cyMatchedInfoNormal2);
 		}
-		
 		Comparator<CyphersMatchedInfo> comparator = new Comparator<CyphersMatchedInfo>() {
 			@Override
 			public int compare(CyphersMatchedInfo cy1, CyphersMatchedInfo cy2) {
@@ -517,12 +531,6 @@ public class SearchService {
 		return matchedInfos;
 	}
 	
-	public CyphersMatches getMatches(String playerId, String startDate, String endDate, String next) throws Exception {
-		CyphersMatches cyMatches = cyApiService.searchGameRecords(playerId, CyphersGameType.RATING, startDate, endDate, RECORDS_LIMIT, next);
-		
-		return cyMatches;
-	}
-
 	// 데이터 필터링 메소드
 	private static List<CyphersMatchedInfo> filterDataByDate(List<CyphersMatchedInfo> dataList, LocalDate startDate,
 			LocalDate endDate) {
