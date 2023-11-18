@@ -4,7 +4,7 @@ import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.cyphers.game.RecordSearch.model.CrsDetailSearch;
+import com.cyphers.game.RecordSearch.model.search.entity.CrsDetailSearch;
 
 public interface CrsDetailSearchRepository extends JpaRepository<CrsDetailSearch, String> {
 

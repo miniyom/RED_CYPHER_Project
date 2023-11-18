@@ -6,11 +6,11 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.cyphers.game.RecordSearch.cyphers.CyphersApiService;
 import com.cyphers.game.RecordSearch.model.ranking.PlayerRankInfo;
 import com.cyphers.game.RecordSearch.openapi.model.CyphersPlayerRankInfo;
 import com.cyphers.game.RecordSearch.openapi.model.CyphersPlayerRanking;
 import com.cyphers.game.RecordSearch.openapi.model.enumuration.CyphersPlayerWordType;
+import com.cyphers.game.RecordSearch.openapi.service.CyphersApiService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.extern.slf4j.Slf4j;
@@ -19,8 +19,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class RankingService {
 
-	@Autowired
-	ObjectMapper objectmapper;
 	@Autowired
 	CyphersApiService cyApiService;
 	

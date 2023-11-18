@@ -8,9 +8,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.cyphers.game.RecordSearch.cyphers.CyphersApiService;
 import com.cyphers.game.RecordSearch.model.ranking.PlayerRankInfo;
 import com.cyphers.game.RecordSearch.openapi.model.CyphersPlayerRanking;
+import com.cyphers.game.RecordSearch.openapi.service.CyphersApiService;
 import com.cyphers.game.RecordSearch.service.ranking.RankingService;
 
 import lombok.AllArgsConstructor;
