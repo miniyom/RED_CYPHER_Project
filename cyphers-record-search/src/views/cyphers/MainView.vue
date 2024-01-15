@@ -2,7 +2,7 @@
   <div>
     <Header/>
     <div class="d-flex flex-column align-items-center justify-content-center" style="height: 80vh;">
-      <h1 class="display-1 mb-5">사이퍼즈 전적검색</h1>
+      <h1 class="display-1 mb-5">RED CYPHER</h1>
       <div class="input-group mb-3 w-50 position-relative"> <!-- 여기에 position-relative 추가 -->
         <input
             type="text"
