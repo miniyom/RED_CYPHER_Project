@@ -3,9 +3,8 @@
     <b-navbar type="dark" variant="dark" class="navbar-container">
       <!-- Image and text -->
       
-      <b-navbar-brand href="/">
-        <img src="https://placekitten.com/30/30" class="d-inline-block align-top" alt="고먐미">
-        RED CYPHER
+      <b-navbar-brand href="/" >
+        <img src="./img/rclogo4.png" class="d-inline-block align-top" alt="고먐미">
       </b-navbar-brand>
 
       <b-navbar-nav class="mx-auto font-size-small">
@@ -18,7 +17,7 @@
       </b-navbar-nav>
 
       <b-navbar-brand href="https://cyphers.game.naver.com/">
-        <img src="https://resource.cyphers.co.kr/ui/img/comm/logo.png" class="d-inline-block align-top" alt="고먐미">
+        <img src="./img/cyphers_logo.png" class="d-inline-block align-top" alt="고먐미">
       </b-navbar-brand>
       
     </b-navbar>
@@ -29,13 +28,6 @@
 .navbar-container {
   display: flex;
   justify-content: space-between;
-}
-.navbar-brand-container {
-  order: 1; /* Navbar Brand를 위로 이동 */
-}
-
-.navbar-nav-container {
-  order: 2; /* Navbar Nav를 아래로 이동 */
 }
 
 @media (max-width: 768px) {
