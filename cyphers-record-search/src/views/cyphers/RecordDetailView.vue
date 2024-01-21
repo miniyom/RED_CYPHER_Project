@@ -10,7 +10,7 @@
           <img src="https://placekitten.com/150/150" alt="프로필 이미지" class="img-fluid rounded-circle profile-image">
         </b-col>
         <b-col class="pl-0 text-left align-self-end">
-          <h2 class="mb-2">닉네임 {{detailData.nickname}}</h2>
+          <h2 class="mb-2">닉네임</h2>
           <b-button variant="primary" class="me-2">전적갱신</b-button>
           <span class="ml-2">최근 갱신: XX분 전</span>
         </b-col>
