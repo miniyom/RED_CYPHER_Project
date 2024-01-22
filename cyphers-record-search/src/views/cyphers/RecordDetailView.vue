@@ -10,7 +10,7 @@
           <img src="https://placekitten.com/150/150" alt="프로필 이미지" class="img-fluid rounded-circle profile-image">
         </b-col>
         <b-col class="pl-0 text-left align-self-end">
-          <h2 class="mb-2">닉네임</h2>
+          <h2 class="mb-2">닉네임, {{ this.playerNickname }}</h2>
           <b-button variant="primary" class="me-2">전적갱신</b-button>
           <span class="ml-2">최근 갱신: XX분 전</span>
         </b-col>
@@ -267,7 +267,7 @@
 </template>
 
 <script>
-//import axios from "axios";
+import axios from "axios";
 import Header from "./HeaderComponent.vue";
 import LineGraph from "@/components/LineGraph";
 import PieGraph from "@/components/PieGraph";
@@ -278,6 +278,12 @@ export default {
   },
   created() {
     console.log("검색 결과 데이터:", this.nickname);
+    console.log("검색 결과 데이터2:", this.playerNickname);
+    // 라우터의 params에서 사용자 아이디 가져오기
+    const nickname = this.$route.params.nickname;
+
+    // 사용자 데이터를 서버에서 가져오기
+    this.fetchPlayerData(nickname);
   },
   components: {
     Header,
@@ -286,7 +292,7 @@ export default {
   },
   data() {
     return {
-      playernickname: '',
+      playerNickname: '',
       activeTab: '모스트 사이퍼', // 예시
       // ... 나머지 데이터 구조
       cypherData: [
@@ -383,20 +389,33 @@ export default {
     showItems(gameId) {
       this.currentGame = this.games.find(game => game.id === gameId);
       this.showItemModal = true;
-    }
+    },
+    fetchPlayerData(nickname) {
+      // 서버에서 사용자 데이터를 가져오는 API 호출
+      axios.get(`/api/search/records/RATING/${nickname}`)
+        .then((response) => {
+          const detailData = response.data;
+          this.playerNickname = detailData.nickname;
+        })
+        .catch((error) => {
+          alert("데이터를 불러오는 것에 실패했습니다" + "\n" + "닉네임: " + this.playerNickname, error);
+          console.log("error: ", error);
+          this.$router.push('/');
+        });
+      // axios.get(`/api/search/${nickname}`)
+      //   .then((response) => {
+      //     const detailData = response.data;
+      //     this.playernickname = detailData.nickname;
+      //   })
+      //   .catch((error) => {
+      //     alert("데이터를 불러오는 것에 실패했습니다");
+      //     console.log("error: ", error);
+      //     this.$router.push('/');
+      //   });
+    },
   },
   mounted() {
-    // const searchNickname = this.$route.params.nickname;
-    // axios.get(`/api/search/${searchNickname}`)
-    //   .then((response) => {
-    //     const detailData = response.data;
-    //     this.playernickname = detailData.nickname;
-    //   })
-    //   .catch((error) => {
-    //     alert("데이터를 불러오는 것에 실패했습니다");
-    //     console.log("error: ", error);
-    //     this.$router.push('/');
-    //   });
+    
   }
 }
 </script>
