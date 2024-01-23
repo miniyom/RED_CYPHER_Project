@@ -279,7 +279,7 @@ export default {
   created() {
     console.log("검색 결과 데이터:", this.nickname);
     console.log("검색 결과 데이터2:", this.playerNickname);
-    // 라우터의 params에서 사용자 아이디 가져오기
+
     const nickname = this.$route.params.nickname;
 
     // 사용자 데이터를 서버에서 가져오기
@@ -400,18 +400,8 @@ export default {
         .catch((error) => {
           alert("데이터를 불러오는 것에 실패했습니다" + "\n" + "닉네임: " + this.playerNickname, error);
           console.log("error: ", error);
-          this.$router.push('/');
+          this.$router.push('/'); 
         });
-      // axios.get(`/api/search/${nickname}`)
-      //   .then((response) => {
-      //     const detailData = response.data;
-      //     this.playernickname = detailData.nickname;
-      //   })
-      //   .catch((error) => {
-      //     alert("데이터를 불러오는 것에 실패했습니다");
-      //     console.log("error: ", error);
-      //     this.$router.push('/');
-      //   });
     },
   },
   mounted() {
