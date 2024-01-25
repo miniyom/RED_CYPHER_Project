@@ -158,79 +158,86 @@
 
     <b-container class="my-3 container-box h-100">
       <b-list-group class="h-100">
-        <b-list-group-item v-for="game in games" :key="game.id" class="p-1">
-          <!-- 게임 타입 -->
-          <div class="d-flex align-items-center" style="justify-content: space-around;">
-            <div class="flex-shrink-0 me-3 pe-2 fs-5">{{ game.type }}</div>
-
-            <!-- 캐릭터 이미지 -->
-            <b-img :src="game.characterImage" alt="Character" class="me-5 rounded-image" style="width: 80px;"></b-img>
-
-            <!-- 특성 이미지 -->
-            <div class="me-5 pe-3 h-100">
-              <b-row>
-                <b-img :src="game.traits[0]" alt="Trait" class="m-0 p-0 me-1 pe-1 rounded-image" style="width: 30px;"></b-img>
-                <b-img :src="game.traits[1]" alt="Trait" class="m-0 p-0 rounded-image" style="width: 30px;"></b-img>
-              </b-row>
-              <b-row class="mt-1">
-                <b-img :src="game.traits[2]" alt="Trait" class="m-0 p-0 me-1 pe-1 rounded-image" style="width: 30px;"></b-img>
-                <b-img :src="game.traits[3]" alt="Trait" class="m-0 p-0 rounded-image" style="width: 30px;"></b-img>
-              </b-row>
-            </div>
-
-
-            <!-- 게임 정보 -->
-            <div class="me-5">
-              <div>{{ game.gameInfo.kills }} / {{ game.gameInfo.deaths }} / {{ game.gameInfo.assists }} ({{ game.participationRate }}%)</div>
-              <div>{{ game.gameInfo.kda }} KDA</div>
-              <div>{{ game.gameInfo.cs }} CS</div>
-            </div>
-
-            <!-- 아이템 정보 -->
-            <div class="me-5">
-              <b-button @click="showItems(game.id)">아이템 보기</b-button>
-            </div>
-
-            <!-- 상세정보1 -->
-            <div class="me-5">
-              <div>{{ game.details.heal }} 힐량</div>
-              <div>{{ game.details.damage }} 준 데미지</div>
-              <div>{{ game.details.takenDamage }} 받은 데미지</div>
-            </div>
-
-            <!-- 상세정보2 -->
-            <div class="me-5">
-              <div>{{ game.details.coins }} 코인량</div>
-              <div>{{ game.details.participation }} 전투참여</div>
-              <div>{{ game.details.vision }} 시야점수</div>
-            </div>
-
-            <!-- 함께한 플레이어 -->
-            <div class="me-4 d-flex flex-column">
-              <b-row>
-                <b-col>
-                  <div v-for="player in game.team1Players" :key="player.name" class="d-flex align-items-center mb-1">
-                    <b-img class="rounded-image" :src="player.image" alt="Player" style="width: 15px;"></b-img>
-                    <div class="ml-2" style="font-size: 12px;">{{ player.name }}</div>
-                  </div>
-                </b-col>
-                <b-col>
-                  <div v-for="player in game.team2Players" :key="player.name" class="d-flex align-items-center mb-1">
-                    <b-img class="rounded-image" :src="player.image" alt="Player" style="width: 15px;"></b-img>
-                    <div class="ml-2" style="font-size: 12px;">{{ player.name }}</div>
-                  </div>
-                </b-col>
-              </b-row>
-
-
-
-            </div>
-<!--            <div class="d-flex flex-column">-->
-
-<!--            </div>-->
-
-          </div>
+        <!-- games 배열이 비어있을 때 메시지 표시 -->
+        <b-list-group-item v-if="games.length < 2">
+          게임 기록이 없습니다.
         </b-list-group-item>
+        <!-- games 배열이 비어있지 않을 때 게임 리스트 표시 -->
+        <template v-else>
+          <b-list-group-item v-for="game in games" :key="game.id" class="p-1">
+            <!-- 게임 타입 -->
+            <div class="d-flex align-items-center" style="justify-content: space-around;">
+              <div class="flex-shrink-0 me-3 pe-2 fs-5">{{ game.type }}</div>
+
+              <!-- 캐릭터 이미지 -->
+              <b-img :src="game.characterImage" alt="Character" class="me-5 rounded-image" style="width: 80px;"></b-img>
+
+              <!-- 특성 이미지 -->
+              <div class="me-5 pe-3 h-100">
+                <b-row>
+                  <b-img :src="game.traits[0]" alt="Trait" class="m-0 p-0 me-1 pe-1 rounded-image" style="width: 30px;"></b-img>
+                  <b-img :src="game.traits[1]" alt="Trait" class="m-0 p-0 rounded-image" style="width: 30px;"></b-img>
+                </b-row>
+                <b-row class="mt-1">
+                  <b-img :src="game.traits[2]" alt="Trait" class="m-0 p-0 me-1 pe-1 rounded-image" style="width: 30px;"></b-img>
+                  <b-img :src="game.traits[3]" alt="Trait" class="m-0 p-0 rounded-image" style="width: 30px;"></b-img>
+                </b-row>
+              </div>
+
+
+              <!-- 게임 정보 -->
+              <div class="me-5">
+                <div>{{ game.gameInfo.kills }} / {{ game.gameInfo.deaths }} / {{ game.gameInfo.assists }} ({{ game.participationRate }}%)</div>
+                <div>{{ game.gameInfo.kda }} KDA</div>
+                <div>{{ game.gameInfo.cs }} CS</div>
+              </div>
+
+              <!-- 아이템 정보 -->
+              <div class="me-5">
+                <b-button @click="showItems(game.id)">아이템 보기</b-button>
+              </div>
+
+              <!-- 상세정보1 -->
+              <div class="me-5">
+                <div>{{ game.details.heal }} 힐량</div>
+                <div>{{ game.details.damage }} 준 데미지</div>
+                <div>{{ game.details.takenDamage }} 받은 데미지</div>
+              </div>
+
+              <!-- 상세정보2 -->
+              <div class="me-5">
+                <div>{{ game.details.coins }} 코인량</div>
+                <div>{{ game.details.participation }} 전투참여</div>
+                <div>{{ game.details.vision }} 시야점수</div>
+              </div>
+
+              <!-- 함께한 플레이어 -->
+              <div class="me-4 d-flex flex-column">
+                <b-row>
+                  <b-col>
+                    <div v-for="player in game.team1Players" :key="player.name" class="d-flex align-items-center mb-1">
+                      <b-img class="rounded-image" :src="player.image" alt="Player" style="width: 15px;"></b-img>
+                      <div class="ml-2" style="font-size: 12px;">{{ player.name }}</div>
+                    </div>
+                  </b-col>
+                  <b-col>
+                    <div v-for="player in game.team2Players" :key="player.name" class="d-flex align-items-center mb-1">
+                      <b-img class="rounded-image" :src="player.image" alt="Player" style="width: 15px;"></b-img>
+                      <div class="ml-2" style="font-size: 12px;">{{ player.name }}</div>
+                    </div>
+                  </b-col>
+                </b-row>
+
+
+
+              </div>
+  <!--            <div class="d-flex flex-column">-->
+
+  <!--            </div>-->
+
+            </div>
+          </b-list-group-item>
+        </template>
       </b-list-group>
     </b-container>
 
@@ -385,12 +392,65 @@ export default {
       this.currentGame = this.games.find(game => game.id === gameId);
       this.showItemModal = true;
     },
+    // 데이터를 변형하는 함수
+    transformGameData(rawData) {
+      // rawData가 존재하지 않거나 빈 배열인 경우 빈 배열을 반환
+      if (!rawData || rawData.length === 0) {
+        return [];
+      }
+
+      const transformedData = rawData.map(record => ({
+        type: record.gameType === "RATING" ? "공식전" : "일반전",
+        characterImage: `https://img-api.neople.co.kr/cy/characters/${record.playCharacterId}?zoom=1`,  // 플레이어 캐릭터 이미지 URL
+      }));
+
+      console.log('Transformed Data in function:', transformedData);
+
+      return transformedData;
+      // return rawData.map(record => ({
+      //   type: (record.gameType === "RATING")? "공식전" : "일반전",
+      //   characterImage: `https://img-api.neople.co.kr/cy/characters/${record.playCharacterId}?zoom=1`,  // 플레이어 캐릭터 이미지 URL
+      //   traits: record.attributeIds.map(traitId => traitImageMap[traitId] || "https://placekitten.com/50/50"),  // 특성 이미지 URL 배열
+      //   gameInfo: {
+      //     kills: record.killCount,
+      //     deaths: record.deathCount,
+      //     assists: record.assistCount,
+      //     kda: record.kda,
+      //     cs: record.csCount
+      //   },
+      //   items: (record.itemIds || []).map(itemId => itemImageMap[itemId] || "https://placekitten.com/80/80"),  // 아이템 이미지 URL 배열
+      //   details: {
+      //     heal: record.healAmount,
+      //     damage: record.damagePoint,
+      //     takenDamage: 0,  // 특성에 해당하는 필드가 없어서 0으로 처리
+      //     coins: record.getCoin,
+      //     participation: record.killParticipation,
+      //     vision: record.sightPoint
+      //   },
+      //   team1Players: record.playerNicknames.slice(0, 5).map(player => ({
+      //     image: `https://placekitten.com/90/90`,  // 팀1 플레이어 이미지 URL
+      //     name: player
+      //   })),
+      //   team2Players: record.playerNicknames.slice(5).map(player => ({
+      //     image: `https://placekitten.com/95/95`,  // 팀2 플레이어 이미지 URL
+      //     name: player
+      //   }))
+      // }));
+    },
     fetchPlayerData(nickname) {
       // 서버에서 사용자 데이터를 가져오는 API 호출
       axios.get(`/api/search/records/RATING/${nickname}`)
         .then((response) => {
           const detailData = response.data;
-          this.username = detailData.nickname;
+          // console.log('Transformed Data in fetch:', this.transformGameData(detailData.gameRecords));
+          // this.games = this.transformGameData(detailData.gameRecords);
+          
+          // 이제 this.games에 데이터가 할당되었으므로 여기에서 원하는 로직을 실행
+          if (this.games.length > 0) {
+            this.games = this.transformGameData(detailData.gameRecords);
+            console.log("타입 : " + this.games[0].type);
+            console.log("캐릭터 이미지 : " + this.games[0].characterImage);
+          }
         })
         .catch((error) => {
           alert("데이터를 불러오는 것에 실패했습니다", error);
