@@ -159,7 +159,7 @@
     <b-container class="my-3 container-box h-100">
       <b-list-group class="h-100">
         <!-- games 배열이 비어있을 때 메시지 표시 -->
-        <b-list-group-item v-if="games.length < 2">
+        <b-list-group-item v-if="this.games.length < 2">
           게임 기록이 없습니다.
         </b-list-group-item>
         <!-- games 배열이 비어있지 않을 때 게임 리스트 표시 -->
@@ -402,54 +402,120 @@ export default {
       const transformedData = rawData.map(record => ({
         type: record.gameType === "RATING" ? "공식전" : "일반전",
         characterImage: `https://img-api.neople.co.kr/cy/characters/${record.playCharacterId}?zoom=1`,  // 플레이어 캐릭터 이미지 URL
+        // traits: record.attributeIds.map(traitId => traitImageMap[traitId] || "https://placekitten.com/50/50"),  // 특성 이미지 URL 배열
+        traits : [
+          `https://img-api.neople.co.kr/cy/position-attributes/${record.attributeIds[0]}`,
+          `https://img-api.neople.co.kr/cy/position-attributes/${record.attributeIds[1]}`,
+          `https://img-api.neople.co.kr/cy/position-attributes/${record.attributeIds[2]}`,
+          `https://img-api.neople.co.kr/cy/position-attributes/${record.attributeIds[3]}`
+        ],
+        gameInfo: {
+          kills: record.killCount,
+          deaths: record.deathCount,
+          assists: record.assistCount,
+          kda: record.kda,
+          cs: record.csCount
+        },
+        // items: (record.itemIds || []).map(itemId => itemImageMap[itemId] || "https://placekitten.com/80/80"),  // 아이템 이미지 URL 배열
+        items: [
+          `https://img-api.neople.co.kr/cy/items/${record.itemIds[0]}`,
+          `https://img-api.neople.co.kr/cy/items/${record.itemIds[1]}`,
+          `https://img-api.neople.co.kr/cy/items/${record.itemIds[2]}`,
+          `https://img-api.neople.co.kr/cy/items/${record.itemIds[3]}`,
+          `https://img-api.neople.co.kr/cy/items/${record.itemIds[4]}`,
+          `https://img-api.neople.co.kr/cy/items/${record.itemIds[5]}`,
+          `https://img-api.neople.co.kr/cy/items/${record.itemIds[6]}`,
+          `https://img-api.neople.co.kr/cy/items/${record.itemIds[7]}`,
+          `https://img-api.neople.co.kr/cy/items/${record.itemIds[8]}`,
+          `https://img-api.neople.co.kr/cy/items/${record.itemIds[9]}`,
+          `https://img-api.neople.co.kr/cy/items/${record.itemIds[10]}`,
+          `https://img-api.neople.co.kr/cy/items/${record.itemIds[11]}`,
+          `https://img-api.neople.co.kr/cy/items/${record.itemIds[12]}`,
+          `https://img-api.neople.co.kr/cy/items/${record.itemIds[13]}`,
+          `https://img-api.neople.co.kr/cy/items/${record.itemIds[14]}`,
+          `https://img-api.neople.co.kr/cy/items/${record.itemIds[15]}`
+        ],
+        details: {
+          heal: record.healAmount,
+          damage: record.attackPoint,
+          takenDamage: record.damagePoint,  
+          coins: record.getCoin,
+          participation: record.killParticipation,
+          vision: record.sightPoint
+        },
+        // team1Players: record.playerNicknames.slice(0, 5).map(player => ({
+        //   image: `https://placekitten.com/90/90`,  // 팀1 플레이어 이미지 URL
+        //   name: player
+        // })),
+        team1Players: [
+          {
+            image: `https://placekitten.com/90/90`,
+            name: record.playerNicknames[0]
+          },
+          {
+            image: `https://placekitten.com/90/90`,
+            name: record.playerNicknames[1]
+          },
+          {
+            image: `https://placekitten.com/90/90`,
+            name: record.playerNicknames[2]
+          },
+          {
+            image: `https://placekitten.com/90/90`,
+            name: record.playerNicknames[3]
+          },
+          {
+            image: `https://placekitten.com/90/90`,
+            name: record.playerNicknames[4]
+          },
+        ],
+        // team2Players: record.playerNicknames.slice(5).map(player => ({
+        //   image: `https://placekitten.com/95/95`,  // 팀2 플레이어 이미지 URL
+        //   name: player
+        // }))
+        team2Players: [
+        {
+            image: `https://placekitten.com/90/90`,
+            name: record.playerNicknames[5]
+          },
+          {
+            image: `https://placekitten.com/90/90`,
+            name: record.playerNicknames[6]
+          },
+          {
+            image: `https://placekitten.com/90/90`,
+            name: record.playerNicknames[7]
+          },
+          {
+            image: `https://placekitten.com/90/90`,
+            name: record.playerNicknames[8]
+          },
+          {
+            image: `https://placekitten.com/90/90`,
+            name: record.playerNicknames[9]
+          },
+        ]
       }));
 
-      console.log('Transformed Data in function:', transformedData);
-
-      return transformedData;
-      // return rawData.map(record => ({
-      //   type: (record.gameType === "RATING")? "공식전" : "일반전",
-      //   characterImage: `https://img-api.neople.co.kr/cy/characters/${record.playCharacterId}?zoom=1`,  // 플레이어 캐릭터 이미지 URL
-      //   traits: record.attributeIds.map(traitId => traitImageMap[traitId] || "https://placekitten.com/50/50"),  // 특성 이미지 URL 배열
-      //   gameInfo: {
-      //     kills: record.killCount,
-      //     deaths: record.deathCount,
-      //     assists: record.assistCount,
-      //     kda: record.kda,
-      //     cs: record.csCount
-      //   },
-      //   items: (record.itemIds || []).map(itemId => itemImageMap[itemId] || "https://placekitten.com/80/80"),  // 아이템 이미지 URL 배열
-      //   details: {
-      //     heal: record.healAmount,
-      //     damage: record.damagePoint,
-      //     takenDamage: 0,  // 특성에 해당하는 필드가 없어서 0으로 처리
-      //     coins: record.getCoin,
-      //     participation: record.killParticipation,
-      //     vision: record.sightPoint
-      //   },
-      //   team1Players: record.playerNicknames.slice(0, 5).map(player => ({
-      //     image: `https://placekitten.com/90/90`,  // 팀1 플레이어 이미지 URL
-      //     name: player
-      //   })),
-      //   team2Players: record.playerNicknames.slice(5).map(player => ({
-      //     image: `https://placekitten.com/95/95`,  // 팀2 플레이어 이미지 URL
-      //     name: player
-      //   }))
-      // }));
+      return transformedData
     },
     fetchPlayerData(nickname) {
       // 서버에서 사용자 데이터를 가져오는 API 호출
       axios.get(`/api/search/records/RATING/${nickname}`)
         .then((response) => {
           const detailData = response.data;
-          // console.log('Transformed Data in fetch:', this.transformGameData(detailData.gameRecords));
           // this.games = this.transformGameData(detailData.gameRecords);
+          this.games.push(this.transformGameData(detailData.gameRecords));
+          console.log("게임기록 : ",this.transformGameData(detailData.gameRecords));
           
           // 이제 this.games에 데이터가 할당되었으므로 여기에서 원하는 로직을 실행
-          if (this.games.length > 0) {
-            this.games = this.transformGameData(detailData.gameRecords);
-            console.log("타입 : " + this.games[0].type);
-            console.log("캐릭터 이미지 : " + this.games[0].characterImage);
+          if (this.games.length > 1) {
+            console.log("길이: "+this.games.length);
+            console.log("타입 : " + this.games[1].type);
+            console.log("캐릭터 이미지 : " + this.games[1].characterImage);
+            console.log("킬: "+this.games[1].gameInfo.kills);
+            console.log("데스: "+this.games[1].gameInfo.deaths);
+            console.log("어시: "+this.games[1].gameInfo.assists);
           }
         })
         .catch((error) => {
