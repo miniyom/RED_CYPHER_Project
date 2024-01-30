@@ -187,8 +187,8 @@
 
               <!-- 게임 정보 -->
               <div class="me-5">
-                <div>{{ game.gameInfo.kills }} / {{ game.gameInfo.deaths }} / {{ game.gameInfo.assists }} ({{ game.participationRate }}%)</div>
-                <div>{{ game.gameInfo.kda }} KDA</div>
+                <div>{{ game.gameInfo.kills }} / {{ game.gameInfo.deaths }} / {{ game.gameInfo.assists }} ({{ game.gameInfo.participationRate }}%)</div>
+                <div>{{ game.gameInfo.kda == -1 ? "PERFECT" : game.gameInfo.kda}} KDA</div>
                 <div>{{ game.gameInfo.cs }} CS</div>
               </div>
 
@@ -202,10 +202,6 @@
                 <div>{{ game.details.heal }} 힐량</div>
                 <div>{{ game.details.damage }} 준 데미지</div>
                 <div>{{ game.details.takenDamage }} 받은 데미지</div>
-              </div>
-
-              <!-- 상세정보2 -->
-              <div class="me-5">
                 <div>{{ game.details.coins }} 코인량</div>
                 <div>{{ game.details.participation }} 전투참여</div>
                 <div>{{ game.details.vision }} 시야점수</div>
@@ -310,6 +306,7 @@ export default {
         {사이퍼: '사이퍼4', 승률: '80%', 게임횟수: '25'},
       ],
       games: [{
+        id: 0,
         type: "공식전",
         characterImage: "https://placekitten.com/100/100",
         traits: [
@@ -322,6 +319,7 @@ export default {
           kills: 10,
           deaths: 2,
           assists: 5,
+          participationRate: 20,
           kda: 2.5,
           cs: 150
         },
@@ -399,9 +397,12 @@ export default {
         return [];
       }
 
+      let id = 0;
+
       const transformedData = rawData.map(record => ({
+        id: id++,
         type: record.gameType === "RATING" ? "공식전" : "일반전",
-        characterImage: `https://img-api.neople.co.kr/cy/characters/${record.playCharacterId}?zoom=1`,  // 플레이어 캐릭터 이미지 URL
+        characterImage: `https://img-api.neople.co.kr/cy/characters/${record.playCharacterId}?zoom=2`,  // 플레이어 캐릭터 이미지 URL
         // traits: record.attributeIds.map(traitId => traitImageMap[traitId] || "https://placekitten.com/50/50"),  // 특성 이미지 URL 배열
         traits : [
           `https://img-api.neople.co.kr/cy/position-attributes/${record.attributeIds[0]}`,
@@ -413,6 +414,7 @@ export default {
           kills: record.killCount,
           deaths: record.deathCount,
           assists: record.assistCount,
+          participationRate: record.killParticipation,
           kda: record.kda,
           cs: record.csCount
         },
@@ -474,7 +476,7 @@ export default {
         //   name: player
         // }))
         team2Players: [
-        {
+          {
             image: `https://placekitten.com/90/90`,
             name: record.playerNicknames[5]
           },
@@ -497,6 +499,8 @@ export default {
         ]
       }));
 
+      console.log("Transformed Data IDs:", transformedData.map(item => item.id)); // 디버깅을 위해 로그 추가
+
       return transformedData
     },
     fetchPlayerData(nickname) {
@@ -504,18 +508,17 @@ export default {
       axios.get(`/api/search/records/RATING/${nickname}`)
         .then((response) => {
           const detailData = response.data;
-          // this.games = this.transformGameData(detailData.gameRecords);
-          this.games.push(this.transformGameData(detailData.gameRecords));
+          this.games = this.transformGameData(detailData.gameRecords);
+          // this.games.push(this.transformGameData(detailData.gameRecords));
           console.log("게임기록 : ",this.transformGameData(detailData.gameRecords));
+          console.log("렌더링된 게임기록 : ",this.games);
           
           // 이제 this.games에 데이터가 할당되었으므로 여기에서 원하는 로직을 실행
           if (this.games.length > 1) {
             console.log("길이: "+this.games.length);
             console.log("타입 : " + this.games[1].type);
             console.log("캐릭터 이미지 : " + this.games[1].characterImage);
-            console.log("킬: "+this.games[1].gameInfo.kills);
-            console.log("데스: "+this.games[1].gameInfo.deaths);
-            console.log("어시: "+this.games[1].gameInfo.assists);
+            console.log("아이템 이미지 : "+ this.games[2].items[0]);
           }
         })
         .catch((error) => {
