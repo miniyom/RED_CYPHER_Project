@@ -418,7 +418,7 @@ export default {
           kda: record.kda,
           cs: record.csCount
         },
-        // items: (record.itemIds || []).map(itemId => itemImageMap[itemId] || "https://placekitten.com/80/80"),  // 아이템 이미지 URL 배열
+        // items: record.itemIds.map(itemId => `https://img-api.neople.co.kr/cy/items/${itemId}`);  // 아이템 이미지 URL 배열
         items: [
           `https://img-api.neople.co.kr/cy/items/${record.itemIds[0]}`,
           `https://img-api.neople.co.kr/cy/items/${record.itemIds[1]}`,
@@ -445,10 +445,6 @@ export default {
           participation: record.killParticipation,
           vision: record.sightPoint
         },
-        // team1Players: record.playerNicknames.slice(0, 5).map(player => ({
-        //   image: `https://placekitten.com/90/90`,  // 팀1 플레이어 이미지 URL
-        //   name: player
-        // })),
         team1Players: [
           {
             image: `https://placekitten.com/90/90`,
@@ -471,10 +467,6 @@ export default {
             name: record.playerNicknames[4]
           },
         ],
-        // team2Players: record.playerNicknames.slice(5).map(player => ({
-        //   image: `https://placekitten.com/95/95`,  // 팀2 플레이어 이미지 URL
-        //   name: player
-        // }))
         team2Players: [
           {
             image: `https://placekitten.com/90/90`,
