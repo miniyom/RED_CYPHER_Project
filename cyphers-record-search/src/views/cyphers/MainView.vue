@@ -99,7 +99,8 @@ export default {
         });
     },
     search() {
-      this.$router.push({ name: 'RecordDetail', params: { nickname: this.searchText } });
+      localStorage.setItem("nickname", this.searchText);
+      this.$router.push({ name: 'RecordDetail', params: { } });
     },
   },
   mounted() {

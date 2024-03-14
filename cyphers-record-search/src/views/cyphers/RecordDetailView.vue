@@ -7,10 +7,10 @@
     <b-container class="container-box my-3 mt-5">
       <b-row>
         <b-col sm="auto" class="p-0">
-          <img src="https://placekitten.com/150/150" alt="프로필 이미지" class="img-fluid rounded-circle profile-image">
+          <img :src="profileImageUrl" alt="프로필 이미지" class="img-fluid rounded-circle profile-image">
         </b-col>
         <b-col class="pl-0 text-left align-self-end">
-          <h2 class="mb-2">닉네임</h2>
+          <h2 class="mb-2">{{ this.playerNickname }}</h2>
           <b-button variant="primary" class="me-2">전적갱신</b-button>
           <span class="ml-2">최근 갱신: XX분 전</span>
         </b-col>
@@ -131,22 +131,22 @@
         <b-col sm="4">
           <b-list-group flush>
             <b-list-group-item class="d-flex align-items-center py-2">
-              <b-img src="path_to_character_image.jpg" fluid alt="Character Image" class="mr-3"
-                     style="width: 20px; height: 20px;"></b-img>
+              <b-img src="https://img-api.neople.co.kr/cy/characters/c603a74ba02374026a535dc53e5b8d40?zoom=1" fluid alt="Character Image" class="mr-3"
+                     style="width: 35px; height: 35px;"></b-img>
               <div class="flex-fill">캐릭터 이름</div>
               <div class="me-4">20승 5패</div>
               <div class="ml-3">KDA: 10/2/5</div>
             </b-list-group-item>
             <b-list-group-item class="d-flex align-items-center py-2">
-              <b-img src="path_to_character_image.jpg" fluid alt="Character Image" class="mr-3"
-                     style="width: 20px; height: 20px;"></b-img>
+              <b-img src="https://img-api.neople.co.kr/cy/characters/c603a74ba02374026a535dc53e5b8d40?zoom=1" fluid alt="Character Image" class="mr-3"
+                     style="width: 35px; height: 35px;"></b-img>
               <div class="flex-fill">캐릭터 이름</div>
               <div class="me-4">20승 5패</div>
               <div class="ml-3">KDA: 10/2/5</div>
             </b-list-group-item>
             <b-list-group-item class="d-flex align-items-center py-2">
-              <b-img src="path_to_character_image.jpg" fluid alt="Character Image" class="mr-3"
-                     style="width: 20px; height: 20px;"></b-img>
+              <b-img src="https://img-api.neople.co.kr/cy/characters/c603a74ba02374026a535dc53e5b8d40?zoom=1" fluid alt="Character Image" class="mr-3"
+                     style="width: 35px; height: 35px;"></b-img>
               <div class="flex-fill">캐릭터 이름</div>
               <div class="me-4">20승 5패</div>
               <div class="ml-3">KDA: 10/2/5</div>
@@ -158,79 +158,82 @@
 
     <b-container class="my-3 container-box h-100">
       <b-list-group class="h-100">
-        <b-list-group-item v-for="game in games" :key="game.id" class="p-1">
-          <!-- 게임 타입 -->
-          <div class="d-flex align-items-center" style="justify-content: space-around;">
-            <div class="flex-shrink-0 me-3 pe-2 fs-5">{{ game.type }}</div>
-
-            <!-- 캐릭터 이미지 -->
-            <b-img :src="game.characterImage" alt="Character" class="me-5 rounded-image" style="width: 80px;"></b-img>
-
-            <!-- 특성 이미지 -->
-            <div class="me-5 pe-3 h-100">
-              <b-row>
-                <b-img :src="game.traits[0]" alt="Trait" class="m-0 p-0 me-1 pe-1 rounded-image" style="width: 30px;"></b-img>
-                <b-img :src="game.traits[1]" alt="Trait" class="m-0 p-0 rounded-image" style="width: 30px;"></b-img>
-              </b-row>
-              <b-row class="mt-1">
-                <b-img :src="game.traits[2]" alt="Trait" class="m-0 p-0 me-1 pe-1 rounded-image" style="width: 30px;"></b-img>
-                <b-img :src="game.traits[3]" alt="Trait" class="m-0 p-0 rounded-image" style="width: 30px;"></b-img>
-              </b-row>
-            </div>
-
-
-            <!-- 게임 정보 -->
-            <div class="me-5">
-              <div>{{ game.gameInfo.kills }} / {{ game.gameInfo.deaths }} / {{ game.gameInfo.assists }} ({{ game.participationRate }}%)</div>
-              <div>{{ game.gameInfo.kda }} KDA</div>
-              <div>{{ game.gameInfo.cs }} CS</div>
-            </div>
-
-            <!-- 아이템 정보 -->
-            <div class="me-5">
-              <b-button @click="showItems(game.id)">아이템 보기</b-button>
-            </div>
-
-            <!-- 상세정보1 -->
-            <div class="me-5">
-              <div>{{ game.details.heal }} 힐량</div>
-              <div>{{ game.details.damage }} 준 데미지</div>
-              <div>{{ game.details.takenDamage }} 받은 데미지</div>
-            </div>
-
-            <!-- 상세정보2 -->
-            <div class="me-5">
-              <div>{{ game.details.coins }} 코인량</div>
-              <div>{{ game.details.participation }} 전투참여</div>
-              <div>{{ game.details.vision }} 시야점수</div>
-            </div>
-
-            <!-- 함께한 플레이어 -->
-            <div class="me-4 d-flex flex-column">
-              <b-row>
-                <b-col>
-                  <div v-for="player in game.team1Players" :key="player.name" class="d-flex align-items-center mb-1">
-                    <b-img class="rounded-image" :src="player.image" alt="Player" style="width: 15px;"></b-img>
-                    <div class="ml-2" style="font-size: 12px;">{{ player.name }}</div>
-                  </div>
-                </b-col>
-                <b-col>
-                  <div v-for="player in game.team2Players" :key="player.name" class="d-flex align-items-center mb-1">
-                    <b-img class="rounded-image" :src="player.image" alt="Player" style="width: 15px;"></b-img>
-                    <div class="ml-2" style="font-size: 12px;">{{ player.name }}</div>
-                  </div>
-                </b-col>
-              </b-row>
-
-
-
-            </div>
-<!--            <div class="d-flex flex-column">-->
-
-<!--            </div>-->
-
-          </div>
+        <!-- games 배열이 비어있을 때 메시지 표시 -->
+        <b-list-group-item v-if="this.games.length < 2">
+          게임 기록이 없습니다.
         </b-list-group-item>
+        <!-- games 배열이 비어있지 않을 때 게임 리스트 표시 -->
+        <template v-else>
+          <b-list-group-item v-for="game in games" :key="game.id" class="p-1">
+            <!-- 게임 타입 -->
+            <div class="d-flex align-items-center" style="justify-content: space-around;">
+              <div class="flex-shrink-0 me-3 pe-2 fs-5">{{ game.type }}</div>
+
+              <!-- 캐릭터 이미지 -->
+              <b-img :src="game.characterImage" alt="Character" class="me-5 rounded-image" style="width: 80px;"></b-img>
+
+              <!-- 특성 이미지 -->
+              <div class="me-5 pe-3 h-100">
+                <b-row>
+                  <b-img :src="game.traits[0]" alt="Trait" class="m-0 p-0 me-1 pe-1 rounded-image" style="width: 30px;"></b-img>
+                  <b-img :src="game.traits[1]" alt="Trait" class="m-0 p-0 rounded-image" style="width: 30px;"></b-img>
+                </b-row>
+                <b-row class="mt-1">
+                  <b-img :src="game.traits[2]" alt="Trait" class="m-0 p-0 me-1 pe-1 rounded-image" style="width: 30px;"></b-img>
+                  <b-img :src="game.traits[3]" alt="Trait" class="m-0 p-0 rounded-image" style="width: 30px;"></b-img>
+                </b-row>
+              </div>
+
+
+              <!-- 게임 정보 -->
+              <div class="me-5">
+                <div>{{ game.gameInfo.kills }} / {{ game.gameInfo.deaths }} / {{ game.gameInfo.assists }} ({{ game.gameInfo.participationRate }}%)</div>
+                <div>{{ game.gameInfo.kda == -1 ? "PERFECT" : game.gameInfo.kda}} KDA</div>
+                <div>{{ game.gameInfo.cs }} CS</div>
+              </div>
+
+              <!-- 아이템 정보 -->
+              <div class="me-5">
+                <b-button @click="showItems(game.id)">아이템 보기</b-button>
+              </div>
+
+              <!-- 상세정보1 -->
+              <div class="me-5">
+                <div>{{ game.details.heal }} 힐량</div>
+                <div>{{ game.details.damage }} 준 데미지</div>
+                <div>{{ game.details.takenDamage }} 받은 데미지</div>
+                <div>{{ game.details.coins }} 코인량</div>
+                <div>{{ game.details.participation }} 전투참여</div>
+                <div>{{ game.details.vision }} 시야점수</div>
+              </div>
+
+              <!-- 함께한 플레이어 -->
+              <div class="me-4 d-flex flex-column">
+                <b-row>
+                  <b-col>
+                    <div v-for="player in game.team1Players" :key="player.name" class="d-flex align-items-center mb-1">
+                      <b-img class="rounded-image" :src="player.image" alt="Player" style="width: 15px;"></b-img>
+                      <div class="ml-2" style="font-size: 12px;">{{ player.name }}</div>
+                    </div>
+                  </b-col>
+                  <b-col>
+                    <div v-for="player in game.team2Players" :key="player.name" class="d-flex align-items-center mb-1">
+                      <b-img class="rounded-image" :src="player.image" alt="Player" style="width: 15px;"></b-img>
+                      <div class="ml-2" style="font-size: 12px;">{{ player.name }}</div>
+                    </div>
+                  </b-col>
+                </b-row>
+
+
+
+              </div>
+  <!--            <div class="d-flex flex-column">-->
+
+  <!--            </div>-->
+
+            </div>
+          </b-list-group-item>
+        </template>
       </b-list-group>
     </b-container>
 
@@ -267,7 +270,7 @@
 </template>
 
 <script>
-// import axios from "axios";
+import axios from "axios";
 import Header from "./HeaderComponent.vue";
 import LineGraph from "@/components/LineGraph";
 import PieGraph from "@/components/PieGraph";
@@ -277,7 +280,7 @@ export default {
     nickname: String
   },
   created() {
-    console.log("검색 결과 데이터:", this.nickname);
+    
   },
   components: {
     Header,
@@ -286,6 +289,9 @@ export default {
   },
   data() {
     return {
+      playerNickname: localStorage.getItem("nickname"),
+      playerId: '',
+      playerCharacterId: '',
       activeTab: '모스트 사이퍼', // 예시
       // ... 나머지 데이터 구조
       cypherData: [
@@ -301,6 +307,7 @@ export default {
         {사이퍼: '사이퍼4', 승률: '80%', 게임횟수: '25'},
       ],
       games: [{
+        id: 0,
         type: "공식전",
         characterImage: "https://placekitten.com/100/100",
         traits: [
@@ -313,6 +320,7 @@ export default {
           kills: 10,
           deaths: 2,
           assists: 5,
+          participationRate: 20,
           kda: 2.5,
           cs: 150
         },
@@ -361,6 +369,12 @@ export default {
       currentGame: null,
     }
   },
+  computed: {
+    // 동적으로 프로필 이미지의 URL을 생성하는 계산된 속성
+    profileImageUrl() {
+      return `https://img-api.neople.co.kr/cy/characters/${this.playerCharacterId}?zoom=3`;
+    }
+  },
   methods: {
     handleBlur() {
       if (!this.preventBlur) {
@@ -382,9 +396,121 @@ export default {
     showItems(gameId) {
       this.currentGame = this.games.find(game => game.id === gameId);
       this.showItemModal = true;
-    }
+    },
+    // 데이터를 변형하는 함수
+    transformGameData(rawData) {
+      // rawData가 존재하지 않거나 빈 배열인 경우 빈 배열을 반환
+      if (!rawData || rawData.length === 0) {
+        return [];
+      }
+
+      let id = 0;
+
+      const transformedData = rawData.map(record => ({
+        id: id++,
+        type: record.gameType === "RATING" ? "공식전" : "일반전",
+        characterImage: `https://img-api.neople.co.kr/cy/characters/${record.playCharacterId}?zoom=2`,  // 플레이어 캐릭터 이미지 URL
+        traits: record.attributeIds.map(traitId => `https://img-api.neople.co.kr/cy/position-attributes/${traitId}`),  // 특성 이미지 URL 배열
+        // traits : [
+        //   `https://img-api.neople.co.kr/cy/position-attributes/${record.attributeIds[0]}`,
+        //   `https://img-api.neople.co.kr/cy/position-attributes/${record.attributeIds[1]}`,
+        //   `https://img-api.neople.co.kr/cy/position-attributes/${record.attributeIds[2]}`,
+        //   `https://img-api.neople.co.kr/cy/position-attributes/${record.attributeIds[3]}`
+        // ],
+        gameInfo: {
+          kills: record.killCount,
+          deaths: record.deathCount,
+          assists: record.assistCount,
+          participationRate: record.killParticipation,
+          kda: record.kda,
+          cs: record.csCount
+        },
+        items: record.itemIds.map(itemId => `https://img-api.neople.co.kr/cy/items/${itemId}`),  // 아이템 이미지 URL 배열
+        details: {
+          heal: record.healAmount,
+          damage: record.attackPoint,
+          takenDamage: record.damagePoint,  
+          coins: record.getCoin,
+          participation: record.killParticipation,
+          vision: record.sightPoint
+        },
+        team1Players: [
+          {
+            image: `https://cataas.com/cat`,
+            name: record.playerNicknames[0]
+          },
+          {
+            image: `https://cataas.com/cat`,
+            name: record.playerNicknames[1]
+          },
+          {
+            image: `https://cataas.com/cat`,
+            name: record.playerNicknames[2]
+          },
+          {
+            image: `https://cataas.com/cat`,
+            name: record.playerNicknames[3]
+          },
+          {
+            image: `https://cataas.com/cat`,
+            name: record.playerNicknames[4]
+          },
+        ],
+        team2Players: [
+          {
+            image: `https://placekitten.com/90/90`,
+            name: record.playerNicknames[5]
+          },
+          {
+            image: `https://placekitten.com/90/90`,
+            name: record.playerNicknames[6]
+          },
+          {
+            image: `https://placekitten.com/90/90`,
+            name: record.playerNicknames[7]
+          },
+          {
+            image: `https://placekitten.com/90/90`,
+            name: record.playerNicknames[8]
+          },
+          {
+            image: `https://placekitten.com/90/90`,
+            name: record.playerNicknames[9]
+          },
+        ]
+      }));
+
+      return transformedData
+    },
+    fetchPlayerData(nickname, playerId) {
+      // 서버에서 사용자 데이터를 가져오는 API 호출
+      axios.get(`/api/search/records/RATING/${playerId}`)
+        .then((response) => {
+          const detailData = response.data;
+          this.games = this.transformGameData(detailData.gameRecords);
+        })
+        .catch((error) => {
+          alert("데이터를 불러오는 것에 실패했습니다", error);
+          console.log("error: ", error);
+          this.$router.push('/'); 
+        });
+    },
   },
   mounted() {
+
+    axios.get(`/api/search/player/search/${localStorage.getItem(`nickname`)}`)
+      .then((response) => {
+        const playerData = response.data;
+        this.playerId = playerData.playerId;
+        this.playerCharacterId = playerData.represent.characterId;
+        // 사용자 데이터를 서버에서 가져오기
+        this.fetchPlayerData(this.playerNickname, this.playerId);
+      })
+      .catch((error) => {
+        alert("닉네임 정보가 없습니다.", error);
+        console.log("error: ", error);
+        this.$router.push('/'); 
+      });
     
   }
 }
