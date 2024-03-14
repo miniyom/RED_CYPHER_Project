@@ -7,7 +7,7 @@
     <b-container class="container-box my-3 mt-5">
       <b-row>
         <b-col sm="auto" class="p-0">
-          <img src="https://placekitten.com/150/150" alt="프로필 이미지" class="img-fluid rounded-circle profile-image">
+          <img :src="profileImageUrl" alt="프로필 이미지" class="img-fluid rounded-circle profile-image">
         </b-col>
         <b-col class="pl-0 text-left align-self-end">
           <h2 class="mb-2">{{ this.playerNickname }}</h2>
@@ -289,8 +289,9 @@ export default {
   },
   data() {
     return {
-      username: '',
       playerNickname: localStorage.getItem("nickname"),
+      playerId: '',
+      playerCharacterId: '',
       activeTab: '모스트 사이퍼', // 예시
       // ... 나머지 데이터 구조
       cypherData: [
@@ -368,6 +369,12 @@ export default {
       currentGame: null,
     }
   },
+  computed: {
+    // 동적으로 프로필 이미지의 URL을 생성하는 계산된 속성
+    profileImageUrl() {
+      return `https://img-api.neople.co.kr/cy/characters/${this.playerCharacterId}?zoom=3`;
+    }
+  },
   methods: {
     handleBlur() {
       if (!this.preventBlur) {
@@ -403,13 +410,13 @@ export default {
         id: id++,
         type: record.gameType === "RATING" ? "공식전" : "일반전",
         characterImage: `https://img-api.neople.co.kr/cy/characters/${record.playCharacterId}?zoom=2`,  // 플레이어 캐릭터 이미지 URL
-        // traits: record.attributeIds.map(traitId => traitImageMap[traitId] || "https://placekitten.com/50/50"),  // 특성 이미지 URL 배열
-        traits : [
-          `https://img-api.neople.co.kr/cy/position-attributes/${record.attributeIds[0]}`,
-          `https://img-api.neople.co.kr/cy/position-attributes/${record.attributeIds[1]}`,
-          `https://img-api.neople.co.kr/cy/position-attributes/${record.attributeIds[2]}`,
-          `https://img-api.neople.co.kr/cy/position-attributes/${record.attributeIds[3]}`
-        ],
+        traits: record.attributeIds.map(traitId => `https://img-api.neople.co.kr/cy/position-attributes/${traitId}`),  // 특성 이미지 URL 배열
+        // traits : [
+        //   `https://img-api.neople.co.kr/cy/position-attributes/${record.attributeIds[0]}`,
+        //   `https://img-api.neople.co.kr/cy/position-attributes/${record.attributeIds[1]}`,
+        //   `https://img-api.neople.co.kr/cy/position-attributes/${record.attributeIds[2]}`,
+        //   `https://img-api.neople.co.kr/cy/position-attributes/${record.attributeIds[3]}`
+        // ],
         gameInfo: {
           kills: record.killCount,
           deaths: record.deathCount,
@@ -418,25 +425,7 @@ export default {
           kda: record.kda,
           cs: record.csCount
         },
-        // items: record.itemIds.map(itemId => `https://img-api.neople.co.kr/cy/items/${itemId}`);  // 아이템 이미지 URL 배열
-        items: [
-          `https://img-api.neople.co.kr/cy/items/${record.itemIds[0]}`,
-          `https://img-api.neople.co.kr/cy/items/${record.itemIds[1]}`,
-          `https://img-api.neople.co.kr/cy/items/${record.itemIds[2]}`,
-          `https://img-api.neople.co.kr/cy/items/${record.itemIds[3]}`,
-          `https://img-api.neople.co.kr/cy/items/${record.itemIds[4]}`,
-          `https://img-api.neople.co.kr/cy/items/${record.itemIds[5]}`,
-          `https://img-api.neople.co.kr/cy/items/${record.itemIds[6]}`,
-          `https://img-api.neople.co.kr/cy/items/${record.itemIds[7]}`,
-          `https://img-api.neople.co.kr/cy/items/${record.itemIds[8]}`,
-          `https://img-api.neople.co.kr/cy/items/${record.itemIds[9]}`,
-          `https://img-api.neople.co.kr/cy/items/${record.itemIds[10]}`,
-          `https://img-api.neople.co.kr/cy/items/${record.itemIds[11]}`,
-          `https://img-api.neople.co.kr/cy/items/${record.itemIds[12]}`,
-          `https://img-api.neople.co.kr/cy/items/${record.itemIds[13]}`,
-          `https://img-api.neople.co.kr/cy/items/${record.itemIds[14]}`,
-          `https://img-api.neople.co.kr/cy/items/${record.itemIds[15]}`
-        ],
+        items: record.itemIds.map(itemId => `https://img-api.neople.co.kr/cy/items/${itemId}`),  // 아이템 이미지 URL 배열
         details: {
           heal: record.healAmount,
           damage: record.attackPoint,
@@ -447,23 +436,23 @@ export default {
         },
         team1Players: [
           {
-            image: `https://placekitten.com/90/90`,
+            image: `https://cataas.com/cat`,
             name: record.playerNicknames[0]
           },
           {
-            image: `https://placekitten.com/90/90`,
+            image: `https://cataas.com/cat`,
             name: record.playerNicknames[1]
           },
           {
-            image: `https://placekitten.com/90/90`,
+            image: `https://cataas.com/cat`,
             name: record.playerNicknames[2]
           },
           {
-            image: `https://placekitten.com/90/90`,
+            image: `https://cataas.com/cat`,
             name: record.playerNicknames[3]
           },
           {
-            image: `https://placekitten.com/90/90`,
+            image: `https://cataas.com/cat`,
             name: record.playerNicknames[4]
           },
         ],
@@ -491,27 +480,14 @@ export default {
         ]
       }));
 
-      console.log("Transformed Data IDs:", transformedData.map(item => item.id)); // 디버깅을 위해 로그 추가
-
       return transformedData
     },
-    fetchPlayerData(nickname) {
+    fetchPlayerData(nickname, playerId) {
       // 서버에서 사용자 데이터를 가져오는 API 호출
-      axios.get(`/api/search/records/RATING/${nickname}`)
+      axios.get(`/api/search/records/RATING/${playerId}`)
         .then((response) => {
           const detailData = response.data;
           this.games = this.transformGameData(detailData.gameRecords);
-          // this.games.push(this.transformGameData(detailData.gameRecords));
-          console.log("게임기록 : ",this.transformGameData(detailData.gameRecords));
-          console.log("렌더링된 게임기록 : ",this.games);
-          
-          // 이제 this.games에 데이터가 할당되었으므로 여기에서 원하는 로직을 실행
-          if (this.games.length > 1) {
-            console.log("길이: "+this.games.length);
-            console.log("타입 : " + this.games[1].type);
-            console.log("캐릭터 이미지 : " + this.games[1].characterImage);
-            console.log("아이템 이미지 : "+ this.games[2].items[0]);
-          }
         })
         .catch((error) => {
           alert("데이터를 불러오는 것에 실패했습니다", error);
@@ -521,10 +497,21 @@ export default {
     },
   },
   mounted() {
-    this.playerNickname = localStorage.getItem("nickname");
 
-    // 사용자 데이터를 서버에서 가져오기
-    this.fetchPlayerData(this.playerNickname);
+    axios.get(`/api/search/player/search/${localStorage.getItem(`nickname`)}`)
+      .then((response) => {
+        const playerData = response.data;
+        this.playerId = playerData.playerId;
+        this.playerCharacterId = playerData.represent.characterId;
+        // 사용자 데이터를 서버에서 가져오기
+        this.fetchPlayerData(this.playerNickname, this.playerId);
+      })
+      .catch((error) => {
+        alert("닉네임 정보가 없습니다.", error);
+        console.log("error: ", error);
+        this.$router.push('/'); 
+      });
+    
   }
 }
 </script>
