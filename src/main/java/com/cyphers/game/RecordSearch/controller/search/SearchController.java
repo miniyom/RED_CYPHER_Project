@@ -15,6 +15,7 @@ import com.cyphers.game.RecordSearch.model.search.IoSearchDetailResponse;
 import com.cyphers.game.RecordSearch.model.search.SearchDetailResponse;
 import com.cyphers.game.RecordSearch.model.search.entity.CrsDetailSearch;
 import com.cyphers.game.RecordSearch.openapi.model.CyphersMatches;
+import com.cyphers.game.RecordSearch.openapi.model.CyphersPlayerInfo;
 import com.cyphers.game.RecordSearch.openapi.model.CyphersPlayerResponse;
 import com.cyphers.game.RecordSearch.openapi.model.enumuration.CyphersGameType;
 import com.cyphers.game.RecordSearch.openapi.model.enumuration.CyphersPlayerWordType;
@@ -55,24 +56,25 @@ public class SearchController {
         return res;
     }
     
-    @GetMapping("/records/{gameType}/{nickname}")
-    public GameRecordResponse getGameRecords(@PathVariable("nickname") String nickname,
-    										 @PathVariable("gameType") CyphersGameType gameType) throws Exception {
-    	CyphersMatches matches = searchService.getGameRecordsFirst(nickname, gameType, ApiDate.NINETY_DAYS_AGO, ApiDate.NOW);
+    @GetMapping("/player/search/{nickname}")
+    public CyphersPlayerInfo getPlayerInfo(@PathVariable("nickname") String nickname) throws Exception {
     	CyphersPlayerResponse cyPlayerResponse = cyApiService.searchPlayers(nickname, CyphersPlayerWordType.MATCH, null);
-    	
-		if (CollectionUtils.isEmpty(cyPlayerResponse.getRows())) {
-			throw new Exception("닉네임 정보가 없습니다.");
-		}
-
-		String playerId = cyPlayerResponse.getRows().get(0).getPlayerId();
-    	GameRecordResponse res = searchService.getGameRecords(matches, playerId);
-
+    	CyphersPlayerInfo cyPlayerInfo = cyApiService.searchPlayerInfo(cyPlayerResponse.getRows().get(0).getPlayerId());
+    	return cyPlayerInfo;
+    }
+    
+    @GetMapping("/records/{gameType}/{playerId}")
+    public GameRecordResponse getGameRecords(@PathVariable("gameType") CyphersGameType gameType,
+    										 @PathVariable("playerId") String playerId) throws Exception {
+    	CyphersMatches matches = searchService.getGameRecordsFirst(playerId, gameType, ApiDate.NINETY_DAYS_AGO, ApiDate.NOW);
+    	GameRecordResponse res = searchService.getGameRecords(matches, playerId);	
+    	log.info("게이게이ㅑ");
     	return res;
     }
     
     @GetMapping("/records/next/{playerId}/{next}")
-    public GameRecordResponse getGameRecordsNext(@PathVariable("playerId") String playerId, @PathVariable("next") String next) throws Exception {
+    public GameRecordResponse getGameRecordsNext(@PathVariable("playerId") String playerId, 
+    											 @PathVariable("next") String next) throws Exception {
     	CyphersMatches matches = searchService.getGameRecordsNext(playerId, next);
     	GameRecordResponse res = searchService.getGameRecords(matches, playerId);
 

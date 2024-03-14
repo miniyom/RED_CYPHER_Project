@@ -387,15 +387,9 @@ public class SearchService {
 		
 	}
 	
-	public CyphersMatches getGameRecordsFirst(String nickname, CyphersGameType gameType, String startDate, String endDate) throws Exception {
+	public CyphersMatches getGameRecordsFirst(String playerId, CyphersGameType gameType, String startDate, String endDate) throws Exception {
 		
-		CyphersPlayerResponse cyPlayerResponse = cyApiService.searchPlayers(nickname, CyphersPlayerWordType.MATCH, null);
-
-		if (CollectionUtils.isEmpty(cyPlayerResponse.getRows())) {
-			throw new Exception("닉네임 정보가 없습니다.");
-		}
-		String myPlayerId = cyPlayerResponse.getRows().get(0).getPlayerId();
-		CyphersMatches cyMatches = cyApiService.searchGameRecords(myPlayerId, gameType, startDate, endDate, RECORDS_LIMIT);
+		CyphersMatches cyMatches = cyApiService.searchGameRecords(playerId, gameType, startDate, endDate, RECORDS_LIMIT);
 		return cyMatches;
 	}
 
@@ -411,9 +405,8 @@ public class SearchService {
 		if (cyMatches.getNext() != null) {
 			gameRecordsInfo.setNext(cyMatches.getNext());
 		}
-		gameRecordsInfo.setPlayerId(playerId);
 
-		if (cyMatchedInfos.size() != 0) {
+		if (cyMatchedInfos.size() > 0) {
 
 			for (CyphersMatchedInfo matchedInfo : cyMatchedInfos) {
 				IoSearchDetailGameRecord gameRecord = new IoSearchDetailGameRecord();
@@ -490,7 +483,7 @@ public class SearchService {
 				gameRecordsInfo.setGameRecords(gameRecords);
 			}
 
-		}
+		} 
 		return gameRecordsInfo;
 	}
 	
