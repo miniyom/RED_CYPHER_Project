@@ -68,7 +68,6 @@ public class SearchController {
     										 @PathVariable("playerId") String playerId) throws Exception {
     	CyphersMatches matches = searchService.getGameRecordsFirst(playerId, gameType, ApiDate.NINETY_DAYS_AGO, ApiDate.NOW);
     	GameRecordResponse res = searchService.getGameRecords(matches, playerId);	
-    	log.info("게이게이ㅑ");
     	return res;
     }
     

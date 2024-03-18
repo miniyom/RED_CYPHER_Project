@@ -3,8 +3,8 @@
     <b-navbar type="dark" variant="dark" class="navbar-container">
       <!-- Image and text -->
       
-      <b-navbar-brand href="/" >
-        <img src="./img/rclogo4.png" class="d-inline-block align-top" alt="고먐미">
+      <b-navbar-brand href="/" title="메인 홈으로">
+        <img src="./img/rclogo4.png" class="d-inline-block align-top" alt="메인">
       </b-navbar-brand>
 
       <b-navbar-nav class="mx-auto font-size-small">
@@ -16,8 +16,8 @@
         <b-nav-item href="#">게시판</b-nav-item>
       </b-navbar-nav>
 
-      <b-navbar-brand href="https://cyphers.game.naver.com/">
-        <img src="./img/cyphers_logo.png" class="d-inline-block align-top" alt="고먐미">
+      <b-navbar-brand href="https://cyphers.game.naver.com/" title="사이퍼즈 공식 홈페이지">
+        <img src="./img/cyphers_logo.png" class="d-inline-block align-top" alt="사이퍼즈 공홈">
       </b-navbar-brand>
       
     </b-navbar>

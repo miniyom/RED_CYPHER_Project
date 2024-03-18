@@ -7,7 +7,7 @@
     <b-container class="container-box my-3 mt-5">
       <b-row>
         <b-col sm="auto" class="p-0">
-          <img :src="profileImageUrl" alt="프로필 이미지" class="img-fluid rounded-circle profile-image">
+          <img :src="playerCharacterImage" alt="프로필 이미지" class="img-fluid rounded-circle profile-image">
         </b-col>
         <b-col class="pl-0 text-left align-self-end">
           <h2 class="mb-2">{{ this.playerNickname }}</h2>
@@ -79,7 +79,7 @@
                 <h3>공식전</h3>
                 <b-row>
                   <b-col cols="4" class="d-flex align-items-center justify-content-center">
-                    <b-img src="https://placekitten.com/120/120" fluid alt="Tier Image"/>
+                    <b-img src="https://img-api.neople.co.kr/cy/characters/c603a74ba02374026a535dc53e5b8d40?zoom=3" fluid alt="Tier Image"/>
                   </b-col>
                   <b-col cols="8">
                     <b-list-group flush>
@@ -164,23 +164,23 @@
         </b-list-group-item>
         <!-- games 배열이 비어있지 않을 때 게임 리스트 표시 -->
         <template v-else>
-          <b-list-group-item v-for="game in games" :key="game.id" class="p-1">
+          <b-list-group-item v-for="game in games" :key="game.id" class="p-1 text-left">
             <!-- 게임 타입 -->
             <div class="d-flex align-items-center" style="justify-content: space-around;">
               <div class="flex-shrink-0 me-3 pe-2 fs-5">{{ game.type }}</div>
 
               <!-- 캐릭터 이미지 -->
-              <b-img :src="game.characterImage" alt="Character" class="me-5 rounded-image" style="width: 80px;"></b-img>
+              <b-img :src="game.characterImage" rounded="circle" alt="Character" class="me-5" style="width: 80px;"></b-img>
 
               <!-- 특성 이미지 -->
               <div class="me-5 pe-3 h-100">
                 <b-row>
-                  <b-img :src="game.traits[0]" alt="Trait" class="m-0 p-0 me-1 pe-1 rounded-image" style="width: 30px;"></b-img>
-                  <b-img :src="game.traits[1]" alt="Trait" class="m-0 p-0 rounded-image" style="width: 30px;"></b-img>
+                  <b-img :src="game.traits[0]" rounded="circle" alt="Trait" class="m-0 p-0 me-1" style="width: 30px;"></b-img>
+                  <b-img :src="game.traits[1]" rounded="circle" alt="Trait" class="m-0 p-0" style="width: 30px;"></b-img>
                 </b-row>
                 <b-row class="mt-1">
-                  <b-img :src="game.traits[2]" alt="Trait" class="m-0 p-0 me-1 pe-1 rounded-image" style="width: 30px;"></b-img>
-                  <b-img :src="game.traits[3]" alt="Trait" class="m-0 p-0 rounded-image" style="width: 30px;"></b-img>
+                  <b-img :src="game.traits[2]" rounded="circle" alt="Trait" class="m-0 p-0 me-1" style="width: 30px;"></b-img>
+                  <b-img :src="game.traits[3]" rounded="circle" alt="Trait" class="m-0 p-0" style="width: 30px;"></b-img>
                 </b-row>
               </div>
 
@@ -208,24 +208,33 @@
               </div>
 
               <!-- 함께한 플레이어 -->
-              <div class="me-4 d-flex flex-column">
+              <div class="me-5 d-flex flex-column">
                 <b-row>
                   <b-col>
                     <div v-for="player in game.team1Players" :key="player.name" class="d-flex align-items-center mb-1">
-                      <b-img class="rounded-image" :src="player.image" alt="Player" style="width: 15px;"></b-img>
-                      <div class="ml-2" style="font-size: 12px;">{{ player.name }}</div>
+                      <b-link class="custom-link" @click="forwardDetail(player.name)" @mouseover="hovered = true" @mouseleave="hovered = false">
+                        <b-img class="rounded-image" :src="player.image" rounded alt="Player" style="width: 25px;"></b-img>
+                      </b-link>
+                      <!-- <router-link :to="{ name: 'RecordDetail', params: { name: player.name } }">
+                        <b-img class="rounded-image" :src="player.image" rounded alt="Player" style="width: 25px;"></b-img>
+                      </router-link> -->
+                      <!-- <b-img class="rounded-image" :src="player.image" rounded alt="Player" style="width: 25px;"></b-img> -->
+                      <b-link class="custom-link" @click="forwardDetail(player.name)" @mouseover="hovered = true" @mouseleave="hovered = false">
+                        <div class="ml-3" style="font-size: 12px;">{{ player.name }}</div>
+                      </b-link>
+                      <!-- <div class="ml-3" style="font-size: 12px;">
+                        <router-link :to="{ name: 'RecordDetail', params: { name: player.name } }">{{ player.name }}</router-link>
+                      </div> -->
+                      <!-- <div class="ml-3" style="font-size: 12px;">{{ player.name }}</div> -->
                     </div>
                   </b-col>
                   <b-col>
                     <div v-for="player in game.team2Players" :key="player.name" class="d-flex align-items-center mb-1">
-                      <b-img class="rounded-image" :src="player.image" alt="Player" style="width: 15px;"></b-img>
+                      <b-img class="rounded-image" :src="player.image" rounded alt="Player" style="width: 25px;"></b-img>
                       <div class="ml-2" style="font-size: 12px;">{{ player.name }}</div>
                     </div>
                   </b-col>
                 </b-row>
-
-
-
               </div>
   <!--            <div class="d-flex flex-column">-->
 
@@ -274,6 +283,7 @@ import axios from "axios";
 import Header from "./HeaderComponent.vue";
 import LineGraph from "@/components/LineGraph";
 import PieGraph from "@/components/PieGraph";
+// import VueTooltip from 'v-tooltip';
 
 export default {
   props: {
@@ -291,7 +301,7 @@ export default {
     return {
       playerNickname: localStorage.getItem("nickname"),
       playerId: '',
-      playerCharacterId: '',
+      playerCharacterImage: '',
       activeTab: '모스트 사이퍼', // 예시
       // ... 나머지 데이터 구조
       cypherData: [
@@ -365,14 +375,9 @@ export default {
           {image: "https://placekitten.com/99/99", name: "Player10"},
         ]
       }], // your games data
+      hovered: false,
       showItemModal: false,
       currentGame: null,
-    }
-  },
-  computed: {
-    // 동적으로 프로필 이미지의 URL을 생성하는 계산된 속성
-    profileImageUrl() {
-      return `https://img-api.neople.co.kr/cy/characters/${this.playerCharacterId}?zoom=3`;
     }
   },
   methods: {
@@ -411,12 +416,6 @@ export default {
         type: record.gameType === "RATING" ? "공식전" : "일반전",
         characterImage: `https://img-api.neople.co.kr/cy/characters/${record.playCharacterId}?zoom=2`,  // 플레이어 캐릭터 이미지 URL
         traits: record.attributeIds.map(traitId => `https://img-api.neople.co.kr/cy/position-attributes/${traitId}`),  // 특성 이미지 URL 배열
-        // traits : [
-        //   `https://img-api.neople.co.kr/cy/position-attributes/${record.attributeIds[0]}`,
-        //   `https://img-api.neople.co.kr/cy/position-attributes/${record.attributeIds[1]}`,
-        //   `https://img-api.neople.co.kr/cy/position-attributes/${record.attributeIds[2]}`,
-        //   `https://img-api.neople.co.kr/cy/position-attributes/${record.attributeIds[3]}`
-        // ],
         gameInfo: {
           kills: record.killCount,
           deaths: record.deathCount,
@@ -434,55 +433,19 @@ export default {
           participation: record.killParticipation,
           vision: record.sightPoint
         },
-        team1Players: [
-          {
-            image: `https://cataas.com/cat`,
-            name: record.playerNicknames[0]
-          },
-          {
-            image: `https://cataas.com/cat`,
-            name: record.playerNicknames[1]
-          },
-          {
-            image: `https://cataas.com/cat`,
-            name: record.playerNicknames[2]
-          },
-          {
-            image: `https://cataas.com/cat`,
-            name: record.playerNicknames[3]
-          },
-          {
-            image: `https://cataas.com/cat`,
-            name: record.playerNicknames[4]
-          },
-        ],
-        team2Players: [
-          {
-            image: `https://placekitten.com/90/90`,
-            name: record.playerNicknames[5]
-          },
-          {
-            image: `https://placekitten.com/90/90`,
-            name: record.playerNicknames[6]
-          },
-          {
-            image: `https://placekitten.com/90/90`,
-            name: record.playerNicknames[7]
-          },
-          {
-            image: `https://placekitten.com/90/90`,
-            name: record.playerNicknames[8]
-          },
-          {
-            image: `https://placekitten.com/90/90`,
-            name: record.playerNicknames[9]
-          },
-        ]
+        team1Players: record.teamPlayerInfos.slice(0, 5).map(player => ({
+          image: `https://img-api.neople.co.kr/cy/characters/${player.characterId}?zoom=1`,
+          name: player.nickname
+        })),
+        team2Players: record.teamPlayerInfos.slice(5).map(player => ({
+          image: `https://img-api.neople.co.kr/cy/characters/${player.characterId}?zoom=1`,
+          name: player.nickname
+        }))
       }));
 
       return transformedData
     },
-    fetchPlayerData(nickname, playerId) {
+    fetchPlayerData(playerId) {
       // 서버에서 사용자 데이터를 가져오는 API 호출
       axios.get(`/api/search/records/RATING/${playerId}`)
         .then((response) => {
@@ -495,16 +458,30 @@ export default {
           this.$router.push('/'); 
         });
     },
+    // forwardDetail(playerName) {
+    //   localStorage.setItem("nickname", playerName);
+    //   this.$router.push({ name: 'RecordDetail', params: { nickname: playerName }});  
+    // }
+    forwardDetail(playerName) {
+      if (this.$route.params.nickname === playerName) {
+        window.location.reload();
+      } else {
+        localStorage.setItem("nickname", playerName);
+        this.$router.push({ name: 'RecordDetail', params: { nickname: playerName }});
+      }
+    }
   },
   mounted() {
-
+    // VueTooltip.init();
+    console.log("현재 닉네임: "+this.$route.params.nickname);
     axios.get(`/api/search/player/search/${localStorage.getItem(`nickname`)}`)
       .then((response) => {
         const playerData = response.data;
         this.playerId = playerData.playerId;
-        this.playerCharacterId = playerData.represent.characterId;
+        this.playerCharacterImage = `https://img-api.neople.co.kr/cy/characters/${playerData.represent.characterId}?zoom=3`;
+        console.log(this.playerCharacterImage);
         // 사용자 데이터를 서버에서 가져오기
-        this.fetchPlayerData(this.playerNickname, this.playerId);
+        this.fetchPlayerData(this.playerId);
       })
       .catch((error) => {
         alert("닉네임 정보가 없습니다.", error);
@@ -537,8 +514,18 @@ export default {
   border-right: 1px solid black;
 }
 
-.rounded-image {
-  border-radius: 50%; /* 이미지를 동그랗게 만들기 위한 설정 */
+.custom-link {
+  color: #6c757d; /* 기본적으로 회색 */
+  text-decoration: none; /* 밑줄 제거 */
 }
+
+.custom-link:hover {
+  color: #343a40; /* 마우스를 올리면 글자색이 더 진한 색으로 변경 */
+  text-decoration: underline; /* 밑줄 추가 */
+}
+/* 
+.rounded-image {
+  border-radius: 50%; //이미지를 동그랗게 만들기 위한 설정
+} */
 
 </style>

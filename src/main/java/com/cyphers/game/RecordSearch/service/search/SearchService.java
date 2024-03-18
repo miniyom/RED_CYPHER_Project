@@ -22,6 +22,7 @@ import com.cyphers.game.RecordSearch.model.search.IoSearchDetailMostPositionInfo
 import com.cyphers.game.RecordSearch.model.search.IoSearchDetailRecentlyPlayCyphersInfo;
 import com.cyphers.game.RecordSearch.model.search.IoSearchDetailResponse;
 import com.cyphers.game.RecordSearch.model.search.IoSearchDetailWinAndLoseCountHistoryInfo;
+import com.cyphers.game.RecordSearch.model.search.TeamPlayerInfo;
 import com.cyphers.game.RecordSearch.openapi.model.CyphersCharacterAttribute;
 import com.cyphers.game.RecordSearch.openapi.model.CyphersCharacterInfo;
 import com.cyphers.game.RecordSearch.openapi.model.CyphersCharacterSearch;
@@ -417,7 +418,7 @@ public class SearchService {
 					totalKillCount += cyPlayersInGame.getPlayInfo().getKillCount();
 				}
 
-				List<String> playerNicknames = new ArrayList<>();
+				List<TeamPlayerInfo> teamPlayerInfos = new ArrayList<>();
 
 				for (CyphersPlayersInGame playerDataInGame : matchingDetail.getPlayers()) {
 					if (playerDataInGame.getPlayerId().equals(playerId)) {
@@ -463,7 +464,10 @@ public class SearchService {
 						gameRecord.setBattlePoint(playInfo.getBattlePoint());
 						gameRecord.setSightPoint(playInfo.getSightPoint());
 					}
-					playerNicknames.add(playerDataInGame.getNickname());
+					teamPlayerInfos.add(TeamPlayerInfo.builder()
+										.characterId(playerDataInGame.getPlayInfo().getCharacterId())
+										.nickname(playerDataInGame.getNickname())
+										.build());
 				}
 				String gameType = matchingDetail.getGameTypeId();
 				switch (gameType) {
@@ -477,7 +481,7 @@ public class SearchService {
 					}
 				}
 				gameRecord.setPlayDate(matchingDetail.getDate());
-				gameRecord.setPlayerNicknames(playerNicknames);
+				gameRecord.setTeamPlayerInfos(teamPlayerInfos);
 				gameRecords.add(gameRecord);
 
 				gameRecordsInfo.setGameRecords(gameRecords);

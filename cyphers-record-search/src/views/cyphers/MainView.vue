@@ -100,7 +100,7 @@ export default {
     },
     search() {
       localStorage.setItem("nickname", this.searchText);
-      this.$router.push({ name: 'RecordDetail', params: { } });
+      this.$router.push({ name: 'RecordDetail', params: { nickname: this.searchText} });
     },
   },
   mounted() {

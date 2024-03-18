@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <!-- 라우터로 결정된 컴포넌트를 렌더링할 위치 -->
-    <router-view></router-view>
+    <router-view :key="$route.fullPath"></router-view>
   </div>
 </template>
 
