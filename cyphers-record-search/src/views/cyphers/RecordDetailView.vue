@@ -113,7 +113,7 @@
     <b-container class="my-3 container-box">
       <b-row>
         <b-col sm="2" class="br-1">
-          <h4>게임수</h4>
+          <h4>게임 수</h4>
           <h2 class="mt-4">1</h2>
         </b-col>
         <b-col sm="2" class="br-1">
@@ -121,7 +121,7 @@
           <h2 class="mt-4">20%</h2>
         </b-col>
         <b-col sm="2" class="br-1">
-          <h4>KDA</h4>
+          <h4>평균 KDA</h4>
           <h2 class="mt-4">3.24</h2>
         </b-col>
         <b-col sm="2" class="br-1">
@@ -172,6 +172,9 @@
               <!-- 캐릭터 이미지 -->
               <b-img :src="game.characterImage" rounded="circle" alt="Character" class="me-5" style="width: 80px;"></b-img>
 
+              <!-- 포지션 이미지 -->
+              <b-img :src="game.positionImage" rounded="circle" alt="Position" class="me-5" style="width: 40px;"></b-img>
+
               <!-- 특성 이미지 -->
               <div class="me-5 pe-3 h-100">
                 <b-row>
@@ -215,17 +218,9 @@
                       <b-link class="custom-link" @click="forwardDetail(player.name)" @mouseover="hovered = true" @mouseleave="hovered = false">
                         <b-img class="rounded-image" :src="player.image" rounded alt="Player" style="width: 25px;"></b-img>
                       </b-link>
-                      <!-- <router-link :to="{ name: 'RecordDetail', params: { name: player.name } }">
-                        <b-img class="rounded-image" :src="player.image" rounded alt="Player" style="width: 25px;"></b-img>
-                      </router-link> -->
-                      <!-- <b-img class="rounded-image" :src="player.image" rounded alt="Player" style="width: 25px;"></b-img> -->
                       <b-link class="custom-link" @click="forwardDetail(player.name)" @mouseover="hovered = true" @mouseleave="hovered = false">
                         <div class="ml-3" style="font-size: 12px;">{{ player.name }}</div>
                       </b-link>
-                      <!-- <div class="ml-3" style="font-size: 12px;">
-                        <router-link :to="{ name: 'RecordDetail', params: { name: player.name } }">{{ player.name }}</router-link>
-                      </div> -->
-                      <!-- <div class="ml-3" style="font-size: 12px;">{{ player.name }}</div> -->
                     </div>
                   </b-col>
                   <b-col>
@@ -320,6 +315,7 @@ export default {
         id: 0,
         type: "공식전",
         characterImage: "https://placekitten.com/100/100",
+        postionImage: "@/public/img/tanker.png",
         traits: [
           "https://placekitten.com/50/50",
           "https://placekitten.com/51/51",
@@ -415,6 +411,7 @@ export default {
         id: id++,
         type: record.gameType === "RATING" ? "공식전" : "일반전",
         characterImage: `https://img-api.neople.co.kr/cy/characters/${record.playCharacterId}?zoom=2`,  // 플레이어 캐릭터 이미지 URL
+        positionImage: this.getPostionImage(record.positionName),
         traits: record.attributeIds.map(traitId => `https://img-api.neople.co.kr/cy/position-attributes/${traitId}`),  // 특성 이미지 URL 배열
         gameInfo: {
           kills: record.killCount,
@@ -458,10 +455,6 @@ export default {
           this.$router.push('/'); 
         });
     },
-    // forwardDetail(playerName) {
-    //   localStorage.setItem("nickname", playerName);
-    //   this.$router.push({ name: 'RecordDetail', params: { nickname: playerName }});  
-    // }
     forwardDetail(playerName) {
       if (this.$route.params.nickname === playerName) {
         window.location.reload();
@@ -469,11 +462,22 @@ export default {
         localStorage.setItem("nickname", playerName);
         this.$router.push({ name: 'RecordDetail', params: { nickname: playerName }});
       }
+    },
+    getPostionImage(positionName) {
+      switch (positionName) {
+        case '탱커':
+          return '/img/tanker.png';
+        case '원거리딜러':
+          return '/img/ad.png';
+        case '근거리딜러':
+          return '/img/assassin.png';
+        case '서포터':
+          return '/img/supporter.png';
+      }
     }
   },
   mounted() {
     // VueTooltip.init();
-    console.log("현재 닉네임: "+this.$route.params.nickname);
     axios.get(`/api/search/player/search/${localStorage.getItem(`nickname`)}`)
       .then((response) => {
         const playerData = response.data;
