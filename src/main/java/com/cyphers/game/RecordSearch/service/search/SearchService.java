@@ -421,10 +421,13 @@ public class SearchService {
 				List<TeamPlayerInfo> teamPlayerInfos = new ArrayList<>();
 
 				for (CyphersPlayersInGame playerDataInGame : matchingDetail.getPlayers()) {
+					
 					if (playerDataInGame.getPlayerId().equals(playerId)) {
 						CyphersPlayInfo playInfo = playerDataInGame.getPlayInfo();
 
 						gameRecord.setPlayCharacterId(playInfo.getCharacterId());
+						gameRecord.setResult(matchedInfo.getPlayInfo().getResult());
+						log.info("게임결과: "+gameRecord.getResult());
 						gameRecord.setPositionName(playerDataInGame.getPosition().getName());
 						List<String> attributeIds = new ArrayList<>();
 						for (CyphersCharacterAttribute attribute : playerDataInGame.getPosition().getAttribute()) {

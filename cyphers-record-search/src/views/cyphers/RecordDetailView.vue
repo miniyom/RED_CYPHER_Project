@@ -167,7 +167,10 @@
           <b-list-group-item v-for="game in games" :key="game.id" class="p-1 text-left">
             <!-- 게임 타입 -->
             <div class="d-flex align-items-center" style="justify-content: space-around;">
-              <div class="flex-shrink-0 me-3 pe-2 fs-5">{{ game.type }}</div>
+              <div class="flex-shrink-0 me-3 pe-2 fs-5">
+                <div>{{ game.type }}</div>
+                <div>{{ game.result }}</div>
+              </div>
 
               <!-- 캐릭터 이미지 -->
               <b-img :src="game.characterImage" rounded="circle" alt="Character" class="me-5" style="width: 80px;"></b-img>
@@ -190,6 +193,7 @@
 
               <!-- 게임 정보 -->
               <div class="me-5">
+                <div>킬 / 데스 / 어시 / (킬기여도)</div>
                 <div>{{ game.gameInfo.kills }} / {{ game.gameInfo.deaths }} / {{ game.gameInfo.assists }} ({{ game.gameInfo.participationRate }}%)</div>
                 <div>{{ game.gameInfo.kda == -1 ? "PERFECT" : game.gameInfo.kda}} KDA</div>
                 <div>{{ game.gameInfo.cs }} CS</div>
@@ -314,6 +318,7 @@ export default {
       games: [{
         id: 0,
         type: "공식전",
+        result: "승리",
         characterImage: "https://placekitten.com/100/100",
         postionImage: "@/public/img/tanker.png",
         traits: [
@@ -410,6 +415,7 @@ export default {
       const transformedData = rawData.map(record => ({
         id: id++,
         type: record.gameType === "RATING" ? "공식전" : "일반전",
+        result: record.result,
         characterImage: `https://img-api.neople.co.kr/cy/characters/${record.playCharacterId}?zoom=2`,  // 플레이어 캐릭터 이미지 URL
         positionImage: this.getPostionImage(record.positionName),
         traits: record.attributeIds.map(traitId => `https://img-api.neople.co.kr/cy/position-attributes/${traitId}`),  // 특성 이미지 URL 배열
@@ -440,7 +446,7 @@ export default {
         }))
       }));
 
-      return transformedData
+      return transformedData;
     },
     fetchPlayerData(playerId) {
       // 서버에서 사용자 데이터를 가져오는 API 호출
