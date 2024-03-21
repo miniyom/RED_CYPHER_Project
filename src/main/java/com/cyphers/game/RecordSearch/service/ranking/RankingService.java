@@ -28,8 +28,9 @@ public class RankingService {
 		CyphersPlayerRankInfo cyPlayerRankInfo = cyApiService.searchPlayerRanking(playerId).getRows().get(0);
 		rankInfo.setRank(cyPlayerRankInfo.getRank());
 		rankInfo.setNickname(cyPlayerRankInfo.getNickname());
-		rankInfo.setClanName(cyPlayerRankInfo.getClanName());
 		rankInfo.setGrade(cyPlayerRankInfo.getGrade());
+		//티어 계산식 필요
+		rankInfo.setTier(null);
 		rankInfo.setRatingPoint(cyPlayerRankInfo.getRatingPoint());
 		return rankInfo;
 	}
@@ -41,7 +42,8 @@ public class RankingService {
 			PlayerRankInfo rankInfo = new PlayerRankInfo();
 			rankInfo.setRank(cyRankInfo.getRank());
 			rankInfo.setNickname(cyRankInfo.getNickname());
-			rankInfo.setClanName(cyRankInfo.getClanName());
+			//티어 계산식 필요
+			rankInfo.setTier(null);
 			rankInfo.setGrade(cyRankInfo.getGrade());
 			rankInfo.setRatingPoint(cyRankInfo.getRatingPoint());
 			rankList.add(rankInfo);

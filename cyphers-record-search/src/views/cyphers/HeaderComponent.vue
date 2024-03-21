@@ -7,11 +7,17 @@
         <img src="./img/rclogo4.png" class="d-inline-block align-top" alt="메인">
       </b-navbar-brand>
 
-      <b-navbar-nav class="mx-auto font-size-small">
-        <b-nav-item href="/" class="font-weight-bold mr-5">메인 페이지</b-nav-item>
+      <b-navbar-nav class="mx-auto font-size-small font-weight-bold mr-5">
+        <b-nav-item>
+          <router-link to="/" class="nav-link">메인 페이지</router-link>
+        </b-nav-item>
+        <b-nav-item>
+          <router-link to="/ranking/all" class="nav-link">통합 랭킹</router-link>
+        </b-nav-item>
+        
+        
 
         <b-nav-item href="#">사이퍼 정보</b-nav-item>
-        <b-nav-item href="#">전체 랭킹</b-nav-item>
         <b-nav-item href="#">캐릭터 코멘트</b-nav-item>
         <b-nav-item href="#">게시판</b-nav-item>
       </b-navbar-nav>
@@ -28,6 +34,14 @@
 .navbar-container {
   display: flex;
   justify-content: space-between;
+}
+.custom-link {
+  color: gray; /* 기본적으로 회색 */
+  text-decoration: none; /* 밑줄 제거 */
+}
+.custom-link:hover {
+  color: white; /* 마우스를 올리면 글자색이 더 진한 색으로 변경 */
+  text-decoration: underline; /* 밑줄 추가 */
 }
 
 @media (max-width: 768px) {
@@ -53,4 +67,5 @@ export default {
   mounted() {
   }
 }
+
 </script>
