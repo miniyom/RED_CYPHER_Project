@@ -3,6 +3,7 @@
         <Header/>
         <b-container class="mt-3 mt-5 text-left">
             <h2>공식전 통합 랭킹</h2>
+            <p class="p-font">플레이어를 클릭해서 모스트 픽을 확인해보세요!</p>
         </b-container>
         <b-container>
             <b-row class="my-5 pl-3">
@@ -46,18 +47,38 @@
                 </b-col>
             </b-row>
         </b-container>
+        <!-- <b-container class="my-5">
+            <b-list-group-item v-if="this.players.length < 2">
+                랭킹이 존재하지 않습니다.
+            </b-list-group-item>
+            <b-table :items="players" :fields="fields" bordered striped hover responsive class="custom-table"></b-table>
+        </b-container> -->
         <b-container class="my-5">
             <!-- <b-list-group-item v-if="this.players.length < 2">
-                랭킹이 존재하지 않습니다.
+            랭킹이 존재하지 않습니다.
             </b-list-group-item> -->
-            <b-row>
-                <b-col>
-                    <b-table class="custom-table" hover bordered :items="players" :fields="fields" :row-variant="rowVariant" >
-
-                        <!-- 필드 커스터마이징 또는 슬롯을 이용한 추가적인 컨텐츠 표시 가능 -->
-                    </b-table>
-                </b-col>
-            </b-row>
+            <div class="ranking-table">
+            <table class="custom-table">
+                <thead>
+                    <tr>
+                        <th>랭크</th>
+                        <th>닉네임</th>
+                        <th>급수</th>
+                        <th>티어</th>
+                        <th>RP</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="(player, index) in players" :key="index">
+                        <td>{{ player.rank }}</td>
+                        <td>{{ player.name }}</td>
+                        <td>{{ player.grade }}</td>
+                        <td>{{ player.tier }}</td>
+                        <td>{{ player.ratingPoint }}</td>
+                    </tr>
+                </tbody>
+            </table>
+            </div>
         </b-container>
     </div>
 </template>
@@ -72,16 +93,12 @@ components: {
 data() {
     return {
         players: [
-            { id: 1, name: '플레이어 1', rank: 'Diamond I' },
-            { id: 2, name: '플레이어 2', rank: 'Platinum II' },
-            { id: 3, name: '플레이어 3', rank: 'Gold III' },
-            { id: 3, name: '플레이어 3', rank: 'Gold III' },
-            { id: 3, name: '플레이어 3', rank: 'Gold III' },
-            { id: 3, name: '플레이어 3', rank: 'Gold III' },
-            { id: 3, name: '플레이어 3', rank: 'Gold III' },
-            { id: 3, name: '플레이어 3', rank: 'Gold III' },
-            { id: 3, name: '플레이어 3', rank: 'Gold III' },
-            { id: 3, name: '플레이어 3', rank: 'Gold III' },
+            { id: 1, name: '플레이어 1', rank: 'Diamond I', grade: 'A', tier: '1', ratingPoint: '2000' },
+            { id: 2, name: '플레이어 2', rank: 'Platinum II', grade: 'B', tier: '2', ratingPoint: '1800' },
+            { id: 3, name: '플레이어 3', rank: 'Gold III', grade: 'C', tier: '3', ratingPoint: '1600' },
+            { id: 4, name: '플레이어 3', rank: 'Gold III', grade: 'C', tier: '3', ratingPoint: '1600' },
+            { id: 5, name: '플레이어 3', rank: 'Gold III', grade: 'C', tier: '3', ratingPoint: '1600' },
+            { id: 6, name: '플레이어 3', rank: 'Gold III', grade: 'C', tier: '3', ratingPoint: '1600' },
             // 데이터는 실제로 API 호출 등으로 받아와야 함
         ],
         fields: [
@@ -94,39 +111,71 @@ data() {
     };
 },
 methods: {
-    rowVariant(item, index) {
-        return index % 2 === 0 ? 'even-row' : 'odd-row';
-    }
+    
 }
 };
 </script>
   
 <style scoped>
+.ranking-table {
+  font-family: 'Arial', sans-serif;
+}
+
 .custom-table {
-  border: 2px solid #4682B4; /* 하늘색 테두리 */
+    width: 100%;
+    text-align: center;
+    background-color: white;
+    border-collapse: collapse;
+    border: 2px solid #A5BED2;
+    /* border-radius: .25rem; */
+    overflow: hidden;
 }
 
-.even-row {
-  background-color: #87CEFA; /* 짝수 행 배경색 */
+.custom-table th,
+.custom-table td {
+    padding: .75rem;
+    border-top: 1px solid #A5BED2;
 }
 
-.odd-row {
-  background-color: #add8e6; /* 홀수 행 배경색 */
+.custom-table th {
+    text-align: center;
+    border-bottom: 2px solid #A5BED2;
+    border-right: 2px solid #A5BED2;
+    background-color: #DDEBE2;
 }
 
-.even-row:hover, .odd-row:hover {
-  background-color: #4682B4; /* 마우스를 올렸을 때 어두운 하늘색 */
+.custom-table tbody tr:nth-child(odd) {
+    background-color: #F5F7FB;
+}
+
+.custom-table tbody tr:hover {
+    background-color: #E0E6F5;
+}
+
+.colors {
+    background-color: #87CEFA; /* 짝수 행 배경색 */
+    background-color: #add8e6; /* 홀수 행 배경색 */
+    background-color: #4682B4; /* 마우스를 올렸을 때 어두운 하늘색 */
+
+    background-color: #A5BED2; /* 테두리 */
+    background-color: #E0E6F5; /* 마우스 올렸을 때 */
+    background-color: #F5F7FB; /* 짝수행 */
+    background-color: #DDEBE2; /* 테이블헤드 */
 }
 
 .text-left {
-  text-align: left;
+    text-align: left;
 }
 
 .container-box {
-  border: 2px solid #87CEFA;
-  box-sizing: border-box;
-  border-radius: 10px; /* 둥근 테두리 적용 */
-  padding: 15px; /* 내부 패딩을 조금 추가해줬습니다. */
+    border: 2px solid #A5BED2;
+    background-color: #F9F9FA;
+    box-sizing: border-box;
+    border-radius: 10px; /* 둥근 테두리 적용 */
+    padding: 15px; /* 내부 패딩을 조금 추가해줬습니다. */
+}
+.p-font {
+    color : #BDBDBD;
 }
 
 .tier-image {
