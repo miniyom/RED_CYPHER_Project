@@ -71,7 +71,7 @@
                 <tbody>
                     <tr v-for="(player, index) in players" :key="index">
                         <td>{{ player.rank }}</td>
-                        <td>{{ player.name }}</td>
+                        <td>{{ player.nickname }}</td>
                         <td>{{ player.grade }}</td>
                         <td>{{ player.tier }}</td>
                         <td>{{ player.ratingPoint }}</td>
@@ -85,34 +85,46 @@
   
 <script>
 import Header from "./HeaderComponent.vue";
+import axios from "axios";
 
 export default {
-components: {
-    Header
-},
-data() {
-    return {
-        players: [
-            { id: 1, name: '플레이어 1', rank: 'Diamond I', grade: 'A', tier: '1', ratingPoint: '2000' },
-            { id: 2, name: '플레이어 2', rank: 'Platinum II', grade: 'B', tier: '2', ratingPoint: '1800' },
-            { id: 3, name: '플레이어 3', rank: 'Gold III', grade: 'C', tier: '3', ratingPoint: '1600' },
-            { id: 4, name: '플레이어 3', rank: 'Gold III', grade: 'C', tier: '3', ratingPoint: '1600' },
-            { id: 5, name: '플레이어 3', rank: 'Gold III', grade: 'C', tier: '3', ratingPoint: '1600' },
-            { id: 6, name: '플레이어 3', rank: 'Gold III', grade: 'C', tier: '3', ratingPoint: '1600' },
-            // 데이터는 실제로 API 호출 등으로 받아와야 함
-        ],
-        fields: [
-            { key: 'rank', label: '랭크'},
-            { key: 'name', label: '닉네임' },
-            { key: 'grade', label: '급수' },
-            { key: 'tier', label: '티어' },
-            { key: 'ratingPoint', label: 'RP' }
-        ],
-    };
-},
-methods: {
-    
-}
+    components: {
+        Header
+    },
+    data() {
+        return {
+            players: [
+                { id: 1, name: '플레이어 1', rank: 'Diamond I', grade: 'A', tier: '1', ratingPoint: '2000' },
+                { id: 2, name: '플레이어 2', rank: 'Platinum II', grade: 'B', tier: '2', ratingPoint: '1800' },
+                { id: 3, name: '플레이어 3', rank: 'Gold III', grade: 'C', tier: '3', ratingPoint: '1600' },
+                { id: 4, name: '플레이어 3', rank: 'Gold III', grade: 'C', tier: '3', ratingPoint: '1600' },
+                { id: 5, name: '플레이어 3', rank: 'Gold III', grade: 'C', tier: '3', ratingPoint: '1600' },
+                { id: 6, name: '플레이어 3', rank: 'Gold III', grade: 'C', tier: '3', ratingPoint: '1600' },
+                // 데이터는 실제로 API 호출 등으로 받아와야 함
+            ],
+            fields: [
+                { key: 'rank', label: '랭크'},
+                { key: 'nickname', label: '닉네임' },
+                { key: 'grade', label: '급수' },
+                { key: 'tier', label: '티어' },
+                { key: 'ratingPoint', label: 'RP' }
+            ],
+        };
+    },
+    methods: {
+        
+    },
+    mounted() {
+        axios.get(`/api/ranking/player/0/50`)
+            .then((response) => {
+                this.players = response.data;
+            })
+            .catch((error) => {
+                alert("서버에 오류가 발생했습니다.", error);
+                console.log("error: ", error);
+                this.$router.push('/'); 
+            });
+    }
 };
 </script>
   
