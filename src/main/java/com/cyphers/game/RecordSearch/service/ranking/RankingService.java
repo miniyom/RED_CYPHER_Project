@@ -29,7 +29,6 @@ public class RankingService {
 		rankInfo.setRank(cyPlayerRankInfo.getRank());
 		rankInfo.setNickname(cyPlayerRankInfo.getNickname());
 		rankInfo.setGrade(cyPlayerRankInfo.getGrade());
-		//티어 계산식 필요
 		rankInfo.setTier(getTierName(cyPlayerRankInfo.getRatingPoint(), cyPlayerRankInfo.getRank()));
 		rankInfo.setRatingPoint(cyPlayerRankInfo.getRatingPoint());
 		return rankInfo;
@@ -42,7 +41,6 @@ public class RankingService {
 			PlayerRankInfo rankInfo = new PlayerRankInfo();
 			rankInfo.setRank(cyRankInfo.getRank());
 			rankInfo.setNickname(cyRankInfo.getNickname());
-			//티어 계산식 필요
 			rankInfo.setTier(getTierName(cyRankInfo.getRatingPoint(), cyRankInfo.getRank()));
 			rankInfo.setGrade(cyRankInfo.getGrade());
 			rankInfo.setRatingPoint(cyRankInfo.getRatingPoint());

@@ -11,7 +11,7 @@
                     <b-row><h5>Legend 커트 라인</h5></b-row>
                     <b-row class="align-items-center">
                         <b-col><b-img src="/img/legend2.png" class="tier-image"></b-img></b-col>
-                        <b-col><h2>3000 RP</h2></b-col>
+                        <b-col><h2 :style="{ whiteSpace: 'pre-line' }">{{ legendCutPoint }}</h2></b-col>
                     </b-row>
                     <b-row class="px-4 pt-3">
                         <b-col>
@@ -30,7 +30,7 @@
                     <b-row><h5>Hero 커트 라인</h5></b-row>
                     <b-row class="align-items-center">
                         <b-col class="justify-content-center"><b-img src="/img/hero.png" class="tier-image"></b-img></b-col>
-                        <b-col><h2>2500 RP</h2></b-col>
+                        <b-col><h2 :style="{ whiteSpace: 'pre-line' }">{{ heroCutPoint }}</h2></b-col>
                     </b-row>
                     <b-row class="px-4 pt-3">
                         <b-col>
@@ -111,13 +111,51 @@ export default {
             ],
         };
     },
+    computed: {
+        legendCutPoint() {
+            return this.getLegendCut();
+        },
+        heroCutPoint() {
+            return this.getHeroCut();
+        }
+    },
     methods: {
-        
+        getLegendCut() {
+            const lastLegendIndex = 0;
+            if (this.players[0].tier !== 'Legend') {
+                return 'No\nLegends'
+            }
+            // 레전드 티어는 30위까지
+            for (let index = 0; index < 31; index++) {
+                if (this.players[index].tier === 'Legend') {
+                    continue;
+                } else {
+                    this.lastLegendIndex = index - 1;
+                }
+            }
+            return this.players[lastLegendIndex].ratingPoint+"RP";
+        },
+        getHeroCut() {
+            const lastHeroIndex = 0;
+            if (this.players[30].tier !== 'Hero') {
+                return 'No\nHeros'
+            }
+            // 히어로 티어는 30위까지
+            for (let index = 0; index < 31; index++) {
+                if (this.players[index].tier === 'Hero') {
+                    continue;
+                } else {
+                    this.lastHeroIndex = index - 1;
+                }
+            }
+            return this.players[lastHeroIndex].ratingPoint+"RP";
+        }
     },
     mounted() {
         axios.get(`/api/ranking/player/0/50`)
             .then((response) => {
                 this.players = response.data;
+                console.log("30위의 정보: ", this.players[29]);
             })
             .catch((error) => {
                 alert("서버에 오류가 발생했습니다.", error);
