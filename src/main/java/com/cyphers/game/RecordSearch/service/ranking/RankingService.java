@@ -49,6 +49,20 @@ public class RankingService {
 		return rankList;
 	}
 	
+	public Integer getRankerNum() throws Exception {
+		Integer offset = 0;
+		Integer limit = 500;
+		Integer rankerNum = 0;
+		Integer apiRankerNum = 1;
+		
+		while (apiRankerNum != 0) {
+			apiRankerNum = cyApiService.searchRankingList(offset, limit).getRows().size();
+			rankerNum += apiRankerNum;
+			offset += 500;
+		}
+		return rankerNum;
+	}
+	
 	public String getTierName(Integer ratingPoint, Integer rank) {
 		if (ratingPoint < 1300) {
 			return "Bronze4";

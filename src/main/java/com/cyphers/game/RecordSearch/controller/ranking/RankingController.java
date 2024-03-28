@@ -25,14 +25,20 @@ public class RankingController {
 	@Autowired
 	private RankingService rankingService;
 
-	@GetMapping("/player/{nickname}")
+	@GetMapping("/player/search/{nickname}")
 	public PlayerRankInfo getPlayerRanking(@PathVariable("nickname") String nickname) throws Exception {
 		return rankingService.getPlayerRankInfo(nickname);
 	}
 	
-	@GetMapping("/player/{offset}/{limit}")
+	@GetMapping("/player/list/{offset}/{limit}")
 	public List<PlayerRankInfo> getRankingList(@PathVariable("offset") Integer offset, 
-											  @PathVariable("limit") Integer limit) throws Exception {
+											   @PathVariable("limit") Integer limit) throws Exception {
 		return rankingService.getPlayerRankList(offset, limit);
+	}
+	
+	@GetMapping("/player/total-num")
+	public Integer getTotalRankerNum() throws Exception {
+		
+		return rankingService.getRankerNum();
 	}
 }

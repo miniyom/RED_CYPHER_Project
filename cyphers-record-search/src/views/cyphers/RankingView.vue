@@ -11,18 +11,18 @@
                     <b-row><h5>Legend 커트 라인</h5></b-row>
                     <b-row class="align-items-center">
                         <b-col><b-img src="/img/legend2.png" class="tier-image"></b-img></b-col>
-                        <b-col><h2 :style="{ whiteSpace: 'pre-line' }">{{ legendCutPoint }}</h2></b-col>
+                        <b-col><h2 :style="{ whiteSpace: 'pre-line' }">{{ this.legendCutPoint === 0 ? 'No\nLegends' : (this.legendCutPoint+"RP") }}</h2></b-col>
                     </b-row>
                     <b-row class="px-4 pt-3">
                         <b-col>
-                            <b-row>전일 대비 변화량</b-row>
+                            <b-row>전체 랭커</b-row>
                             <b-row>상위</b-row>
                             <b-row>플레이어 수</b-row>
                         </b-col>
                         <b-col class="d-flex flex-column">
-                            <b-row class="align-self-end">+10</b-row>
-                            <b-row class="align-self-end">0.1%</b-row>
-                            <b-row class="align-self-end">50</b-row>
+                            <b-row class="align-self-end">{{ this.totalRankerNum }}명</b-row>
+                            <b-row class="align-self-end">{{ (this.legendCutPoint / this.totalRankerNum).toFixed(2) }}%</b-row>
+                            <b-row class="align-self-end">{{ this.legendPlayerNum }}명</b-row>
                         </b-col>
                     </b-row>
                 </b-col>
@@ -30,18 +30,18 @@
                     <b-row><h5>Hero 커트 라인</h5></b-row>
                     <b-row class="align-items-center">
                         <b-col class="justify-content-center"><b-img src="/img/hero.png" class="tier-image"></b-img></b-col>
-                        <b-col><h2 :style="{ whiteSpace: 'pre-line' }">{{ heroCutPoint }}</h2></b-col>
+                        <b-col><h2 :style="{ whiteSpace: 'pre-line' }">{{ this.heroCutPoint === 0 ? 'No\nHeros' : (this.heroCutPoint+"RP") }}</h2></b-col>
                     </b-row>
                     <b-row class="px-4 pt-3">
                         <b-col>
-                            <b-row>전일 대비 변화량</b-row>
+                            <b-row>전체 랭커</b-row>
                             <b-row>상위</b-row>
                             <b-row>플레이어 수</b-row>
                         </b-col>
                         <b-col class="d-flex flex-column">
-                            <b-row class="align-self-end">+10</b-row>
-                            <b-row class="align-self-end">0.1%</b-row>
-                            <b-row class="align-self-end">50</b-row>
+                            <b-row class="align-self-end">4000명</b-row>
+                            <b-row class="align-self-end">{{ (this.heroCutPoint / this.totalRankerNum).toFixed(2) }}%</b-row>
+                            <b-row class="align-self-end">{{ this.heroPlayerNum}}명</b-row>
                         </b-col>
                     </b-row>
                 </b-col>
@@ -72,7 +72,7 @@
                     <tr v-for="(player, index) in players" :key="index">
                         <td>{{ player.rank }}</td>
                         <td>{{ player.nickname }}</td>
-                        <td>{{ player.grade }}</td>
+                        <td>{{ player.grade }}급</td>
                         <td>{{ player.tier }}</td>
                         <td>{{ player.ratingPoint }}</td>
                     </tr>
@@ -93,13 +93,23 @@ export default {
     },
     data() {
         return {
-            players: [
-                { id: 1, name: '플레이어 1', rank: 'Diamond I', grade: 'A', tier: '1', ratingPoint: '2000' },
-                { id: 2, name: '플레이어 2', rank: 'Platinum II', grade: 'B', tier: '2', ratingPoint: '1800' },
-                { id: 3, name: '플레이어 3', rank: 'Gold III', grade: 'C', tier: '3', ratingPoint: '1600' },
-                { id: 4, name: '플레이어 3', rank: 'Gold III', grade: 'C', tier: '3', ratingPoint: '1600' },
-                { id: 5, name: '플레이어 3', rank: 'Gold III', grade: 'C', tier: '3', ratingPoint: '1600' },
-                { id: 6, name: '플레이어 3', rank: 'Gold III', grade: 'C', tier: '3', ratingPoint: '1600' },
+            legendCutPoint: '',
+            heroCutPoint: '',
+            legendPlayerNum: 0,
+            heroPlayerNum: 0,
+            totalRankerNum: 0,
+            players: [{ 
+                nickname: '플레이어 1', 
+                rank: '1', 
+                grade: '100급', 
+                tier: 'Legend', 
+                ratingPoint: '2000' 
+            },
+                { nickname: '플레이어 2', rank: '2', grade: '100급', tier: 'Hero', ratingPoint: '1800' },
+                { nickname: '플레이어 3', rank: '3', grade: '100급', tier: 'Zoker1', ratingPoint: '1600' },
+                { nickname: '플레이어 3', rank: '4', grade: '100급', tier: 'Zoker2', ratingPoint: '1600' },
+                { nickname: '플레이어 3', rank: '5', grade: '100급', tier: 'Zoker2', ratingPoint: '1600' },
+                { nickname: '플레이어 3', rank: '6', grade: '100급', tier: 'Zoker3', ratingPoint: '1600' },
                 // 데이터는 실제로 API 호출 등으로 받아와야 함
             ],
             fields: [
@@ -112,50 +122,63 @@ export default {
         };
     },
     computed: {
-        legendCutPoint() {
-            return this.getLegendCut();
-        },
-        heroCutPoint() {
-            return this.getHeroCut();
-        }
+        
     },
     methods: {
         getLegendCut() {
-            const lastLegendIndex = 0;
+            let lastLegendIndex = 0;
             if (this.players[0].tier !== 'Legend') {
-                return 'No\nLegends'
+                return 0;
             }
             // 레전드 티어는 30위까지
-            for (let index = 0; index < 31; index++) {
+            for (let index = 0; index <= 30; index++) {
                 if (this.players[index].tier === 'Legend') {
                     continue;
                 } else {
-                    this.lastLegendIndex = index - 1;
+                    lastLegendIndex = index - 1;
+                    this.legendPlayerNum = index;
+                    break;
                 }
             }
-            return this.players[lastLegendIndex].ratingPoint+"RP";
+            return this.players[lastLegendIndex].ratingPoint;
         },
         getHeroCut() {
-            const lastHeroIndex = 0;
+            let lastHeroIndex = 0;
             if (this.players[30].tier !== 'Hero') {
-                return 'No\nHeros'
+                return 0;
             }
-            // 히어로 티어는 30위까지
-            for (let index = 0; index < 31; index++) {
+            // 히어로 티어는 300위까지
+            for (let index = 30; index <= 300; index++) {
                 if (this.players[index].tier === 'Hero') {
                     continue;
                 } else {
-                    this.lastHeroIndex = index - 1;
+                    lastHeroIndex = index - 1;
+                    this.heroPlayerNum = index;
+                    break;
                 }
             }
-            return this.players[lastHeroIndex].ratingPoint+"RP";
+            return this.players[lastHeroIndex].ratingPoint;
+        },
+        getTotalRankernum() {
+            axios.get(`/api/ranking/player/total-num`)
+                .then((response) => {
+                    this.totalRankerNum = response.data;
+                })
+                .catch((error) => {
+                    alert("랭커를 계산하는데에 오류가 발생했습니다.", error);
+                    console.log("error: ", error);
+                    this.$router.push('/'); 
+                });
         }
     },
     mounted() {
-        axios.get(`/api/ranking/player/0/50`)
+        axios.get(`/api/ranking/player/list/0/50`)
             .then((response) => {
                 this.players = response.data;
-                console.log("30위의 정보: ", this.players[29]);
+
+                this.legendCutPoint = this.getLegendCut();
+                this.heroCutPoint = this.getHeroCut();
+                this.getTotalRankernum();
             })
             .catch((error) => {
                 alert("서버에 오류가 발생했습니다.", error);
