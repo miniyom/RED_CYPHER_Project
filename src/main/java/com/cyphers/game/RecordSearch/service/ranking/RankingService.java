@@ -40,6 +40,7 @@ public class RankingService {
 		for (CyphersPlayerRankInfo cyRankInfo : cyRankList) {
 			PlayerRankInfo rankInfo = new PlayerRankInfo();
 			rankInfo.setRank(cyRankInfo.getRank());
+			rankInfo.setBeforeRank(cyRankInfo.getBeforeRank());
 			rankInfo.setNickname(cyRankInfo.getNickname());
 			rankInfo.setTier(getTierName(cyRankInfo.getRatingPoint(), cyRankInfo.getRank()));
 			rankInfo.setGrade(cyRankInfo.getGrade());

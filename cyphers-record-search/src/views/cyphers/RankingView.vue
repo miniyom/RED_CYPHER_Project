@@ -6,7 +6,7 @@
             <p class="p-font">플레이어를 클릭해서 모스트 픽을 확인해보세요!</p>
         </b-container>
         <b-container>
-            <b-row class="my-5 pl-3">
+            <b-row class="mt-5 mb-3 pl-3">
                 <b-col cols="3" class="container-box mx-3">
                     <b-row><h5>Legend 커트 라인</h5></b-row>
                     <b-row class="align-items-center">
@@ -15,9 +15,9 @@
                     </b-row>
                     <b-row class="px-4 pt-3">
                         <b-col>
-                            <b-row>전체 랭커</b-row>
+                            <b-row>전체 능력자</b-row>
                             <b-row>상위</b-row>
-                            <b-row>플레이어 수</b-row>
+                            <b-row>능력자 수</b-row>
                         </b-col>
                         <b-col class="d-flex flex-column">
                             <b-row class="align-self-end">{{ this.totalRankerNum }}명</b-row>
@@ -34,17 +34,20 @@
                     </b-row>
                     <b-row class="px-4 pt-3">
                         <b-col>
-                            <b-row>전체 랭커</b-row>
+                            <b-row>전체 능력자</b-row>
                             <b-row>상위</b-row>
-                            <b-row>플레이어 수</b-row>
+                            <b-row>능력자 수</b-row>
                         </b-col>
                         <b-col class="d-flex flex-column">
-                            <b-row class="align-self-end">4000명</b-row>
+                            <b-row class="align-self-end">{{ this.totalRankerNum }}명</b-row>
                             <b-row class="align-self-end">{{ (this.heroCutPoint / this.totalRankerNum).toFixed(2) }}%</b-row>
                             <b-row class="align-self-end">{{ this.heroPlayerNum}}명</b-row>
                         </b-col>
                     </b-row>
                 </b-col>
+            </b-row>
+            <b-row>
+                <p class="p-font text-left">전체 능력자는 배치고사를 마친 능력자를 집계한 수치입니다.</p>
             </b-row>
         </b-container>
         <!-- <b-container class="my-5">
@@ -53,7 +56,7 @@
             </b-list-group-item>
             <b-table :items="players" :fields="fields" bordered striped hover responsive class="custom-table"></b-table>
         </b-container> -->
-        <b-container class="my-5">
+        <b-container class="mt-4 mb-5">
             <!-- <b-list-group-item v-if="this.players.length < 2">
             랭킹이 존재하지 않습니다.
             </b-list-group-item> -->
@@ -61,7 +64,7 @@
             <table class="custom-table">
                 <thead>
                     <tr>
-                        <th>랭크</th>
+                        <th :style="{width:'15%'}">랭크</th>
                         <th>닉네임</th>
                         <th>급수</th>
                         <th>티어</th>
@@ -70,7 +73,15 @@
                 </thead>
                 <tbody>
                     <tr v-for="(player, index) in players" :key="index">
-                        <td>{{ player.rank }}</td>
+                        <td>
+                            <div class="row">
+                                <div class="col-md-6 font-bold">{{ player.rank }}</div>
+                                <div v-if="player.zeroDifference" class="col-md-6 " style="vertical-align: middle; display: flex; align-items: center;">
+                                    <div class="bar" :style="{width: '15px'}"></div>
+                                </div>
+                                <div v-else class="col-md-6" :style="{ color: player.textColor, fontSize: '15px'}">{{ player.sign }}{{ player.difference }}</div>
+                            </div>
+                        </td>
                         <td>{{ player.nickname }}</td>
                         <td>{{ player.grade }}급</td>
                         <td>{{ player.tier }}</td>
@@ -98,12 +109,18 @@ export default {
             legendPlayerNum: 0,
             heroPlayerNum: 0,
             totalRankerNum: 0,
+            
             players: [{ 
                 nickname: '플레이어 1', 
-                rank: '1', 
-                grade: '100급', 
+                rank: 1, 
+                beforeRank: 0,
+                textColor: '', // 폰트 색상을 동적으로 설정할 변수
+                difference: 0, // rank - beforeRank의 값
+                zeroDifference: false,
+                sign: '', // 부호를 추가할 변수
+                grade: 0, 
                 tier: 'Legend', 
-                ratingPoint: '2000' 
+                ratingPoint: 0 
             },
                 { nickname: '플레이어 2', rank: '2', grade: '100급', tier: 'Hero', ratingPoint: '1800' },
                 { nickname: '플레이어 3', rank: '3', grade: '100급', tier: 'Zoker1', ratingPoint: '1600' },
@@ -124,6 +141,9 @@ export default {
     computed: {
         
     },
+    // created() {
+    //     this.calculateDifference();
+    // },
     methods: {
         getLegendCut() {
             let lastLegendIndex = 0;
@@ -169,7 +189,24 @@ export default {
                     console.log("error: ", error);
                     this.$router.push('/'); 
                 });
-        }
+        },
+        // rank - beforeRank의 값을 계산하고, 색상 및 부호를 설정하는 메서드
+        calculateDifference() {
+            this.players.forEach(player => {
+                player.difference = Math.abs(player.rank - player.beforeRank); // 차이값을 절댓값으로 계산
+
+                if (player.rank < player.beforeRank) {
+                    player.textColor = '#1CA484';
+                    player.sign = '▲';
+                } else if (player.rank > player.beforeRank){
+                    player.textColor = '#E96767';
+                    player.sign = '▼';
+                } else {
+                    player.difference = '';
+                    player.zeroDifference = true;
+                }
+            });
+        },
     },
     mounted() {
         axios.get(`/api/ranking/player/list/0/50`)
@@ -179,6 +216,7 @@ export default {
                 this.legendCutPoint = this.getLegendCut();
                 this.heroCutPoint = this.getHeroCut();
                 this.getTotalRankernum();
+                this.calculateDifference();
             })
             .catch((error) => {
                 alert("서버에 오류가 발생했습니다.", error);
@@ -186,7 +224,7 @@ export default {
                 this.$router.push('/'); 
             });
     }
-};
+}
 </script>
   
 <style scoped>
@@ -213,7 +251,7 @@ export default {
 .custom-table th {
     text-align: center;
     border-bottom: 2px solid #A5BED2;
-    border-right: 2px solid #A5BED2;
+    border-right: 1px solid #A5BED2;
     background-color: #DDEBE2;
 }
 
@@ -254,4 +292,16 @@ export default {
 .tier-image {
     width: 100px;
 }
+
+.font-bold {
+    font-weight: bold;
+}
+.bar{
+    height: 3px;
+    background-color: rgb(49, 49, 49);
+    opacity: 0.6;
+    vertical-align: middle;
+    margin: auto;
+}
+
 </style>

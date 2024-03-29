@@ -14,6 +14,7 @@ import lombok.Setter;
 public class PlayerRankInfo {
 
 	private Integer rank;
+	private Integer beforeRank;
 	private String nickname;
 	private Integer grade;
 	private String tier;

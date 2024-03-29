@@ -533,9 +533,5 @@ export default {
   color: #343a40; /* 마우스를 올리면 글자색이 더 진한 색으로 변경 */
   text-decoration: underline; /* 밑줄 추가 */
 }
-/* 
-.rounded-image {
-  border-radius: 50%; //이미지를 동그랗게 만들기 위한 설정
-} */
 
 </style>
