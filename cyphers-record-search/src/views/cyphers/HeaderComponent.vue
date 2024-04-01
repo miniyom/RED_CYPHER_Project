@@ -8,13 +8,8 @@
       </b-navbar-brand>
 
       <b-navbar-nav class="mx-auto font-size-small font-weight-bold mr-5">
-        <b-nav-item>
-          <router-link to="/" class="nav-link">메인 페이지</router-link>
-        </b-nav-item>
-        <b-nav-item>
-          <router-link to="/ranking/all" class="nav-link">통합 랭킹</router-link>
-        </b-nav-item>
-        
+        <b-nav-item href="/">메인페이지</b-nav-item>
+        <b-nav-item href="#/ranking/all">통합 랭킹</b-nav-item>
         
 
         <b-nav-item href="#">사이퍼 정보</b-nav-item>
@@ -34,14 +29,6 @@
 .navbar-container {
   display: flex;
   justify-content: space-between;
-}
-.custom-link {
-  color: gray; /* 기본적으로 회색 */
-  text-decoration: none; /* 밑줄 제거 */
-}
-.custom-link:hover {
-  color: white; /* 마우스를 올리면 글자색이 더 진한 색으로 변경 */
-  text-decoration: underline; /* 밑줄 추가 */
 }
 
 @media (max-width: 768px) {

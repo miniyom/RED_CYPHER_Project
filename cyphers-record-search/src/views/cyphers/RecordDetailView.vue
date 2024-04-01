@@ -463,7 +463,7 @@ export default {
     },
     forwardDetail(playerName) {
       if (this.$route.params.nickname === playerName) {
-        window.location.reload();
+        window.location.reload(); //현재 페이지와 동일한 플레이어로 접근시 현재 페이지 새로고침
       } else {
         localStorage.setItem("nickname", playerName);
         this.$router.push({ name: 'RecordDetail', params: { nickname: playerName }});
