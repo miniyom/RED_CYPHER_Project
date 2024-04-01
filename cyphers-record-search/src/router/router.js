@@ -2,6 +2,7 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Main from '@/views/cyphers/MainView.vue'
 import RecordDetailView from "@/views/cyphers/RecordDetailView.vue";
+import RankingView from "@/views/cyphers/RankingView.vue"
 import UserList from '@/views/UserList.vue'
 import UserEdit from '@/views/UserEdit.vue'
 
@@ -15,10 +16,16 @@ const routes = [
         component: Main,
     },
     {
-        path: '/record/detail',
+        path: '/record/detail/:nickname',
         name: 'RecordDetail',
         component: RecordDetailView,
-        props: true
+        props: true,
+        meta: {refresh: true}
+    },
+    {
+        path: '/ranking/all',
+        name: 'Ranking',
+        component: RankingView,
     },
     {
         path: '/user/list',
@@ -41,7 +48,11 @@ const routes = [
 const router = new VueRouter({
     mode: 'hash',
     base: '/vue/html', // 이 부분을 추가하세요.
-    routes
+    routes,
+    scrollBehavior() {
+        // 항상 페이지의 맨 위로 스크롤합니다.
+        return { x: 0, y: 0 };
+    }
 })
 
 export default router

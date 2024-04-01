@@ -1,4 +1,4 @@
-package com.cyphers.game.RecordSearch.model.ranking;
+package com.cyphers.game.RecordSearch.model.search;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,12 +11,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class PlayerRankInfo {
-
-	private Integer rank;
-	private Integer beforeRank;
+public class TeamPlayerInfo {
+	private String characterId;
 	private String nickname;
-	private Integer grade;
-	private String tier;
-	private Integer ratingPoint;
 }
