@@ -50,18 +50,12 @@
                 <p class="p-font text-left">전체 능력자는 배치고사를 마친 능력자를 집계한 수치입니다.</p>
             </b-row>
         </b-container>
-        <!-- <b-container class="my-5">
-            <b-list-group-item v-if="this.players.length < 2">
-                랭킹이 존재하지 않습니다.
-            </b-list-group-item>
-            <b-table :items="players" :fields="fields" bordered striped hover responsive class="custom-table"></b-table>
-        </b-container> -->
-        <b-container class="mt-4 mb-5">
-            <!-- <b-list-group-item v-if="this.players.length < 2">
+        <b-container v-if="this.players.length < 2" class=" my-4 container-box">
             랭킹이 존재하지 않습니다.
-            </b-list-group-item> -->
+        </b-container>
+        <b-container v-else class="mt-4 mb-5">
             <div class="ranking-table">
-                <table class="custom-table">
+                <table class="custom-table" id="my-table">
                     <thead>
                         <tr>
                             <th :style="{width:'15%'}">랭크</th>
@@ -89,29 +83,37 @@
                         </tr>
                     </tbody>
                 </table>
-                <!-- 페이징 버튼 -->
                 
-                <!-- 페이지 넘버 버튼 -->
                 <div class="pagination">
-                    <!-- 이전 5개 페이지로 이동하는 버튼 -->
-                    <button @click="moveBackwardPages" :disabled="currentPage <= 5" class="pagination-btn"> &lt;&lt; </button>
 
-                    <!-- 이전 페이지로 이동하는 버튼 -->
+                    <button @click="goToPage(1)" class="pagination-btn"> First </button>
+                    <button @click="moveBackwardPages" class="pagination-btn"> ≪ </button>
                     <button @click="prevPage" :disabled="currentPage === 1" class="pagination-btn"> &lt; </button>
-
-                    <!-- 페이지 넘버 버튼들 -->
                     <button v-for="pageNumber in displayedPageNumbers"
                             :key="pageNumber"
                             @click="goToPage(pageNumber)"
                             :class="{ 'active': pageNumber === currentPage }"
                             class="pagination-btn">{{ pageNumber }}</button>
-
-                    <!-- 다음 페이지로 이동하는 버튼 -->
                     <button @click="nextPage" :disabled="currentPage === totalPages" class="pagination-btn">></button>
+                    <button @click="moveForwardPages" class="pagination-btn">≫</button>
+                    <button @click="goToPage(totalPages)" class="pagination-btn"> Last </button>
 
-                    <!-- 다음 5개 페이지로 이동하는 버튼 -->
-                    <button @click="moveForwardPages" :disabled="currentPage + 5 > totalPages" class="pagination-btn">>></button>
                 </div>
+                <!-- <div class="my-5">
+                    <b-pagination
+                        v-model="currentPage"
+                        :total-rows="totalRankerNum"
+                        :per-page="pageSize"
+                        first-text="⏮"
+                        prev-text="⏪"
+                        next-text="⏩"
+                        last-text="⏭"
+                        class="mt-4"
+                        size="lg"
+                    ></b-pagination>
+                </div> -->
+
+
             </div>
         </b-container>
     </div>
@@ -120,10 +122,12 @@
 <script>
 import Header from "./HeaderComponent.vue";
 import axios from "axios";
+// import { BPagination } from 'bootstrap-vue'
 
 export default {
     components: {
-        Header
+        Header,
+        // BPagination
     },
     data() {
         return {
@@ -156,7 +160,6 @@ export default {
                 { key: 'ratingPoint', label: 'RP' }
             ],
 
-            totalPlayers: 0,
             pageSize: 50,
             currentPage: 1
         };
@@ -165,21 +168,27 @@ export default {
         totalPages() {
             return Math.ceil(this.totalRankerNum / this.pageSize);
         },
-        displayedPlayers() {
-            const startIndex = (this.currentPage - 1) * this.pageSize;
-            const endIndex = startIndex + this.pageSize;
-            return this.players.slice(startIndex, endIndex);
-        },
         displayedPageNumbers() {
             const maxPageButtons = 10; // 최대 페이지 버튼 수
-            let startPage = Math.max(1, this.currentPage - 4); // 현재 페이지를 중심으로 앞으로 4개의 페이지까지 표시
-            const endPage = Math.min(this.totalPages, startPage + maxPageButtons - 1); // 현재 페이지를 중심으로 최대 10개까지 표시
-
-            if (endPage - startPage < maxPageButtons - 1) {
-                startPage = Math.max(1, endPage - maxPageButtons + 1);
+            let startPage = 1; 
+            if (this.currentPage % 10 === 0) {
+                startPage = this.currentPage - maxPageButtons + 1
+            } else if (this.currentPage > 10) {
+                startPage = this.currentPage - (this.currentPage % 10) + 1
+            } else {
+                startPage = 1;
             }
+            const endPage = Math.min(this.totalPages, startPage + maxPageButtons - 1);
 
             return Array(endPage - startPage + 1).fill().map((_, index) => startPage + index);
+        }
+    },
+    watch: {
+        currentPage(newPage, oldPage) {
+            // currentPage 값이 변경될 때마다 fetchData 함수 실행
+            if (newPage !== oldPage) {
+                this.fetchRankers();
+            }
         }
     },
     methods: {
@@ -221,7 +230,8 @@ export default {
             axios.get(`/api/ranking/player/total-num`)
                 .then((response) => {
                     this.totalRankerNum = response.data;
-                    console.log("전체 랭커 수: "+this.totalRankerNum);
+                    this.legendCutPoint = this.getLegendCut();
+                    this.heroCutPoint = this.getHeroCut();
                 })
                 .catch((error) => {
                     alert("랭커를 계산하는데에 오류가 발생했습니다.", error);
@@ -250,21 +260,19 @@ export default {
             });
         },
         fetchRankers() {
-            const startIndex = (this.currentPage - 1) * this.pageSize;
-            const endIndex = startIndex + this.pageSize;
-            axios.get(`/api/ranking/player/list/${startIndex}/${endIndex}`)
+            const offset = (this.currentPage - 1) * this.pageSize;
+            const limit = this.pageSize;
+            axios.get(`/api/ranking/player/list/${offset}/${limit}`)
                 .then(response => {
-                    this.players = response.data;
 
-                    this.legendCutPoint = this.getLegendCut();
-                    this.heroCutPoint = this.getHeroCut();
+                    this.players = response.data;
                     this.calculateDifference();
+                    this.scrollTop();
                 })
                 .catch(error => {
                     alert("서버에 오류가 발생했습니다.", error);
                     console.error('Error fetching players:', error);
                     this.$router.push('/'); 
-                    throw error;
                 });
         },
         nextPage() {
@@ -280,21 +288,33 @@ export default {
             }
         },
         moveForwardPages() {
-            if (this.currentPage < this.totalPages) {
-                this.currentPage += 5;
+            if (this.totalPages - this.currentPage < 10) {
+                this.currentPage = this.totalPages;
+                this.fetchRankers();
+            } else if (this.currentPage < this.totalPages) {
+                this.currentPage += 10;
                 this.fetchRankers();
             }
         },
         moveBackwardPages() {
-            if (this.currentPage > 1) {
-                this.currentPage -= 5;
+            if (this.currentPage < 10) {
+                this.currentPage = 1;
+                this.fetchRankers();
+            } else if (this.currentPage > 1) {
+                this.currentPage -= 10;
                 this.fetchRankers();
             }
         },
         goToPage(pageNumber) {
             this.currentPage = pageNumber;
             this.fetchRankers();
-        }
+        },
+        scrollTop() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth' // 부드러운 스크롤
+            });
+        },
     },
     mounted() {
         this.fetchTotalRanker();
@@ -314,7 +334,6 @@ export default {
     background-color: white;
     border-collapse: collapse;
     border: 2px solid #A5BED2;
-    /* border-radius: .25rem; */
     overflow: hidden;
 }
 
@@ -363,17 +382,21 @@ export default {
 }
 .bar{
     height: 3px;
-    background-color: rgb(49, 49, 49);
+    background-color: #313131;
     opacity: 0.6;
     vertical-align: middle;
     margin: auto;
 }
 
 .pagination {
-  margin-top: 10px;
+    margin-top: 40px;
+    display: flex;
+    justify-content: center; /* 가로 정렬을 중앙에 맞춤 */
+    align-items: center; /* 세로 정렬을 중앙에 맞춤 */
 }
 
 .pagination-btn {
+  display: inline-block; 
   margin: 0 5px;
   padding: 5px 10px;
   border: 1px solid #ccc;
