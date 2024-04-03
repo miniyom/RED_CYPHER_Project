@@ -9,7 +9,7 @@
         <input
             type="text"
             class="form-control form-control-lg"
-            placeholder="검색어를 입력하세요"
+            placeholder="능력자 명을 입력하세요"
             aria-label="검색어"
             aria-describedby="search-button"
             v-model="searchText"
@@ -58,7 +58,6 @@ export default {
       isInputFocused: false,
       searchText: '',
       searchData: [],
-      timeout: null,
     }
   },
   methods: {
@@ -69,7 +68,7 @@ export default {
     },
     onHover(event) {
       event.target.style.cursor = "pointer";
-      event.target.style.backgroundColor = "#f5f5f5"; // 예시로 배경색 변경 추가. 원하는 스타일로 조절 가능
+      event.target.style.backgroundColor = "#E0E6F5"; // 예시로 배경색 변경 추가. 원하는 스타일로 조절 가능
     },
     onLeave(event) {
       event.target.style.cursor = "default";

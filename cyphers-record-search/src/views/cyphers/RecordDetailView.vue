@@ -6,7 +6,7 @@
     <!-- 프로필 박스 -->
     <b-container class="container-box my-3 mt-5">
       <b-row>
-        <b-col sm="auto" class="p-0">
+        <b-col sm="auto" class="p-1">
           <img :src="playerCharacterImage" alt="프로필 이미지" class="img-fluid rounded-circle profile-image">
         </b-col>
         <b-col class="pl-0 text-left align-self-end">
@@ -298,7 +298,7 @@ export default {
   },
   data() {
     return {
-      playerNickname: localStorage.getItem("nickname"),
+      playerNickname: this.$route.params.nickname,
       playerId: '',
       playerCharacterImage: '',
       activeTab: '모스트 사이퍼', // 예시
@@ -465,7 +465,6 @@ export default {
       if (this.$route.params.nickname === playerName) {
         window.location.reload(); //현재 페이지와 동일한 플레이어로 접근시 현재 페이지 새로고침
       } else {
-        localStorage.setItem("nickname", playerName);
         this.$router.push({ name: 'RecordDetail', params: { nickname: playerName }});
       }
     },
@@ -484,7 +483,7 @@ export default {
   },
   mounted() {
     // VueTooltip.init();
-    axios.get(`/api/search/player/search/${localStorage.getItem(`nickname`)}`)
+    axios.get(`/api/search/player/search/${this.$route.params.nickname}`)
       .then((response) => {
         const playerData = response.data;
         this.playerId = playerData.playerId;
