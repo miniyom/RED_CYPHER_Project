@@ -7,7 +7,7 @@
         <img src="./img/rclogo4.png" class="d-inline-block align-top" alt="메인">
       </b-navbar-brand>
 
-      <b-navbar-nav class="mx-auto font-size-small font-weight-bold mr-5">
+      <b-navbar-nav class="font-size-small font-weight-bold">
         <b-nav-item href="/">메인페이지</b-nav-item>
         <b-nav-item href="#/ranking/all">통합 랭킹</b-nav-item>
         

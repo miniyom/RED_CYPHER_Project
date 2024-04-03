@@ -1,6 +1,7 @@
 <template>
     <div>
         <Header/>
+        <HeaderSearch/>
         <b-container class="mt-3 mt-5 text-left">
             <h2>공식전 통합 랭킹</h2>
             <p class="p-font">플레이어를 클릭해서 모스트 픽을 확인해보세요!</p>
@@ -76,7 +77,14 @@
                                     <div v-else class="col-md-6" :style="{ color: player.textColor, fontSize: '15px'}">{{ player.sign }}{{ player.difference }}</div>
                                 </div>
                             </td>
-                            <td>{{ player.nickname }}</td>
+                            <td>
+                                <b-link class="custom-link" 
+                                        @click="forwardDetail(player.nickname)" 
+                                        @mouseover="hovered = true" 
+                                        @mouseleave="hovered = false">
+                                    <div class="ml-3">{{ player.nickname }}</div>
+                                </b-link>
+                            </td>
                             <td>{{ player.grade }}급</td>
                             <td>{{ player.tier }}</td>
                             <td>{{ player.ratingPoint }}</td>
@@ -113,7 +121,6 @@
                     ></b-pagination>
                 </div> -->
 
-
             </div>
         </b-container>
     </div>
@@ -121,12 +128,14 @@
   
 <script>
 import Header from "./HeaderComponent.vue";
+import HeaderSearch from "./HeaderSearch.vue";
 import axios from "axios";
 // import { BPagination } from 'bootstrap-vue'
 
 export default {
     components: {
         Header,
+        HeaderSearch
         // BPagination
     },
     data() {
@@ -236,7 +245,6 @@ export default {
                 .catch((error) => {
                     alert("랭커를 계산하는데에 오류가 발생했습니다.", error);
                     console.log("error: ", error);
-                    this.$router.push('/'); 
                 });
         },
         // rank - beforeRank의 값을 계산하고, 색상 및 부호를 설정하는 메서드
@@ -315,6 +323,9 @@ export default {
                 behavior: 'smooth' // 부드러운 스크롤
             });
         },
+        forwardDetail(playerNickname) {
+            this.$router.push({ name: 'RecordDetail', params: { nickname: playerNickname }});
+        }
     },
     mounted() {
         this.fetchTotalRanker();
@@ -418,8 +429,17 @@ export default {
 }
 
 .pagination-btn.active {
-  background-color: #007bff;
+  background-color: #6c757d;
   color: #fff;
+}
+.custom-link {
+  color: #000000; /* 기본적으로 회색 */
+  text-decoration: none; /* 밑줄 제거 */
+}
+
+.custom-link:hover {
+  color: #343a40; /* 마우스를 올리면 글자색이 더 진한 색으로 변경 */
+  text-decoration: underline; /* 밑줄 추가 */
 }
 
 </style>
