@@ -3,7 +3,7 @@
     <Header/>
     <div class="d-flex flex-column align-items-center justify-content-center" style="height: 80vh;">
       <h1 class="display-1 mb-2">
-        <img src="./img/rclogo3.png" class="d-inline-block align-top" alt="고먐미">
+        <img src="/img/rclogo3.png" class="d-inline-block align-top" alt="고먐미">
       </h1>
       <div class="input-group mb-3 w-50 position-relative"> <!-- 여기에 position-relative 추가 -->
         <input
@@ -47,7 +47,7 @@
 
 <script>
 import axios from "axios";
-import Header from "./HeaderComponent.vue";
+import Header from "@/mycomponents/HeaderComponent.vue";
 
 export default {
   components: {

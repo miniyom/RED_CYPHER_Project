@@ -1,7 +1,7 @@
 <template>
     <div>
         <Header/>
-        <HeaderSearch/>
+        <HeaderRankSearch/>
         <b-container class="mt-3 mt-5 text-left">
             <h2>공식전 통합 랭킹</h2>
             <p class="p-font">플레이어를 클릭해서 모스트 픽을 확인해보세요!</p>
@@ -12,7 +12,7 @@
                     <b-row><h5>Legend 커트 라인</h5></b-row>
                     <b-row class="align-items-center">
                         <b-col><b-img src="/img/legend2.png" class="tier-image"></b-img></b-col>
-                        <b-col><h2 :style="{ whiteSpace: 'pre-line' }">{{ this.legendCutPoint === 0 ? 'No\nLegends' : (this.legendCutPoint+"RP") }}</h2></b-col>
+                        <b-col><h2 :style="{ whiteSpace: 'pre-line' }">{{ legendCutPoint === 0 ? 'No\nLegends' : (legendCutPoint+"RP") }}</h2></b-col>
                     </b-row>
                     <b-row class="px-4 pt-3">
                         <b-col>
@@ -21,9 +21,9 @@
                             <b-row>능력자 수</b-row>
                         </b-col>
                         <b-col class="d-flex flex-column">
-                            <b-row class="align-self-end">{{ this.totalRankerNum }}명</b-row>
-                            <b-row class="align-self-end">{{ (this.legendCutPoint / this.totalRankerNum).toFixed(2) }}%</b-row>
-                            <b-row class="align-self-end">{{ this.legendPlayerNum }}명</b-row>
+                            <b-row class="align-self-end">{{ totalRankerNum }}명</b-row>
+                            <b-row class="align-self-end">{{ (legendCutPoint / totalRankerNum).toFixed(2) }}%</b-row>
+                            <b-row class="align-self-end">{{ legendPlayerNum }}명</b-row>
                         </b-col>
                     </b-row>
                 </b-col>
@@ -31,7 +31,7 @@
                     <b-row><h5>Hero 커트 라인</h5></b-row>
                     <b-row class="align-items-center">
                         <b-col class="justify-content-center"><b-img src="/img/hero.png" class="tier-image"></b-img></b-col>
-                        <b-col><h2 :style="{ whiteSpace: 'pre-line' }">{{ this.heroCutPoint === 0 ? 'No\nHeros' : (this.heroCutPoint+"RP") }}</h2></b-col>
+                        <b-col><h2 :style="{ whiteSpace: 'pre-line' }">{{ heroCutPoint === 0 ? 'No\nHeros' : (heroCutPoint+"RP") }}</h2></b-col>
                     </b-row>
                     <b-row class="px-4 pt-3">
                         <b-col>
@@ -40,9 +40,9 @@
                             <b-row>능력자 수</b-row>
                         </b-col>
                         <b-col class="d-flex flex-column">
-                            <b-row class="align-self-end">{{ this.totalRankerNum }}명</b-row>
-                            <b-row class="align-self-end">{{ (this.heroCutPoint / this.totalRankerNum).toFixed(2) }}%</b-row>
-                            <b-row class="align-self-end">{{ this.heroPlayerNum}}명</b-row>
+                            <b-row class="align-self-end">{{ totalRankerNum }}명</b-row>
+                            <b-row class="align-self-end">{{ (heroCutPoint / totalRankerNum).toFixed(2) }}%</b-row>
+                            <b-row class="align-self-end">{{ heroPlayerNum}}명</b-row>
                         </b-col>
                     </b-row>
                 </b-col>
@@ -51,7 +51,7 @@
                 <p class="p-font text-left">전체 능력자는 배치고사를 마친 능력자를 집계한 수치입니다.</p>
             </b-row>
         </b-container>
-        <b-container v-if="this.players.length < 2" class=" my-4 container-box">
+        <b-container v-if="players.length < 2" class=" my-4 container-box">
             랭킹이 존재하지 않습니다.
         </b-container>
         <b-container v-else class="mt-4 mb-5">
@@ -66,7 +66,7 @@
                             <th>RP</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody v-if="$route.params.type === 'all_list'">
                         <tr v-for="(player, index) in players" :key="index">
                             <td>
                                 <div class="row">
@@ -90,9 +90,33 @@
                             <td>{{ player.ratingPoint }}</td>
                         </tr>
                     </tbody>
+                    <tbody v-else>
+                        <tr>
+                            <td>
+                                <div class="row">
+                                    <div class="col-md-6 font-bold">{{ singlePlayer.rank }}</div>
+                                    <div v-if="singlePlayer.zeroDifference" class="col-md-6 " style="vertical-align: middle; display: flex; align-items: center;">
+                                        <div class="bar" :style="{width: '15px'}"></div>
+                                    </div>
+                                    <div v-else class="col-md-6" :style="{ color: singlePlayer.textColor, fontSize: '15px'}">{{ singlePlayer.sign }}{{ singlePlayer.difference }}</div>
+                                </div>
+                            </td>
+                            <td>
+                                <b-link class="custom-link" 
+                                        @click="forwardDetail(singlePlayer.nickname)" 
+                                        @mouseover="hovered = true" 
+                                        @mouseleave="hovered = false">
+                                    <div class="ml-3">{{ singlePlayer.nickname }}</div>
+                                </b-link>
+                            </td>
+                            <td>{{ singlePlayer.grade }}급</td>
+                            <td>{{ singlePlayer.tier }}</td>
+                            <td>{{ singlePlayer.ratingPoint }}</td>
+                        </tr>
+                    </tbody>
                 </table>
                 
-                <div class="pagination">
+                <div class="pagination" v-if="$route.params.type === 'all_list'">
 
                     <button @click="goToPage(1)" class="pagination-btn"> First </button>
                     <button @click="moveBackwardPages" class="pagination-btn"> ≪ </button>
@@ -127,25 +151,42 @@
 </template>
   
 <script>
-import Header from "./HeaderComponent.vue";
-import HeaderSearch from "./HeaderSearch.vue";
+import Header from "@/mycomponents/HeaderComponent.vue";
+import HeaderRankSearch from "@/mycomponents/HeaderRankingSearch.vue";
 import axios from "axios";
 // import { BPagination } from 'bootstrap-vue'
 
 export default {
     components: {
         Header,
-        HeaderSearch
+        HeaderRankSearch,
         // BPagination
     },
     data() {
         return {
+            isInputFocused: false,
+            searchText: '',
+            searchData: [],
+
             legendCutPoint: '',
             heroCutPoint: '',
             legendPlayerNum: 0,
             heroPlayerNum: 0,
             totalRankerNum: 0,
             
+            singlePlayer: {
+                nickname: '', 
+                rank: 0, 
+                beforeRank: 0,
+                grade: 0, 
+                tier: '', 
+                ratingPoint: 0,
+
+                textColor: '', 
+                difference: 0, 
+                zeroDifference: false,
+                sign: '', 
+            },
             players: [
                 { 
                     nickname: '플레이어 1', 
@@ -243,29 +284,10 @@ export default {
                     this.heroCutPoint = this.getHeroCut();
                 })
                 .catch((error) => {
-                    alert("랭커를 계산하는데에 오류가 발생했습니다.", error);
+                    alert("서버에 오류가 발생했습니다.", error);
                     console.log("error: ", error);
+                    this.$router.push('/'); 
                 });
-        },
-        // rank - beforeRank의 값을 계산하고, 색상 및 부호를 설정하는 메서드
-        calculateDifference() {
-            this.players.forEach(player => {
-                player.difference = Math.abs(player.rank - player.beforeRank); // 차이값을 절댓값으로 계산
-                if (player.beforeRank === 0) {
-                    player.difference = 'new';
-                    player.textColor = '#1CA484';
-                    player.sign = '▲';
-                } else if (player.rank < player.beforeRank) {
-                    player.textColor = '#1CA484';
-                    player.sign = '▲';
-                } else if (player.rank > player.beforeRank){
-                    player.textColor = '#E96767';
-                    player.sign = '▼';
-                } else {
-                    player.difference = '';
-                    player.zeroDifference = true;
-                }
-            });
         },
         fetchRankers() {
             const offset = (this.currentPage - 1) * this.pageSize;
@@ -274,15 +296,62 @@ export default {
                 .then(response => {
 
                     this.players = response.data;
-                    this.calculateDifference();
+                    this.calcListDifference();
                     this.scrollTop();
                 })
                 .catch(error => {
-                    alert("서버에 오류가 발생했습니다.", error);
+                    alert("랭킹 리스트를 불러올 수 없습니다.", error);
                     console.error('Error fetching players:', error);
-                    this.$router.push('/'); 
                 });
         },
+        fetchSingleRanker() {
+            axios.get(`/api/ranking/player/search/${this.$route.params.type}`)
+                .then(response => {
+                    this.singlePlayer = response.data;
+                    this.calcSingleDifference();
+                    this.scrollTop();
+                })
+                .catch(error => {
+                    alert("랭킹 정보를 불러올 수 없습니다.", error);
+                    console.error('Error fetching Single player:', error);
+                    this.$router.push('/ranking/all_list'); 
+                });
+        },
+        forwardDetail(playerNickname) {
+            this.$router.push({ name: 'RecordDetail', params: { nickname: playerNickname }});
+        },
+
+
+
+        // rank - beforeRank의 값을 계산하고, 색상 및 부호를 설정하는 메서드
+        calcListDifference() {
+            this.players.forEach(player => {
+                this.designFluctuations(player);
+            });
+        },
+        calcSingleDifference() {
+            this.designFluctuations(this.singlePlayer);
+        },
+        designFluctuations(player) {
+            player.difference = Math.abs(player.rank - player.beforeRank); // 차이값을 절댓값으로 계산
+            if (player.beforeRank === 0) {
+                player.difference = 'new';
+                player.textColor = '#1CA484';
+                player.sign = '▲';
+            } else if (player.rank < player.beforeRank) {
+                player.textColor = '#1CA484';
+                player.sign = '▲';
+            } else if (player.rank > player.beforeRank){
+                player.textColor = '#E96767';
+                player.sign = '▼';
+            } else {
+                player.difference = '';
+                player.zeroDifference = true;
+            }
+        },
+
+
+
         nextPage() {
             if (this.currentPage < this.totalPages) {
                 this.currentPage++;
@@ -323,13 +392,43 @@ export default {
                 behavior: 'smooth' // 부드러운 스크롤
             });
         },
-        forwardDetail(playerNickname) {
-            this.$router.push({ name: 'RecordDetail', params: { nickname: playerNickname }});
-        }
+
+
+
+        handleBlur() {
+            if (!this.preventBlur) {
+                this.isInputFocused = false;
+            }
+        },
+        onHover(event) {
+            event.target.style.cursor = "pointer";
+            event.target.style.backgroundColor = "#E0E6F5"; 
+        },
+        onLeave(event) {
+            event.target.style.cursor = "default";
+            event.target.style.backgroundColor = "white"; // hover 효과가 사라질 때 원래 상태로 되돌리기 위한 코드
+        },
+        selectAutocompleteItem(text) {
+            this.searchText = text;
+            this.isInputFocused = false;
+        },
+        fetchData() {
+            axios.get(`/api/search/auto-complete/${this.searchText}`)
+                .then(response => {
+                this.searchData = [];
+                    for (let index = 0; index < response.data.length; index++) {
+                        this.searchData.push({'text': response.data[index], 'id' : index});
+                    }
+                });
+        },
     },
     mounted() {
         this.fetchTotalRanker();
         this.fetchRankers();
+        if (this.$route.params.type !== 'all_list') {
+            console.log("파라미터 뭔데 시발: ", this.$route.params.type); 
+            this.fetchSingleRanker();
+        }
     }
 }
 </script>

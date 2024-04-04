@@ -27,6 +27,7 @@ public class RankingService {
 		PlayerRankInfo rankInfo = new PlayerRankInfo();
 		CyphersPlayerRankInfo cyPlayerRankInfo = cyApiService.searchPlayerRanking(playerId).getRows().get(0);
 		rankInfo.setRank(cyPlayerRankInfo.getRank());
+		rankInfo.setBeforeRank(cyPlayerRankInfo.getBeforeRank());
 		rankInfo.setNickname(cyPlayerRankInfo.getNickname());
 		rankInfo.setGrade(cyPlayerRankInfo.getGrade());
 		rankInfo.setTier(getTierName(cyPlayerRankInfo.getRatingPoint(), cyPlayerRankInfo.getRank()));
