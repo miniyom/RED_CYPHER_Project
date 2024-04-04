@@ -23,7 +23,7 @@ const routes = [
         meta: {refresh: true}
     },
     {
-        path: '/ranking/all',
+        path: '/ranking/:type',
         name: 'Ranking',
         component: RankingView,
     },

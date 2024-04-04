@@ -2,6 +2,7 @@
   <div>
     <!-- 최상단: Header -->
     <Header/>
+    <HeaderSearch/>
 
     <!-- 프로필 박스 -->
     <b-container class="container-box my-3 mt-5">
@@ -279,9 +280,11 @@
 
 <script>
 import axios from "axios";
-import Header from "./HeaderComponent.vue";
+import Header from "@/mycomponents/HeaderComponent.vue";
+import HeaderSearch from "@/mycomponents/HeaderSearch.vue";
 import LineGraph from "@/components/LineGraph";
 import PieGraph from "@/components/PieGraph";
+
 // import VueTooltip from 'v-tooltip';
 
 export default {
@@ -293,6 +296,7 @@ export default {
   },
   components: {
     Header,
+    HeaderSearch,
     LineGraph,
     PieGraph,
   },
