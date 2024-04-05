@@ -157,30 +157,36 @@
       </b-row>
     </b-container>
 
-    <b-container class="my-3 container-box h-100">
-      <b-list-group class="h-100">
+    <b-container class="my-3 container-box">
+      <b-list-group>
         <!-- games 배열이 비어있을 때 메시지 표시 -->
         <b-list-group-item v-if="this.games.length < 2">
           게임 기록이 없습니다.
         </b-list-group-item>
         <!-- games 배열이 비어있지 않을 때 게임 리스트 표시 -->
         <template v-else>
-          <b-list-group-item v-for="game in games" :key="game.id" class="p-1 text-left">
-            <!-- 게임 타입 -->
-            <div class="d-flex align-items-center" style="justify-content: space-around;">
-              <div class="flex-shrink-0 me-3 pe-2 fs-5">
-                <div>{{ game.type }}</div>
-                <div>{{ game.result }}</div>
-              </div>
+          <b-list-group-item v-for="game in games" :key="game.id" class="p-1 text-left" :style="{ backgroundColor: backgroundColorByResult(game.result)}" style="color: #6E7474;">
+            <b-row class="align-items-center justify-content-around" style="overflow: hidden;">
+              <!-- 게임 타입 -->
+              <b-col sm="1" class="ml-3 pe-2 fs-5 d-flex justify-content-center">
+                <div class="flex-wrap">
+                  <b-row>{{ game.type }}</b-row>
+                  <b-row>{{ game.result }}</b-row>
+                </div>
+              </b-col>
 
               <!-- 캐릭터 이미지 -->
-              <b-img :src="game.characterImage" rounded="circle" alt="Character" class="me-5" style="width: 80px;"></b-img>
+              <b-col sm="auto">
+                <b-img :src="game.characterImage" rounded="circle" alt="Character" class="me-4" style="width: 80px;"></b-img>
+              </b-col>
 
               <!-- 포지션 이미지 -->
-              <b-img :src="game.positionImage" rounded="circle" alt="Position" class="me-5" style="width: 40px;"></b-img>
+              <b-col sm="auto">
+                <b-img :src="game.positionImage" rounded="circle" alt="Position" class="me-4" style="width: 40px;"></b-img>
+              </b-col>
 
               <!-- 특성 이미지 -->
-              <div class="me-5 pe-3 h-100">
+              <b-col sm="auto" class=" pe-3">
                 <b-row>
                   <b-img :src="game.traits[0]" rounded="circle" alt="Trait" class="m-0 p-0 me-1" style="width: 30px;"></b-img>
                   <b-img :src="game.traits[1]" rounded="circle" alt="Trait" class="m-0 p-0" style="width: 30px;"></b-img>
@@ -189,58 +195,80 @@
                   <b-img :src="game.traits[2]" rounded="circle" alt="Trait" class="m-0 p-0 me-1" style="width: 30px;"></b-img>
                   <b-img :src="game.traits[3]" rounded="circle" alt="Trait" class="m-0 p-0" style="width: 30px;"></b-img>
                 </b-row>
-              </div>
-
-
-              <!-- 게임 정보 -->
-              <div class="me-5">
-                <div>킬 / 데스 / 어시 / (킬기여도)</div>
-                <div>{{ game.gameInfo.kills }} / {{ game.gameInfo.deaths }} / {{ game.gameInfo.assists }} ({{ game.gameInfo.participationRate }}%)</div>
-                <div>{{ game.gameInfo.kda == -1 ? "PERFECT" : game.gameInfo.kda}} KDA</div>
-                <div>{{ game.gameInfo.cs }} CS</div>
-              </div>
+              </b-col>
 
               <!-- 아이템 정보 -->
-              <div class="me-5">
+              <b-col sm="auto" class="me-2">
                 <b-button @click="showItems(game.id)">아이템 보기</b-button>
-              </div>
+              </b-col>
 
-              <!-- 상세정보1 -->
-              <div class="me-5">
-                <div>{{ game.details.heal }} 힐량</div>
-                <div>{{ game.details.damage }} 준 데미지</div>
-                <div>{{ game.details.takenDamage }} 받은 데미지</div>
-                <div>{{ game.details.coins }} 코인량</div>
-                <div>{{ game.details.participation }} 전투참여</div>
-                <div>{{ game.details.vision }} 시야점수</div>
-              </div>
 
-              <!-- 함께한 플레이어 -->
-              <div class="me-5 d-flex flex-column">
+              <b-col sm="6">
                 <b-row>
-                  <b-col>
-                    <div v-for="player in game.team1Players" :key="player.name" class="d-flex align-items-center mb-1">
-                      <b-link class="custom-link" @click="forwardDetail(player.name)" @mouseover="hovered = true" @mouseleave="hovered = false">
-                        <b-img class="rounded-image" :src="player.image" rounded alt="Player" style="width: 25px;"></b-img>
-                      </b-link>
-                      <b-link class="custom-link" @click="forwardDetail(player.name)" @mouseover="hovered = true" @mouseleave="hovered = false">
-                        <div class="ml-3" style="font-size: 12px;">{{ player.name }}</div>
-                      </b-link>
+                  <!-- 게임 정보 -->
+                  <b-col sm="3" class="d-flex align-items-center">
+                    <div class="flex-wrap">
+                      <div v-b-tooltip.hover title="킬 / 데스 / 어시 / 킬기여도">K / D / A / (KP)</div>
+                      <div>{{ game.gameInfo.kills }} / {{ game.gameInfo.deaths }} / {{ game.gameInfo.assists }} ({{ game.gameInfo.participationRate }}%)</div>
+                      <div>{{ game.gameInfo.kda == -1 ? "PERFECT" : game.gameInfo.kda}} KDA</div>
+                      <div>{{ game.gameInfo.cs }} CS</div>
                     </div>
                   </b-col>
-                  <b-col>
-                    <div v-for="player in game.team2Players" :key="player.name" class="d-flex align-items-center mb-1">
-                      <b-img class="rounded-image" :src="player.image" rounded alt="Player" style="width: 25px;"></b-img>
-                      <div class="ml-2" style="font-size: 12px;">{{ player.name }}</div>
-                    </div>
+                  <!-- 상세정보1 -->
+                  <b-col sm="4">
+                    <b-row>
+                      <b-col>
+                        <div class="text-right">
+                          <div v-b-tooltip.hover title="총 힐량">Heal</div>
+                          <div v-b-tooltip.hover title="공격량">Attack</div>
+                          <div v-b-tooltip.hover title="입은 피해량">Damaged</div>
+                          <div v-b-tooltip.hover title="획득한 코인량">Coin</div>
+                          <div v-b-tooltip.hover title="전투 참여">Battle</div>
+                          <div v-b-tooltip.hover title="시야">Sight</div>
+                        </div>
+                      </b-col>
+                      <b-col>
+                        <div class="text-right">
+                          <div>{{ formatNumber(game.details.heal) }}</div>
+                          <div>{{ formatNumber(game.details.damage) }}</div>
+                          <div>{{ formatNumber(game.details.takenDamage) }}</div>
+                          <div>{{ formatNumber(game.details.coins) }}</div>
+                          <div>{{ formatNumber(game.details.participation) }}</div>
+                          <div>{{ formatNumber(game.details.vision) }}</div>
+                        </div>
+                      </b-col>
+                    </b-row>
+                  </b-col>
+                  <!-- 함께한 플레이어 -->
+                  <b-col sm="5">
+                    <b-row>
+                      <b-col col="6">
+                        <div v-for="player in game.team1Players" :key="player.name" class="d-flex align-items-center mb-1">
+                          <b-link class="custom-link" @click="forwardDetail(player.name)" @mouseover="hovered = true" @mouseleave="hovered = false">
+                            <b-img class="rounded-image" :src="player.image" rounded alt="Player" style="width: 25px;"></b-img>
+                          </b-link>
+                          <b-link class="custom-link" @click="forwardDetail(player.name)" @mouseover="hovered = true" @mouseleave="hovered = false">
+                            <div class="ml-2" style="font-size: 12px;">{{ shortenPlayerName(player.name) }}</div>
+                          </b-link>
+                        </div>
+                      </b-col>
+                      <b-col col="6">
+                        <div v-for="player in game.team2Players" :key="player.name" class="d-flex align-items-center mb-1">
+                          <b-link class="custom-link" @click="forwardDetail(player.name)" @mouseover="hovered = true" @mouseleave="hovered = false">
+                            <b-img class="rounded-image" :src="player.image" rounded alt="Player" style="width: 25px;"></b-img>
+                          </b-link>
+                          <b-link class="custom-link" @click="forwardDetail(player.name)" @mouseover="hovered = true" @mouseleave="hovered = false">
+                            <div class="ml-2" style="font-size: 12px;">{{ shortenPlayerName(player.name) }}</div>
+                          </b-link>
+                        </div>
+                      </b-col>
+                    </b-row>
                   </b-col>
                 </b-row>
-              </div>
-  <!--            <div class="d-flex flex-column">-->
+              </b-col>
 
-  <!--            </div>-->
 
-            </div>
+            </b-row>
           </b-list-group-item>
         </template>
       </b-list-group>
@@ -483,6 +511,27 @@ export default {
         case '서포터':
           return '/img/supporter.png';
       }
+    },
+    shortenPlayerName(name) {
+      // 이름이 너무 길 경우 줄임말로 변형하여 반환
+      if (name.length > 5) {
+        return name.substring(0, 5) + '...';
+      }
+      // 그 외에는 원래의 이름 그대로 반환
+      return name;
+    },
+    formatNumber(number) {
+      if (number >= 10000) {
+        return (number / 1000).toFixed(1) + 'k';
+      }
+      return number.toString();
+    },
+    backgroundColorByResult(result) {
+      if (result === 'win') {
+        return '#E7F0FC'
+      } else {
+        return '#FBECEA'
+      }
     }
   },
   mounted() {
@@ -521,6 +570,9 @@ export default {
 
 .text-left {
   text-align: left;
+}
+.text-right {
+  text-align: right;
 }
 
 .br-1 {

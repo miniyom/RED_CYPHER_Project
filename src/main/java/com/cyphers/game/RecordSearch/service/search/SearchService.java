@@ -427,7 +427,6 @@ public class SearchService {
 
 						gameRecord.setPlayCharacterId(playInfo.getCharacterId());
 						gameRecord.setResult(matchedInfo.getPlayInfo().getResult());
-						log.info("게임결과: "+gameRecord.getResult());
 						gameRecord.setPositionName(playerDataInGame.getPosition().getName());
 						List<String> attributeIds = new ArrayList<>();
 						for (CyphersCharacterAttribute attribute : playerDataInGame.getPosition().getAttribute()) {
