@@ -47,7 +47,7 @@ const routes = [
 
 const router = new VueRouter({
     mode: 'hash',
-    base: '/vue/html', // 이 부분을 추가하세요.
+    base: '/vue/html',
     routes,
     scrollBehavior() {
         // 항상 페이지의 맨 위로 스크롤합니다.

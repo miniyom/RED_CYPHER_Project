@@ -7,8 +7,8 @@
             <p class="p-font">플레이어를 클릭해서 모스트 픽을 확인해보세요!</p>
         </b-container>
         <b-container>
-            <b-row class="mt-5 mb-3 pl-3">
-                <b-col cols="3" class="container-box mx-3">
+            <b-row class="mt-5 mb-3 pl-3 d-flex justifty-content-between">
+                <b-col class="container-box mx-4">
                     <b-row><h5>Legend 커트 라인</h5></b-row>
                     <b-row class="align-items-center">
                         <b-col><b-img src="/img/legend2.png" class="tier-image"></b-img></b-col>
@@ -27,7 +27,7 @@
                         </b-col>
                     </b-row>
                 </b-col>
-                <b-col cols="3" class="container-box mx-3">
+                <b-col class="container-box mx-4">
                     <b-row><h5>Hero 커트 라인</h5></b-row>
                     <b-row class="align-items-center">
                         <b-col class="justify-content-center"><b-img src="/img/hero.png" class="tier-image"></b-img></b-col>
@@ -44,6 +44,16 @@
                             <b-row class="align-self-end">{{ (heroCutPoint / totalRankerNum).toFixed(2) }}%</b-row>
                             <b-row class="align-self-end">{{ heroPlayerNum}}명</b-row>
                         </b-col>
+                    </b-row>
+                </b-col>
+                <b-col class="container-box mx-4">
+                    <b-row>
+                        <h3 class="mt-3 font-bold">랭킹 산정 기준</h3>
+                        <ul class="p-3 m-2 text-left">
+                            <li class="m-2">30급 이상/공식전 10판 이상 참여</li>
+                            <li class="m-2">중단 게임 수 10% 이하</li>
+                            <li class="m-2">일주일에 3게임 이상 참여</li>
+                        </ul>
                     </b-row>
                 </b-col>
             </b-row>
