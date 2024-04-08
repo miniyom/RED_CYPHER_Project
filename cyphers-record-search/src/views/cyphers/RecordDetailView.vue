@@ -169,7 +169,7 @@
             <b-row class="align-items-center justify-content-around" style="overflow: hidden;">
               <!-- 게임 타입 -->
               <b-col sm="1" class="ml-3 pe-2 fs-5 d-flex justify-content-center">
-                <div class="flex-wrap">
+                <div class="flex-wrap font-bold" :style="{ color : fontColorByResult(game.result)}">
                   <b-row>{{ game.type }}</b-row>
                   <b-row>{{ game.result }}</b-row>
                 </div>
@@ -177,16 +177,16 @@
 
               <!-- 캐릭터 이미지 -->
               <b-col sm="auto">
-                <b-img :src="game.characterImage" rounded="circle" alt="Character" class="me-4" style="width: 80px;"></b-img>
+                <b-img :src="game.characterImage" rounded="circle" alt="Character" class="me-4" style="width: 85px;"></b-img>
               </b-col>
 
               <!-- 포지션 이미지 -->
-              <b-col sm="auto">
+              <!-- <b-col sm="auto">
                 <b-img :src="game.positionImage" rounded="circle" alt="Position" class="me-4" style="width: 40px;"></b-img>
-              </b-col>
+              </b-col> -->
 
               <!-- 특성 이미지 -->
-              <b-col sm="auto" class=" pe-3">
+              <!-- <b-col sm="auto" class=" pe-3">
                 <b-row>
                   <b-img :src="game.traits[0]" rounded="circle" alt="Trait" class="m-0 p-0 me-1" style="width: 30px;"></b-img>
                   <b-img :src="game.traits[1]" rounded="circle" alt="Trait" class="m-0 p-0" style="width: 30px;"></b-img>
@@ -195,11 +195,52 @@
                   <b-img :src="game.traits[2]" rounded="circle" alt="Trait" class="m-0 p-0 me-1" style="width: 30px;"></b-img>
                   <b-img :src="game.traits[3]" rounded="circle" alt="Trait" class="m-0 p-0" style="width: 30px;"></b-img>
                 </b-row>
-              </b-col>
+              </b-col> -->
 
               <!-- 아이템 정보 -->
-              <b-col sm="auto" class="me-2">
+              <!-- <b-col sm="auto" class="me-2">
                 <b-button @click="showItems(game.id)">아이템 보기</b-button>
+              </b-col> -->
+
+              <b-col sm="3">
+                <b-row class="mb-2 pb-2" style="border-bottom: solid 1px #6E7474;">
+                  <b-col sm="3">
+                    <b-img :src="game.positionImage" rounded="circle" alt="Position" class="p-0 me-4" style="width: 40px; "></b-img>
+                  </b-col>
+                  <b-col sm="9" class="d-flex justify-content-end">
+                    <b-img :src="game.traits[0]" rounded="circle" alt="Trait" class="m-0 p-0 me-1" style="width: 40px;"></b-img>
+                    <b-img :src="game.traits[1]" rounded="circle" alt="Trait" class="m-0 p-0 me-1" style="width: 40px;"></b-img>
+                    <b-img :src="game.traits[2]" rounded="circle" alt="Trait" class="m-0 p-0 me-1" style="width: 40px;"></b-img>
+                    <b-img :src="game.traits[3]" rounded="circle" alt="Trait" class="m-0 p-0" style="width: 40px;"></b-img>
+                  </b-col>
+                </b-row>
+                <b-row>
+                  <!-- <b-button @click="showItems(game.id)">아이템 보기</b-button> -->
+                  <div>
+                    <!-- 첫 번째 줄 -->
+                    <div class="d-flex justify-content-between mb-2">
+                      <b-img
+                          v-for="item in game.items.slice(0, 8)"
+                          :src="item"
+                          :alt="'Item ' + item"
+                          :key="item"
+                          class="flex-grow-1 pe-1"
+                          style="max-width: 12.5%;"
+                      ></b-img>
+                    </div>
+                    <!-- 두 번째 줄 -->
+                    <div class="d-flex justify-content-between">
+                      <b-img
+                          v-for="item in game.items.slice(8, 16)"
+                          :src="item"
+                          :alt="'Item ' + item"
+                          :key="item"
+                          class="flex-grow-1 pe-1"
+                          style="max-width: 12.5%;"
+                      ></b-img>
+                    </div>
+                  </div>
+                </b-row>
               </b-col>
 
 
@@ -215,7 +256,7 @@
                     </div>
                   </b-col>
                   <!-- 상세정보1 -->
-                  <b-col sm="4">
+                  <b-col sm="3" class="me-5"> 
                     <b-row>
                       <b-col>
                         <div class="text-right">
@@ -242,23 +283,23 @@
                   <!-- 함께한 플레이어 -->
                   <b-col sm="5">
                     <b-row>
-                      <b-col col="6">
+                      <b-col sm="6">
                         <div v-for="player in game.team1Players" :key="player.name" class="d-flex align-items-center mb-1">
                           <b-link class="custom-link" @click="forwardDetail(player.name)" @mouseover="hovered = true" @mouseleave="hovered = false">
-                            <b-img class="rounded-image" :src="player.image" rounded alt="Player" style="width: 25px;"></b-img>
+                            <b-img class="rounded-image" :src="player.image" rounded alt="Player" style="width: 25px;" ></b-img>
                           </b-link>
                           <b-link class="custom-link" @click="forwardDetail(player.name)" @mouseover="hovered = true" @mouseleave="hovered = false">
-                            <div class="ml-2" style="font-size: 12px;">{{ shortenPlayerName(player.name) }}</div>
+                            <div v-b-tooltip.hover :title="player.name" class="ml-2" style="font-size: 12px;">{{ shortenPlayerName(player.name) }}</div>
                           </b-link>
                         </div>
                       </b-col>
-                      <b-col col="6">
+                      <b-col sm="6">
                         <div v-for="player in game.team2Players" :key="player.name" class="d-flex align-items-center mb-1">
                           <b-link class="custom-link" @click="forwardDetail(player.name)" @mouseover="hovered = true" @mouseleave="hovered = false">
                             <b-img class="rounded-image" :src="player.image" rounded alt="Player" style="width: 25px;"></b-img>
                           </b-link>
                           <b-link class="custom-link" @click="forwardDetail(player.name)" @mouseover="hovered = true" @mouseleave="hovered = false">
-                            <div class="ml-2" style="font-size: 12px;">{{ shortenPlayerName(player.name) }}</div>
+                            <div v-b-tooltip.hover :title="player.name" class="ml-2" style="font-size: 12px;">{{ shortenPlayerName(player.name) }}</div>
                           </b-link>
                         </div>
                       </b-col>
@@ -514,8 +555,8 @@ export default {
     },
     shortenPlayerName(name) {
       // 이름이 너무 길 경우 줄임말로 변형하여 반환
-      if (name.length > 5) {
-        return name.substring(0, 5) + '...';
+      if (name.length > 6) {
+        return name.substring(0, 6) + '...';
       }
       // 그 외에는 원래의 이름 그대로 반환
       return name;
@@ -532,7 +573,14 @@ export default {
       } else {
         return '#FBECEA'
       }
-    }
+    },
+    fontColorByResult(result) {
+      if (result === 'win') {
+        return '#699CE3'
+      } else {
+        return '#F57593'
+      }
+    },
   },
   mounted() {
     // VueTooltip.init();
@@ -588,5 +636,7 @@ export default {
   color: #343a40; /* 마우스를 올리면 글자색이 더 진한 색으로 변경 */
   text-decoration: underline; /* 밑줄 추가 */
 }
-
+.font-bold {
+    font-weight: bold;
+}
 </style>
