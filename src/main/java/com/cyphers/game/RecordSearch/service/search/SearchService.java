@@ -22,11 +22,13 @@ import com.cyphers.game.RecordSearch.model.search.IoSearchDetailMostPositionInfo
 import com.cyphers.game.RecordSearch.model.search.IoSearchDetailRecentlyPlayCyphersInfo;
 import com.cyphers.game.RecordSearch.model.search.IoSearchDetailResponse;
 import com.cyphers.game.RecordSearch.model.search.IoSearchDetailWinAndLoseCountHistoryInfo;
+import com.cyphers.game.RecordSearch.model.search.ItemInfoResponse;
 import com.cyphers.game.RecordSearch.model.search.TeamPlayerInfo;
 import com.cyphers.game.RecordSearch.openapi.model.CyphersCharacterAttribute;
 import com.cyphers.game.RecordSearch.openapi.model.CyphersCharacterInfo;
 import com.cyphers.game.RecordSearch.openapi.model.CyphersCharacterSearch;
 import com.cyphers.game.RecordSearch.openapi.model.CyphersEquipItems;
+import com.cyphers.game.RecordSearch.openapi.model.CyphersItemDetailInfo;
 import com.cyphers.game.RecordSearch.openapi.model.CyphersMatchedInfo;
 import com.cyphers.game.RecordSearch.openapi.model.CyphersMatches;
 import com.cyphers.game.RecordSearch.openapi.model.CyphersMatchingDetails;
@@ -541,5 +543,18 @@ public class SearchService {
 			}
 		}
 		return filteredData;
+	}
+	
+	public ItemInfoResponse getItemDetailInfo(String itemId) throws Exception {
+		CyphersItemDetailInfo cyItemDetail = cyApiService.searchItemDetail(itemId);
+		ItemInfoResponse itemRes = ItemInfoResponse.builder()
+							.itemId(itemId)
+							.itemName(cyItemDetail.getItemName())
+							.rarity(cyItemDetail.getRarityName())
+							.slotName(cyItemDetail.getSlotName())
+							.seasonName(cyItemDetail.getSeasonName())
+							.explainDetail(cyItemDetail.getExplainDetail())
+							.build();
+		return itemRes;
 	}
 }
