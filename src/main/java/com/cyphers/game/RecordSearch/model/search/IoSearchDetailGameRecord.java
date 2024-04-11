@@ -1,11 +1,15 @@
 package com.cyphers.game.RecordSearch.model.search;
 
-import lombok.*;
-
-import java.time.LocalDateTime;
 import java.util.List;
 
+import com.cyphers.game.RecordSearch.openapi.model.CyphersEquipItems;
 import com.cyphers.game.RecordSearch.openapi.model.enumuration.CyphersGameType;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @Setter
@@ -28,7 +32,7 @@ public class IoSearchDetailGameRecord {
     private Float kda;
     private Integer csCount;
 
-    private List<String> itemIds;
+    private List<CyphersEquipItems> itemInfos;
 
     private Integer healAmount;
     private Integer attackPoint;

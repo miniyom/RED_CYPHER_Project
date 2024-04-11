@@ -205,7 +205,7 @@
                     <div class="d-flex justify-content-between mb-2">
                       <b-img
                           v-for="item in game.items.slice(0, 8)"
-                          :src="item.itemImage"
+                          :src="item.itemId !== null ? item.itemImage : 'http://static.cyphers.co.kr/img/league/icon_nil.jpg'"
                           :alt="'Item ' + item"
                           :key="item.itemId"
                           class="flex-grow-1 pe-1"
@@ -221,7 +221,7 @@
                     <div class="d-flex justify-content-between">
                       <b-img
                           v-for="item in game.items.slice(8, 16)"
-                          :src="item.itemImage"
+                          :src="item.itemId !== null ? item.itemImage : 'http://static.cyphers.co.kr/img/league/icon_nil.jpg'"
                           :alt="'Item ' + item"
                           :key="item.itemId"
                           class="flex-grow-1 pe-1"
@@ -493,9 +493,13 @@ export default {
           kda: record.kda,
           cs: record.csCount
         },
-        items: record.itemIds.map(itemId => ({
-          itemId: itemId, 
-          itemImage: `https://img-api.neople.co.kr/cy/items/${itemId}`   // 아이템 이미지 URL
+        items: record.itemInfos.map(itemInfo => ({
+          itemId: itemInfo.itemId, 
+          itemImage: `https://img-api.neople.co.kr/cy/items/${itemInfo.itemId}`,  // 아이템 이미지 URL
+          itemName: itemInfo.itemName,
+          rarityName: itemInfo.rarityName,
+          equipSlotCode: itemInfo.equipSlotCode,
+          equipSlotName: itemInfo.equipSlotName
         })), 
         itemIds: record.itemIds,
         details: {
@@ -524,6 +528,7 @@ export default {
         .then((response) => {
           const detailData = response.data;
           this.games = this.transformGameData(detailData.gameRecords);
+          console.log("아이템 배열", this.games[0].items);
         })
         .catch((error) => {
           alert("데이터를 불러오는 것에 실패했습니다", error);
@@ -623,7 +628,7 @@ export default {
       })
       .catch((error) => {
         alert("닉네임 정보가 없습니다.", error);
-        console.log("error: ", error);
+        console.log("오류내용: ", error);
         this.$router.push('/'); 
       });
     

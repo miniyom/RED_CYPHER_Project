@@ -455,11 +455,30 @@ public class SearchService {
 						}
 						gameRecord.setCsCount(playInfo.getDemolisherKillCount() + playInfo.getSentinelKillCount());
 
-						List<String> itemIds = new ArrayList<>();
+						Map<String, CyphersEquipItems> defaultItemData = new HashMap<>();
+						CyphersEquipItems tempItem = new CyphersEquipItems();
+						defaultItemData.put("101", tempItem);
+						defaultItemData.put("102", tempItem);
+						defaultItemData.put("103", tempItem);
+						defaultItemData.put("104", tempItem);
+						defaultItemData.put("105", tempItem);
+						defaultItemData.put("106", tempItem);
+						defaultItemData.put("202", tempItem);
+						defaultItemData.put("203", tempItem);
+						defaultItemData.put("301", tempItem);
+						defaultItemData.put("302", tempItem);
+						defaultItemData.put("303", tempItem);
+						defaultItemData.put("304", tempItem);
+						defaultItemData.put("305", tempItem);
+						defaultItemData.put("107", tempItem);
+						defaultItemData.put("204", tempItem);
+						defaultItemData.put("205", tempItem);
 						for (CyphersEquipItems item : playerDataInGame.getItems()) {
-							itemIds.add(item.getItemId());
+							defaultItemData.put(item.getSlotCode(), item);
 						}
-						gameRecord.setItemIds(itemIds);
+						List<CyphersEquipItems> itemInfos = new ArrayList<>(defaultItemData.values());
+
+						gameRecord.setItemInfos(itemInfos);
 
 						gameRecord.setHealAmount(playInfo.getHealAmount());
 						gameRecord.setAttackPoint(playInfo.getAttackPoint());
