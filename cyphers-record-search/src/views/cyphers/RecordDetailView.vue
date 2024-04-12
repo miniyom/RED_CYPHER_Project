@@ -192,10 +192,17 @@
                   </b-col>
                   <b-col sm="9" class="d-flex justify-content-end">
                      <!-- 특성 이미지 -->
-                    <b-img :src="game.traits[0]" rounded="circle" alt="Trait" class="m-0 p-0 me-1" style="width: 40px;"></b-img>
-                    <b-img :src="game.traits[1]" rounded="circle" alt="Trait" class="m-0 p-0 me-1" style="width: 40px;"></b-img>
-                    <b-img :src="game.traits[2]" rounded="circle" alt="Trait" class="m-0 p-0 me-1" style="width: 40px;"></b-img>
-                    <b-img :src="game.traits[3]" rounded="circle" alt="Trait" class="m-0 p-0" style="width: 40px;"></b-img>
+                    <b-img 
+                      v-for="attribute in game.attributes"
+                      :src="attribute.attributeImage" 
+                      rounded="circle" 
+                      alt="'Attribute' + attribute" 
+                      :key="attribute.attributeId"
+                      class="m-0 p-0 me-1" 
+                      style="width: 40px; cursor: pointer;"
+                      @click="fetchAttributeData(attribute.attributeId)"
+                    >
+                    </b-img>
                   </b-col>
                 </b-row>
                 <b-row>
@@ -209,28 +216,70 @@
                           :alt="'Item ' + item"
                           :key="item.itemId"
                           class="flex-grow-1 pe-1"
-                          style="max-width: 12.5%;"
-                          @click="showItems(item.itemId)"
+                          style="max-width: 12.5%; cursor: pointer;"
+                          @click="fetchItemData(item.itemId)"
                       >
                         <!-- 아이템 이름에 따라 마크 표시 -->
-                        <!-- <span v-if="item.itemName.includes('e')" class="badge bg-primary">e</span>
-                        <span v-else-if="item.itemName.includes('s')" class="badge bg-danger">s</span> -->
+                        <template v-if="item.itemId !== null">
+                          <span v-if="item.itemName.includes('E')" class="badge bg-primary" style="position: absolute; top: 0; left: 0; padding: 0.2rem 0.5rem; background-color: pink;">E</span> <!-- 수정 -->
+                          <span v-else-if="item.itemName.includes('S')" class="badge bg-danger" style="position: absolute; top: 0; left: 0; padding: 0.2rem 0.5rem; background-color: pink;">S</span> <!-- 수정 -->
+                          <span v-else-if="item.itemName.includes('SU')" class="badge bg-danger" style="position: absolute; top: 0; left: 0; padding: 0.2rem 0.5rem; background-color: pink;">SU</span> <!-- 수정 -->
+                        </template>
                       </b-img>
                     </div>
                     <!-- 두 번째 줄 -->
-                    <div class="d-flex justify-content-between">
+                    <div class="d-flex justify-content-between mb-2">
                       <b-img
                           v-for="item in game.items.slice(8, 16)"
                           :src="item.itemId !== null ? item.itemImage : 'http://static.cyphers.co.kr/img/league/icon_nil.jpg'"
                           :alt="'Item ' + item"
                           :key="item.itemId"
                           class="flex-grow-1 pe-1"
-                          style="max-width: 12.5%;"
-                          @click="showItems(item.itemId)"
+                          style="max-width: 12.5%; cursor: pointer;"
+                          @click="fetchItemData(item.itemId)"
                       >
                         <!-- 아이템 이름에 따라 마크 표시 -->
-                        <!-- <span v-if="item.itemName.includes('E')" class="badge bg-primary">e</span>
-                        <span v-else-if="item.itemName.includes('S')" class="badge bg-danger">s</span> -->
+                        <template v-if="item.itemId !== null">
+                          <span v-if="item.itemName.includes('E')" class="badge bg-primary" style="position: absolute; top: 0; left: 0; padding: 0.2rem 0.5rem; background-color: pink;">E</span> <!-- 수정 -->
+                          <span v-else-if="item.itemName.includes('S')" class="badge bg-danger" style="position: absolute; top: 0; left: 0; padding: 0.2rem 0.5rem; background-color: pink;">S</span> <!-- 수정 -->
+                          <span v-else-if="item.itemName.includes('SU')" class="badge bg-danger" style="position: absolute; top: 0; left: 0; padding: 0.2rem 0.5rem; background-color: pink;">SU</span> <!-- 수정 -->
+                        </template>
+                      </b-img>
+                    </div>
+                  </div>
+                  <div>
+                    <div class="d-flex justify-content-between mb-2">
+                      <b-img
+                          v-for="item in game.items.slice(0, 8)"
+                          :src="item.itemId !== null ? item.itemImage : 'http://static.cyphers.co.kr/img/league/icon_nil.jpg'"
+                          :alt="'Item ' + item"
+                          :key="item.itemId"
+                          class="flex-grow-1 pe-1"
+                          style="max-width: 12.5%; cursor: pointer;"
+                          @click="fetchItemData(item.itemId)"
+                      >
+                        <template v-if="item.itemId !== null">
+                          <span v-if="item.itemName.includes('E')" class="badge bg-primary" style="position: absolute; top: 0; left: 0; padding: 0.2rem 0.5rem; background-color: pink;">E</span> <!-- 수정 -->
+                          <span v-else-if="item.itemName.includes('S')" class="badge bg-danger" style="position: absolute; top: 0; left: 0; padding: 0.2rem 0.5rem; background-color: pink;">S</span> <!-- 수정 -->
+                          <span v-else-if="item.itemName.includes('SU')" class="badge bg-danger" style="position: absolute; top: 0; left: 0; padding: 0.2rem 0.5rem; background-color: pink;">SU</span> <!-- 수정 -->
+                        </template>
+                      </b-img>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                      <b-img
+                          v-for="item in game.items.slice(8, 16)"
+                          :src="item.itemId !== null ? item.itemImage : 'http://static.cyphers.co.kr/img/league/icon_nil.jpg'"
+                          :alt="'Item ' + item"
+                          :key="item.itemId"
+                          class="flex-grow-1 pe-1"
+                          style="max-width: 12.5%; cursor: pointer;"
+                          @click="fetchItemData(item.itemId)"
+                      >
+                        <template v-if="item.itemId !== null">
+                          <span v-if="item.itemName.includes('E')" class="badge bg-primary" style="position: absolute; top: 0; left: 0; padding: 0.2rem 0.5rem; background-color: pink;">E</span> <!-- 수정 -->
+                          <span v-else-if="item.itemName.includes('S')" class="badge bg-danger" style="position: absolute; top: 0; left: 0; padding: 0.2rem 0.5rem; background-color: pink;">S</span> <!-- 수정 -->
+                          <span v-else-if="item.itemName.includes('SU')" class="badge bg-danger" style="position: absolute; top: 0; left: 0; padding: 0.2rem 0.5rem; background-color: pink;">SU</span> <!-- 수정 -->
+                        </template>
                       </b-img>
                     </div>
                   </div>
@@ -309,11 +358,17 @@
       </b-list-group>
     </b-container>
 
-    <!-- Modal for Items -->
-    <!-- <b-modal v-model="showItemModal" centered title="아이템 정보" hide-footer>
-      <div v-if="currentGame">
+    <b-modal v-model="showAttributeModal" title="특성 정보" centered hide-footer>
+      <div class="p-3" v-if="attributeDetail" style="background-color: #f5deb3;">
+        <h5>
+          <img class="me-3" :src="attributeDetail.image" alt="특성 이미지" style="width: 60px; height: 60px;">
+          <span class="font-bold">{{ attributeDetail.attributeName }}</span>
+          <span class="text-right" style="float: right;">{{ attributeDetail.positionName }}</span>
+        </h5>
+        <br><br>
+        <p>{{ attributeDetail.explain }}</p>
       </div>
-    </b-modal> -->
+    </b-modal>
 
     <b-modal v-model="showItemModal" title="아이템 정보" centered hide-footer>
       <div class="p-3" v-if="itemDetail" style="background-color: #f5deb3;">
@@ -322,10 +377,9 @@
           <span class="font-bold" :style="{ color: itemDetail.rarityColor }">{{ itemDetail.itemName }}</span>
           <span class="text-right" style="float: right;">{{ itemDetail.slotName }}</span>
         </h5>
-        <p v-html="itemDetail.explainDetail.replace(/\n/g, '<br>')" style="white-space: pre-line; "></p>
+        <p style="white-space: pre-line; ">{{ itemDetail.explainDetail }}</p>
       </div>
     </b-modal>
-
 
   </div>
 </template>
@@ -376,7 +430,7 @@ export default {
         result: "승리",
         characterImage: "https://placekitten.com/100/100",
         postionImage: "@/public/img/tanker.png",
-        traits: [
+        attributes: [
           // {
           //   image: "https://img-api.neople.co.kr/cy/position-attributes/e29cbec17de6ae981984c6d279400483",
           //   attributeId: "e29cbec17de6ae981984c6d279400483",
@@ -443,6 +497,15 @@ export default {
       //   seasonName: "시즌 1 : Eclipse",
       //   explainDetail: "\n\n[1레벨] : 장비레벨+3\n비용 650 coin\n이동속도 : +63\n\n[2레벨] : 장비레벨+3\n비용 850 coin\n이동속도 : +63\n불놀이(SL) 공격속도 : +6%\n\n난 언제나 내가 내린 결정에 확신이 있어. 같은 상황이 온다고 해도 언제나 내 답은 같아. "
       // },
+      showAttributeModal: false,
+      attributeDetail: null,
+        // {
+        //   attributeId: '',
+        //   attributeName: '',
+        //   explain: '',
+        //   positionName: '',
+        // }
+      
     }
   },
   methods: {
@@ -463,12 +526,6 @@ export default {
       this.searchText = text;
       this.isInputFocused = false;
     },
-    showItems(itemId) {
-      this.fetchItemData(itemId);
-    },
-    hideModal() {
-      this.showItemModal = false;
-    },
     // 데이터를 변형하는 함수
     transformGameData(rawData) {
       // rawData가 존재하지 않거나 빈 배열인 경우 빈 배열을 반환
@@ -484,7 +541,10 @@ export default {
         result: record.result,
         characterImage: `https://img-api.neople.co.kr/cy/characters/${record.playCharacterId}?zoom=2`,  // 플레이어 캐릭터 이미지 URL
         positionImage: this.getPostionImage(record.positionName),
-        traits: record.attributeIds.map(traitId => `https://img-api.neople.co.kr/cy/position-attributes/${traitId}`),  // 특성 이미지 URL 배열
+        attributes: record.attributeIds.map(attributeId => ({
+          attributeId: attributeId,
+          attributeImage: `https://img-api.neople.co.kr/cy/position-attributes/${attributeId}`
+        })),  // 특성 이미지 URL 배열
         gameInfo: {
           kills: record.killCount,
           deaths: record.deathCount,
@@ -501,7 +561,6 @@ export default {
           equipSlotCode: itemInfo.equipSlotCode,
           equipSlotName: itemInfo.equipSlotName
         })), 
-        itemIds: record.itemIds,
         details: {
           heal: record.healAmount,
           damage: record.attackPoint,
@@ -528,7 +587,6 @@ export default {
         .then((response) => {
           const detailData = response.data;
           this.games = this.transformGameData(detailData.gameRecords);
-          console.log("아이템 배열", this.games[0].items);
         })
         .catch((error) => {
           alert("데이터를 불러오는 것에 실패했습니다", error);
@@ -537,17 +595,36 @@ export default {
         });
     },
     fetchItemData(itemId) {
+      if (itemId === null) {
+        return
+      }
       axios.get(`/api/search/item/${itemId}`)
         .then((response) => {
           const itemData = response.data;
           this.itemDetail = itemData;
           this.itemDetail.image = `https://img-api.neople.co.kr/cy/items/${itemData.itemId}`;
-          // console.log("itemid: ", itemId);
           this.showItemModal = true;
           this.setRarityColor();
         })
         .catch((error) => {
           alert("아이템 정보를 불러오는 것에 실패했습니다", error);
+          console.log("error: ", error);
+        });
+    },
+    fetchAttributeData(attributeId) {
+      if (attributeId === null) {
+        return
+      }
+      axios.get(`/api/search/attribute/${attributeId}`)
+        .then((response) => {
+          const attributeData = response.data;
+          this.attributeDetail = attributeData;
+          this.attributeDetail.image = `https://img-api.neople.co.kr/cy/position-attributes/${attributeData.attributeId}`;
+          // console.log("attributeId: ", attributeId);
+          this.showAttributeModal = true;
+        })
+        .catch((error) => {
+          alert("특성 정보를 불러오는 것에 실패했습니다", error);
           console.log("error: ", error);
         });
     },
@@ -613,6 +690,22 @@ export default {
           break;
         default:
           this.itemDetail.rarityColor = "white";
+      }
+    },
+    // 아이템의 rarity에 따라 적절한 색상을 반환하는 함수
+    getBorderColor(item) {
+      switch(item.rarity) {
+          case "유니크":
+              return "2px solid pink";
+          case "레어":
+              return "2px solid purple";
+          case "언커먼":
+              return "2px solid skyblue";
+          case "커먼":
+              return "2px solid white";  
+          // 다른 경우에 대한 처리 추가 가능
+          default:
+              return "1px solid transparent"; // 특정하지 않은 경우
       }
     }
   },

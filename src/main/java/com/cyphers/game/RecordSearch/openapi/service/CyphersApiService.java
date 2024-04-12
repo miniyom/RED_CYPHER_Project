@@ -32,6 +32,7 @@ import com.cyphers.game.RecordSearch.openapi.model.CyphersPlayDate;
 import com.cyphers.game.RecordSearch.openapi.model.CyphersPlayerInfo;
 import com.cyphers.game.RecordSearch.openapi.model.CyphersPlayerRanking;
 import com.cyphers.game.RecordSearch.openapi.model.CyphersPlayerResponse;
+import com.cyphers.game.RecordSearch.openapi.model.CyphersPositionAttribute;
 import com.cyphers.game.RecordSearch.openapi.model.CyphersTsjRanking;
 import com.cyphers.game.RecordSearch.openapi.model.enumuration.CyphersGameType;
 import com.cyphers.game.RecordSearch.openapi.model.enumuration.CyphersItemWordType;
@@ -323,4 +324,9 @@ public class CyphersApiService {
         return objectMapper.readValue(get("/cy/characters" , params), CyphersCharacterSearch.class);
     }
     
+    
+    public CyphersPositionAttribute searchAttribute(@Required String attributeId) throws Exception {
+    	Map<String, String> params = new HashMap<>();
+    	return objectMapper.readValue(get("/cy/position-attributes/" + attributeId, params), CyphersPositionAttribute.class);
+    }
 }

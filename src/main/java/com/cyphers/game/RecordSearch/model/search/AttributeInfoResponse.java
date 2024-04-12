@@ -11,12 +11,9 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ItemInfoResponse {
-	private String itemId;
-	private String itemName;
-	private String rarity;
-	private String rarityColor;
-	private String slotName;
-	private String seasonName;
-	private String explainDetail;
+public class AttributeInfoResponse {
+	private String attributeId;
+	private String attributeName;
+	private String explain;
+	private String positionName;
 }

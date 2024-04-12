@@ -3,6 +3,7 @@ package com.cyphers.game.RecordSearch.model.search;
 import java.util.List;
 
 import com.cyphers.game.RecordSearch.openapi.model.CyphersEquipItems;
+import com.cyphers.game.RecordSearch.openapi.model.CyphersPositionAttribute;
 import com.cyphers.game.RecordSearch.openapi.model.enumuration.CyphersGameType;
 
 import lombok.AllArgsConstructor;

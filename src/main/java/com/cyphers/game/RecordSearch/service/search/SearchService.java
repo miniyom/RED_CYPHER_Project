@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -15,6 +16,7 @@ import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import com.cyphers.game.RecordSearch.model.search.AttributeInfoResponse;
 import com.cyphers.game.RecordSearch.model.search.GameRecordResponse;
 import com.cyphers.game.RecordSearch.model.search.IoSearchDetailGameRecord;
 import com.cyphers.game.RecordSearch.model.search.IoSearchDetailMostCypherInfo;
@@ -38,6 +40,7 @@ import com.cyphers.game.RecordSearch.openapi.model.CyphersPlayer;
 import com.cyphers.game.RecordSearch.openapi.model.CyphersPlayerInfo;
 import com.cyphers.game.RecordSearch.openapi.model.CyphersPlayerResponse;
 import com.cyphers.game.RecordSearch.openapi.model.CyphersPlayersInGame;
+import com.cyphers.game.RecordSearch.openapi.model.CyphersPositionAttribute;
 import com.cyphers.game.RecordSearch.openapi.model.CyphersRecords;
 import com.cyphers.game.RecordSearch.openapi.model.enumuration.CyphersGameType;
 import com.cyphers.game.RecordSearch.openapi.model.enumuration.CyphersPlayerWordType;
@@ -455,7 +458,7 @@ public class SearchService {
 						}
 						gameRecord.setCsCount(playInfo.getDemolisherKillCount() + playInfo.getSentinelKillCount());
 
-						Map<String, CyphersEquipItems> defaultItemData = new HashMap<>();
+						Map<String, CyphersEquipItems> defaultItemData = new LinkedHashMap<>();
 						CyphersEquipItems tempItem = new CyphersEquipItems();
 						defaultItemData.put("101", tempItem);
 						defaultItemData.put("102", tempItem);
@@ -575,5 +578,16 @@ public class SearchService {
 							.explainDetail(cyItemDetail.getExplainDetail())
 							.build();
 		return itemRes;
+	}
+	
+	public AttributeInfoResponse getAttributeDetailInfo(String attributeId) throws Exception {
+		CyphersPositionAttribute cyAttrDetail = cyApiService.searchAttribute(attributeId);
+		AttributeInfoResponse attrRes = AttributeInfoResponse.builder()
+							.attributeId(cyAttrDetail.getAttributeId())
+							.attributeName(cyAttrDetail.getAttributeName())
+							.explain(cyAttrDetail.getExplain())
+							.positionName(cyAttrDetail.getPositionName())
+							.build();
+		return attrRes;
 	}
 }
