@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -15,6 +16,7 @@ import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import com.cyphers.game.RecordSearch.model.search.AttributeInfoResponse;
 import com.cyphers.game.RecordSearch.model.search.GameRecordResponse;
 import com.cyphers.game.RecordSearch.model.search.IoSearchDetailGameRecord;
 import com.cyphers.game.RecordSearch.model.search.IoSearchDetailMostCypherInfo;
@@ -22,11 +24,13 @@ import com.cyphers.game.RecordSearch.model.search.IoSearchDetailMostPositionInfo
 import com.cyphers.game.RecordSearch.model.search.IoSearchDetailRecentlyPlayCyphersInfo;
 import com.cyphers.game.RecordSearch.model.search.IoSearchDetailResponse;
 import com.cyphers.game.RecordSearch.model.search.IoSearchDetailWinAndLoseCountHistoryInfo;
+import com.cyphers.game.RecordSearch.model.search.ItemInfoResponse;
 import com.cyphers.game.RecordSearch.model.search.TeamPlayerInfo;
 import com.cyphers.game.RecordSearch.openapi.model.CyphersCharacterAttribute;
 import com.cyphers.game.RecordSearch.openapi.model.CyphersCharacterInfo;
 import com.cyphers.game.RecordSearch.openapi.model.CyphersCharacterSearch;
 import com.cyphers.game.RecordSearch.openapi.model.CyphersEquipItems;
+import com.cyphers.game.RecordSearch.openapi.model.CyphersItemDetailInfo;
 import com.cyphers.game.RecordSearch.openapi.model.CyphersMatchedInfo;
 import com.cyphers.game.RecordSearch.openapi.model.CyphersMatches;
 import com.cyphers.game.RecordSearch.openapi.model.CyphersMatchingDetails;
@@ -36,6 +40,7 @@ import com.cyphers.game.RecordSearch.openapi.model.CyphersPlayer;
 import com.cyphers.game.RecordSearch.openapi.model.CyphersPlayerInfo;
 import com.cyphers.game.RecordSearch.openapi.model.CyphersPlayerResponse;
 import com.cyphers.game.RecordSearch.openapi.model.CyphersPlayersInGame;
+import com.cyphers.game.RecordSearch.openapi.model.CyphersPositionAttribute;
 import com.cyphers.game.RecordSearch.openapi.model.CyphersRecords;
 import com.cyphers.game.RecordSearch.openapi.model.enumuration.CyphersGameType;
 import com.cyphers.game.RecordSearch.openapi.model.enumuration.CyphersPlayerWordType;
@@ -453,11 +458,30 @@ public class SearchService {
 						}
 						gameRecord.setCsCount(playInfo.getDemolisherKillCount() + playInfo.getSentinelKillCount());
 
-						List<String> itemIds = new ArrayList<>();
+						Map<String, CyphersEquipItems> defaultItemData = new LinkedHashMap<>();
+						CyphersEquipItems tempItem = new CyphersEquipItems();
+						defaultItemData.put("101", tempItem);
+						defaultItemData.put("102", tempItem);
+						defaultItemData.put("103", tempItem);
+						defaultItemData.put("104", tempItem);
+						defaultItemData.put("105", tempItem);
+						defaultItemData.put("106", tempItem);
+						defaultItemData.put("202", tempItem);
+						defaultItemData.put("203", tempItem);
+						defaultItemData.put("301", tempItem);
+						defaultItemData.put("302", tempItem);
+						defaultItemData.put("303", tempItem);
+						defaultItemData.put("304", tempItem);
+						defaultItemData.put("305", tempItem);
+						defaultItemData.put("107", tempItem);
+						defaultItemData.put("204", tempItem);
+						defaultItemData.put("205", tempItem);
 						for (CyphersEquipItems item : playerDataInGame.getItems()) {
-							itemIds.add(item.getItemId());
+							defaultItemData.put(item.getSlotCode(), item);
 						}
-						gameRecord.setItemIds(itemIds);
+						List<CyphersEquipItems> itemInfos = new ArrayList<>(defaultItemData.values());
+
+						gameRecord.setItemInfos(itemInfos);
 
 						gameRecord.setHealAmount(playInfo.getHealAmount());
 						gameRecord.setAttackPoint(playInfo.getAttackPoint());
@@ -541,5 +565,29 @@ public class SearchService {
 			}
 		}
 		return filteredData;
+	}
+	
+	public ItemInfoResponse getItemDetailInfo(String itemId) throws Exception {
+		CyphersItemDetailInfo cyItemDetail = cyApiService.searchItemDetail(itemId);
+		ItemInfoResponse itemRes = ItemInfoResponse.builder()
+							.itemId(itemId)
+							.itemName(cyItemDetail.getItemName())
+							.rarity(cyItemDetail.getRarityName())
+							.slotName(cyItemDetail.getSlotName())
+							.seasonName(cyItemDetail.getSeasonName())
+							.explainDetail(cyItemDetail.getExplainDetail())
+							.build();
+		return itemRes;
+	}
+	
+	public AttributeInfoResponse getAttributeDetailInfo(String attributeId) throws Exception {
+		CyphersPositionAttribute cyAttrDetail = cyApiService.searchAttribute(attributeId);
+		AttributeInfoResponse attrRes = AttributeInfoResponse.builder()
+							.attributeId(cyAttrDetail.getAttributeId())
+							.attributeName(cyAttrDetail.getAttributeName())
+							.explain(cyAttrDetail.getExplain())
+							.positionName(cyAttrDetail.getPositionName())
+							.build();
+		return attrRes;
 	}
 }

@@ -4,14 +4,15 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cyphers.game.RecordSearch.model.search.AttributeInfoResponse;
 import com.cyphers.game.RecordSearch.model.search.GameRecordResponse;
 import com.cyphers.game.RecordSearch.model.search.IoSearchDetailResponse;
+import com.cyphers.game.RecordSearch.model.search.ItemInfoResponse;
 import com.cyphers.game.RecordSearch.model.search.SearchDetailResponse;
 import com.cyphers.game.RecordSearch.model.search.entity.CrsDetailSearch;
 import com.cyphers.game.RecordSearch.openapi.model.CyphersMatches;
@@ -90,9 +91,22 @@ public class SearchController {
         return searchDetailDTO;
     }
     
+    @GetMapping("/item/{itemId}")
+    public ItemInfoResponse getItemDetail(@PathVariable("itemId") String itemId) throws Exception {
+    	ItemInfoResponse itemInfoRes = searchService.getItemDetailInfo(itemId);
+    	return itemInfoRes;
+    }
+    
     @GetMapping("/find/id/{playerId}")
     public CrsDetailSearch findCyphersUserInfo(@PathVariable("playerId") String playerId) throws Exception {
     	CrsDetailSearch res = crsSearchRepository.findByPlayerId(playerId).get();
         return null;
     }
+    
+    @GetMapping("/attribute/{attributeId}")
+    public AttributeInfoResponse getAttributeDetail(@PathVariable("attributeId") String attributeId) throws Exception {
+    	AttributeInfoResponse AttrInfoRes = searchService.getAttributeDetailInfo(attributeId);
+    	return AttrInfoRes;
+    }
 }
+

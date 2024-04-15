@@ -180,24 +180,6 @@
                 <b-img :src="game.characterImage" rounded="circle" alt="Character" class="me-4" style="width: 85px;"></b-img>
               </b-col>
 
-              <!-- 포지션 이미지 -->
-              <!-- <b-col sm="auto">
-                <b-img :src="game.positionImage" rounded="circle" alt="Position" class="me-4" style="width: 40px;"></b-img>
-              </b-col> -->
-
-              <!-- 특성 이미지 -->
-              <!-- <b-col sm="auto" class=" pe-3">
-                <b-row>
-                  <b-img :src="game.traits[0]" rounded="circle" alt="Trait" class="m-0 p-0 me-1" style="width: 30px;"></b-img>
-                  <b-img :src="game.traits[1]" rounded="circle" alt="Trait" class="m-0 p-0" style="width: 30px;"></b-img>
-                </b-row>
-                <b-row class="mt-1">
-                  <b-img :src="game.traits[2]" rounded="circle" alt="Trait" class="m-0 p-0 me-1" style="width: 30px;"></b-img>
-                  <b-img :src="game.traits[3]" rounded="circle" alt="Trait" class="m-0 p-0" style="width: 30px;"></b-img>
-                </b-row>
-              </b-col> -->
-
-              <!-- 아이템 정보 -->
               <!-- <b-col sm="auto" class="me-2">
                 <b-button @click="showItems(game.id)">아이템 보기</b-button>
               </b-col> -->
@@ -205,39 +187,56 @@
               <b-col sm="3">
                 <b-row class="mb-2 pb-2" style="border-bottom: solid 1px #6E7474;">
                   <b-col sm="3">
+                    <!-- 포지션 이미지 -->
                     <b-img :src="game.positionImage" rounded="circle" alt="Position" class="p-0 me-4" style="width: 40px; "></b-img>
                   </b-col>
                   <b-col sm="9" class="d-flex justify-content-end">
-                    <b-img :src="game.traits[0]" rounded="circle" alt="Trait" class="m-0 p-0 me-1" style="width: 40px;"></b-img>
-                    <b-img :src="game.traits[1]" rounded="circle" alt="Trait" class="m-0 p-0 me-1" style="width: 40px;"></b-img>
-                    <b-img :src="game.traits[2]" rounded="circle" alt="Trait" class="m-0 p-0 me-1" style="width: 40px;"></b-img>
-                    <b-img :src="game.traits[3]" rounded="circle" alt="Trait" class="m-0 p-0" style="width: 40px;"></b-img>
+                     <!-- 특성 이미지 -->
+                    <b-img 
+                      v-for="attribute in game.attributes"
+                      :src="attribute.attributeImage" 
+                      rounded="circle" 
+                      alt="'Attribute' + attribute" 
+                      :key="attribute.attributeId"
+                      class="m-0 p-0 me-1" 
+                      style="width: 40px; cursor: pointer;"
+                      @click="fetchAttributeData(attribute.attributeId)"
+                    >
+                    </b-img>
                   </b-col>
                 </b-row>
                 <b-row>
-                  <!-- <b-button @click="showItems(game.id)">아이템 보기</b-button> -->
+                  <!-- 아이템 정보 -->
                   <div>
-                    <!-- 첫 번째 줄 -->
                     <div class="d-flex justify-content-between mb-2">
-                      <b-img
-                          v-for="item in game.items.slice(0, 8)"
-                          :src="item"
-                          :alt="'Item ' + item"
-                          :key="item"
-                          class="flex-grow-1 pe-1"
-                          style="max-width: 12.5%;"
-                      ></b-img>
+                      <div 
+                        v-for="item in game.items.slice(0, 8)"
+                        :key="item.itemId"
+                        :style="{border: getBorderColor(item), position: 'relative', width: '100%', maxWidth: '100%'}"
+                        class="me-1"
+                      >
+                        <b-img 
+                          :src="item.itemId !== null ? item.itemImage : 'http://static.cyphers.co.kr/img/league/icon_nil.jpg'"
+                          style="width: 100%; height: auto; cursor: pointer;"
+                          fluid
+                          @click="fetchItemData(item.itemId)"
+                        ></b-img>
+                      </div>
                     </div>
-                    <!-- 두 번째 줄 -->
-                    <div class="d-flex justify-content-between">
-                      <b-img
-                          v-for="item in game.items.slice(8, 16)"
-                          :src="item"
-                          :alt="'Item ' + item"
-                          :key="item"
-                          class="flex-grow-1 pe-1"
-                          style="max-width: 12.5%;"
-                      ></b-img>
+                    <div class="d-flex justify-content-between mb-2">
+                      <div 
+                        v-for="item in game.items.slice(8, 16)"
+                        :key="item.itemId"
+                        :style="{border: getBorderColor(item), position: 'relative', width: '100%', maxWidth: '100%'}"
+                        class="me-1"
+                      >
+                        <b-img 
+                          :src="item.itemId !== null ? item.itemImage : 'http://static.cyphers.co.kr/img/league/icon_nil.jpg'"
+                          style="width: 100%; height: auto; cursor: pointer;"
+                          fluid
+                          @click="fetchItemData(item.itemId)"
+                        ></b-img>
+                      </div>
                     </div>
                   </div>
                 </b-row>
@@ -315,34 +314,28 @@
       </b-list-group>
     </b-container>
 
-    <!-- Modal for Items -->
-    <b-modal v-model="showItemModal" centered title="아이템 정보" hide-footer>
-      <div v-if="currentGame">
-        <!-- 첫 번째 줄 -->
-        <div class="d-flex justify-content-between mb-2">
-          <b-img
-              v-for="item in currentGame.items.slice(0, 8)"
-              :src="item"
-              :alt="'Item ' + item"
-              :key="item"
-              class="flex-grow-1 pe-2"
-              style="max-width: 12.5%;"
-          ></b-img>
-        </div>
-        <!-- 두 번째 줄 -->
-        <div class="d-flex justify-content-between">
-          <b-img
-              v-for="item in currentGame.items.slice(8, 16)"
-              :src="item"
-              :alt="'Item ' + item"
-              :key="item"
-              class="flex-grow-1 pe-2"
-              style="max-width: 12.5%;"
-          ></b-img>
-        </div>
+    <b-modal v-model="showAttributeModal" title="특성 정보" centered hide-footer>
+      <div class="p-3" v-if="attributeDetail" style="background-color: #f5deb3;">
+        <h5>
+          <img class="me-3" :src="attributeDetail.image" alt="특성 이미지" style="width: 60px; height: 60px;">
+          <span class="font-bold">{{ attributeDetail.attributeName }}</span>
+          <span class="text-right" style="float: right;">{{ attributeDetail.positionName }}</span>
+        </h5>
+        <br><br>
+        <p>{{ attributeDetail.explain }}</p>
       </div>
     </b-modal>
 
+    <b-modal v-model="showItemModal" title="아이템 정보" centered hide-footer>
+      <div class="p-3" v-if="itemDetail" style="background-color: #f5deb3;">
+        <h5>
+          <img class="me-3" :src="itemDetail.image" alt="아이템 이미지" style="width: 60px; height: 60px;">
+          <span class="font-bold" :style="{ color: itemDetail.rarityColor }">{{ itemDetail.itemName }}</span>
+          <span class="text-right" style="float: right;">{{ itemDetail.slotName }}</span>
+        </h5>
+        <p style="white-space: pre-line; ">{{ itemDetail.explainDetail }}</p>
+      </div>
+    </b-modal>
 
   </div>
 </template>
@@ -354,7 +347,6 @@ import HeaderSearch from "@/mycomponents/HeaderSearch.vue";
 import LineGraph from "@/components/LineGraph";
 import PieGraph from "@/components/PieGraph";
 
-// import VueTooltip from 'v-tooltip';
 
 export default {
   props: {
@@ -394,11 +386,15 @@ export default {
         result: "승리",
         characterImage: "https://placekitten.com/100/100",
         postionImage: "@/public/img/tanker.png",
-        traits: [
-          "https://placekitten.com/50/50",
-          "https://placekitten.com/51/51",
-          "https://placekitten.com/52/52",
-          "https://placekitten.com/53/53"
+        attributes: [
+          // {
+          //   image: "https://img-api.neople.co.kr/cy/position-attributes/e29cbec17de6ae981984c6d279400483",
+          //   attributeId: "e29cbec17de6ae981984c6d279400483",
+          //   attributeName: "완벽주의자",
+          //   explain: "체력이 80% 이상일시 스킬 공격력 +5%, 치명타 +3%",
+          //   positionName: "원거리딜러"
+          // }
+          //총 4개 특성
         ],
         gameInfo: {
           kills: 10,
@@ -409,22 +405,17 @@ export default {
           cs: 150
         },
         items: [
-          "https://placekitten.com/80/80",
-          "https://placekitten.com/81/81",
-          "https://placekitten.com/82/82",
-          "https://placekitten.com/83/83",
-          "https://placekitten.com/84/84",
-          "https://placekitten.com/85/85",
-          "https://placekitten.com/86/86",
-          "https://placekitten.com/87/87",
-          "https://placekitten.com/88/88",
-          "https://placekitten.com/89/89",
-          "https://placekitten.com/90/90",
-          "https://placekitten.com/91/91",
-          "https://placekitten.com/92/92",
-          "https://placekitten.com/93/93",
-          "https://placekitten.com/94/94",
-          "https://placekitten.com/95/95",
+          // {
+          //   image: "https://img-api.neople.co.kr/cy/items/19f0134c20a835546c760c38293ce67a",
+          //   itemId: "19f0134c20a835546c760c38293ce67a",
+          //   itemName: "E 파이어 포르테",
+          //   rarityName: "유니크",
+          //   rarityColor: "",
+          //   slotName: "발(이동)",
+          //   seasonName: "시즌 1 : Eclipse",
+          //   explainDetail: "\n\n[1레벨] : 장비레벨+3\n비용 650 coin\n이동속도 : +63\n\n[2레벨] : 장비레벨+3\n비용 850 coin\n이동속도 : +63\n불놀이(SL) 공격속도 : +6%\n\n난 언제나 내가 내린 결정에 확신이 있어. 같은 상황이 온다고 해도 언제나 내 답은 같아. "
+          // },
+          //총 16개 아이템
         ],
         details: {
           heal: 5000,
@@ -448,10 +439,29 @@ export default {
           {image: "https://placekitten.com/98/98", name: "Player9"},
           {image: "https://placekitten.com/99/99", name: "Player10"},
         ]
-      }], // your games data
+      }],
       hovered: false,
       showItemModal: false,
-      currentGame: null,
+      itemDetail: null,
+      // {
+      //   image: "https://img-api.neople.co.kr/cy/items/19f0134c20a835546c760c38293ce67a",
+      //   itemId: "19f0134c20a835546c760c38293ce67a",
+      //   itemName: "E 파이어 포르테",
+      //   rarity: "유니크",
+      //   rarityColor: "",
+      //   slotName: "발(이동)",
+      //   seasonName: "시즌 1 : Eclipse",
+      //   explainDetail: "\n\n[1레벨] : 장비레벨+3\n비용 650 coin\n이동속도 : +63\n\n[2레벨] : 장비레벨+3\n비용 850 coin\n이동속도 : +63\n불놀이(SL) 공격속도 : +6%\n\n난 언제나 내가 내린 결정에 확신이 있어. 같은 상황이 온다고 해도 언제나 내 답은 같아. "
+      // },
+      showAttributeModal: false,
+      attributeDetail: null,
+        // {
+        //   attributeId: '',
+        //   attributeName: '',
+        //   explain: '',
+        //   positionName: '',
+        // }
+      
     }
   },
   methods: {
@@ -472,10 +482,6 @@ export default {
       this.searchText = text;
       this.isInputFocused = false;
     },
-    showItems(gameId) {
-      this.currentGame = this.games.find(game => game.id === gameId);
-      this.showItemModal = true;
-    },
     // 데이터를 변형하는 함수
     transformGameData(rawData) {
       // rawData가 존재하지 않거나 빈 배열인 경우 빈 배열을 반환
@@ -491,7 +497,10 @@ export default {
         result: record.result,
         characterImage: `https://img-api.neople.co.kr/cy/characters/${record.playCharacterId}?zoom=2`,  // 플레이어 캐릭터 이미지 URL
         positionImage: this.getPostionImage(record.positionName),
-        traits: record.attributeIds.map(traitId => `https://img-api.neople.co.kr/cy/position-attributes/${traitId}`),  // 특성 이미지 URL 배열
+        attributes: record.attributeIds.map(attributeId => ({
+          attributeId: attributeId,
+          attributeImage: `https://img-api.neople.co.kr/cy/position-attributes/${attributeId}`
+        })),  // 특성 이미지 URL 배열
         gameInfo: {
           kills: record.killCount,
           deaths: record.deathCount,
@@ -500,7 +509,14 @@ export default {
           kda: record.kda,
           cs: record.csCount
         },
-        items: record.itemIds.map(itemId => `https://img-api.neople.co.kr/cy/items/${itemId}`),  // 아이템 이미지 URL 배열
+        items: record.itemInfos.map(itemInfo => ({
+          itemId: itemInfo.itemId, 
+          itemImage: `https://img-api.neople.co.kr/cy/items/${itemInfo.itemId}`,  // 아이템 이미지 URL
+          itemName: itemInfo.itemName,
+          rarityName: itemInfo.rarityName,
+          equipSlotCode: itemInfo.equipSlotCode,
+          equipSlotName: itemInfo.equipSlotName
+        })), 
         details: {
           heal: record.healAmount,
           damage: record.attackPoint,
@@ -534,6 +550,40 @@ export default {
           this.$router.push('/'); 
         });
     },
+    fetchItemData(itemId) {
+      if (itemId === null) {
+        return
+      }
+      axios.get(`/api/search/item/${itemId}`)
+        .then((response) => {
+          const itemData = response.data;
+          this.itemDetail = itemData;
+          this.itemDetail.image = `https://img-api.neople.co.kr/cy/items/${itemData.itemId}`;
+          this.showItemModal = true;
+          this.setRarityColor();
+        })
+        .catch((error) => {
+          alert("아이템 정보를 불러오는 것에 실패했습니다", error);
+          console.log("error: ", error);
+        });
+    },
+    fetchAttributeData(attributeId) {
+      if (attributeId === null) {
+        return
+      }
+      axios.get(`/api/search/attribute/${attributeId}`)
+        .then((response) => {
+          const attributeData = response.data;
+          this.attributeDetail = attributeData;
+          this.attributeDetail.image = `https://img-api.neople.co.kr/cy/position-attributes/${attributeData.attributeId}`;
+          // console.log("attributeId: ", attributeId);
+          this.showAttributeModal = true;
+        })
+        .catch((error) => {
+          alert("특성 정보를 불러오는 것에 실패했습니다", error);
+          console.log("error: ", error);
+        });
+    },
     forwardDetail(playerName) {
       if (this.$route.params.nickname === playerName) {
         window.location.reload(); //현재 페이지와 동일한 플레이어로 접근시 현재 페이지 새로고침
@@ -562,6 +612,7 @@ export default {
       return name;
     },
     formatNumber(number) {
+      //1000이상 수치를 k단위로 변환
       if (number >= 10000) {
         return (number / 1000).toFixed(1) + 'k';
       }
@@ -581,9 +632,37 @@ export default {
         return '#F57593'
       }
     },
+    setRarityColor() {
+      // 레어리티에 따라 색상을 지정할 수 있습니다.
+      switch (this.itemDetail.rarity) {
+        case "유니크":
+          this.itemDetail.rarityColor = "#EB61AD";
+          break;
+        case "레어":
+          this.itemDetail.rarityColor = "#9C5AFF";
+          break;
+        case "언커먼":
+          this.itemDetail.rarityColor = "#3EB7FF";
+          break;
+        default:
+          this.itemDetail.rarityColor = "#454545";
+      }
+    },
+    // 아이템의 rarity에 따라 적절한 색상을 반환하는 함수
+    getBorderColor(item) {
+      switch(item.rarityName) {
+          case "유니크":
+              return '3px solid #EB61AD';
+          case "레어":
+              return '3px solid #9C5AFF';
+          case "언커먼":
+              return '3px solid #3EB7FF';
+          default:
+              return '3px solid #454545';  
+      }
+    }
   },
   mounted() {
-    // VueTooltip.init();
     axios.get(`/api/search/player/search/${this.$route.params.nickname}`)
       .then((response) => {
         const playerData = response.data;
@@ -595,7 +674,7 @@ export default {
       })
       .catch((error) => {
         alert("닉네임 정보가 없습니다.", error);
-        console.log("error: ", error);
+        console.log("오류내용: ", error);
         this.$router.push('/'); 
       });
     
@@ -638,5 +717,19 @@ export default {
 }
 .font-bold {
     font-weight: bold;
+}
+
+.item-badge {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: calc(100% / 8); /* 이미지의 1/8 크기로 설정 */
+  max-width: calc(100% / 8); /* 이미지의 1/8 크기로 설정 */
+  height: auto;
+  background-color: #ED05A6;
+  display: block;
+  color: white;
+  font-size: 0.8em; /* 원하는 크기로 설정 */
+  text-align: center;
 }
 </style>
