@@ -208,79 +208,35 @@
                 <b-row>
                   <!-- 아이템 정보 -->
                   <div>
-                    <!-- 첫 번째 줄 -->
                     <div class="d-flex justify-content-between mb-2">
-                      <b-img
-                          v-for="item in game.items.slice(0, 8)"
-                          :src="item.itemId !== null ? item.itemImage : 'http://static.cyphers.co.kr/img/league/icon_nil.jpg'"
-                          :alt="'Item ' + item"
-                          :key="item.itemId"
-                          class="flex-grow-1 pe-1"
-                          style="max-width: 12.5%; cursor: pointer;"
-                          @click="fetchItemData(item.itemId)"
+                      <div 
+                        v-for="item in game.items.slice(0, 8)"
+                        :key="item.itemId"
+                        :style="{border: getBorderColor(item), position: 'relative', width: '100%', maxWidth: '100%'}"
+                        class="me-1"
                       >
-                        <!-- 아이템 이름에 따라 마크 표시 -->
-                        <template v-if="item.itemId !== null">
-                          <span v-if="item.itemName.includes('E')" class="badge bg-primary" style="position: absolute; top: 0; left: 0; padding: 0.2rem 0.5rem; background-color: pink;">E</span> <!-- 수정 -->
-                          <span v-else-if="item.itemName.includes('S')" class="badge bg-danger" style="position: absolute; top: 0; left: 0; padding: 0.2rem 0.5rem; background-color: pink;">S</span> <!-- 수정 -->
-                          <span v-else-if="item.itemName.includes('SU')" class="badge bg-danger" style="position: absolute; top: 0; left: 0; padding: 0.2rem 0.5rem; background-color: pink;">SU</span> <!-- 수정 -->
-                        </template>
-                      </b-img>
-                    </div>
-                    <!-- 두 번째 줄 -->
-                    <div class="d-flex justify-content-between mb-2">
-                      <b-img
-                          v-for="item in game.items.slice(8, 16)"
+                        <b-img 
                           :src="item.itemId !== null ? item.itemImage : 'http://static.cyphers.co.kr/img/league/icon_nil.jpg'"
-                          :alt="'Item ' + item"
-                          :key="item.itemId"
-                          class="flex-grow-1 pe-1"
-                          style="max-width: 12.5%; cursor: pointer;"
+                          style="width: 100%; height: auto; cursor: pointer;"
+                          fluid
                           @click="fetchItemData(item.itemId)"
-                      >
-                        <!-- 아이템 이름에 따라 마크 표시 -->
-                        <template v-if="item.itemId !== null">
-                          <span v-if="item.itemName.includes('E')" class="badge bg-primary" style="position: absolute; top: 0; left: 0; padding: 0.2rem 0.5rem; background-color: pink;">E</span> <!-- 수정 -->
-                          <span v-else-if="item.itemName.includes('S')" class="badge bg-danger" style="position: absolute; top: 0; left: 0; padding: 0.2rem 0.5rem; background-color: pink;">S</span> <!-- 수정 -->
-                          <span v-else-if="item.itemName.includes('SU')" class="badge bg-danger" style="position: absolute; top: 0; left: 0; padding: 0.2rem 0.5rem; background-color: pink;">SU</span> <!-- 수정 -->
-                        </template>
-                      </b-img>
-                    </div>
-                  </div>
-                  <div>
-                    <div class="d-flex justify-content-between mb-2">
-                      <b-img
-                          v-for="item in game.items.slice(0, 8)"
-                          :src="item.itemId !== null ? item.itemImage : 'http://static.cyphers.co.kr/img/league/icon_nil.jpg'"
-                          :alt="'Item ' + item"
-                          :key="item.itemId"
-                          class="flex-grow-1 pe-1"
-                          style="max-width: 12.5%; cursor: pointer;"
-                          @click="fetchItemData(item.itemId)"
-                      >
-                        <template v-if="item.itemId !== null">
-                          <span v-if="item.itemName.includes('E')" class="badge bg-primary" style="position: absolute; top: 0; left: 0; padding: 0.2rem 0.5rem; background-color: pink;">E</span> <!-- 수정 -->
-                          <span v-else-if="item.itemName.includes('S')" class="badge bg-danger" style="position: absolute; top: 0; left: 0; padding: 0.2rem 0.5rem; background-color: pink;">S</span> <!-- 수정 -->
-                          <span v-else-if="item.itemName.includes('SU')" class="badge bg-danger" style="position: absolute; top: 0; left: 0; padding: 0.2rem 0.5rem; background-color: pink;">SU</span> <!-- 수정 -->
-                        </template>
-                      </b-img>
+                        ></b-img>
+                      </div>
                     </div>
                     <div class="d-flex justify-content-between mb-2">
-                      <b-img
-                          v-for="item in game.items.slice(8, 16)"
-                          :src="item.itemId !== null ? item.itemImage : 'http://static.cyphers.co.kr/img/league/icon_nil.jpg'"
-                          :alt="'Item ' + item"
-                          :key="item.itemId"
-                          class="flex-grow-1 pe-1"
-                          style="max-width: 12.5%; cursor: pointer;"
-                          @click="fetchItemData(item.itemId)"
+                      <div 
+                        v-for="item in game.items.slice(8, 16)"
+                        :key="item.itemId"
+                        :style="{border: getBorderColor(item), position: 'relative', width: '100%', maxWidth: '100%'}"
+                        class="me-1"
                       >
-                        <template v-if="item.itemId !== null">
-                          <span v-if="item.itemName.includes('E')" class="badge bg-primary" style="position: absolute; top: 0; left: 0; padding: 0.2rem 0.5rem; background-color: pink;">E</span> <!-- 수정 -->
-                          <span v-else-if="item.itemName.includes('S')" class="badge bg-danger" style="position: absolute; top: 0; left: 0; padding: 0.2rem 0.5rem; background-color: pink;">S</span> <!-- 수정 -->
-                          <span v-else-if="item.itemName.includes('SU')" class="badge bg-danger" style="position: absolute; top: 0; left: 0; padding: 0.2rem 0.5rem; background-color: pink;">SU</span> <!-- 수정 -->
-                        </template>
-                      </b-img>
+                        <b-img 
+                          :src="item.itemId !== null ? item.itemImage : 'http://static.cyphers.co.kr/img/league/icon_nil.jpg'"
+                          style="width: 100%; height: auto; cursor: pointer;"
+                          fluid
+                          @click="fetchItemData(item.itemId)"
+                        ></b-img>
+                      </div>
                     </div>
                   </div>
                 </b-row>
@@ -453,7 +409,7 @@ export default {
           //   image: "https://img-api.neople.co.kr/cy/items/19f0134c20a835546c760c38293ce67a",
           //   itemId: "19f0134c20a835546c760c38293ce67a",
           //   itemName: "E 파이어 포르테",
-          //   rarity: "유니크",
+          //   rarityName: "유니크",
           //   rarityColor: "",
           //   slotName: "발(이동)",
           //   seasonName: "시즌 1 : Eclipse",
@@ -680,7 +636,7 @@ export default {
       // 레어리티에 따라 색상을 지정할 수 있습니다.
       switch (this.itemDetail.rarity) {
         case "유니크":
-          this.itemDetail.rarityColor = "#ED05A6";
+          this.itemDetail.rarityColor = "#EB61AD";
           break;
         case "레어":
           this.itemDetail.rarityColor = "#9C5AFF";
@@ -689,23 +645,20 @@ export default {
           this.itemDetail.rarityColor = "#3EB7FF";
           break;
         default:
-          this.itemDetail.rarityColor = "white";
+          this.itemDetail.rarityColor = "#454545";
       }
     },
     // 아이템의 rarity에 따라 적절한 색상을 반환하는 함수
     getBorderColor(item) {
-      switch(item.rarity) {
+      switch(item.rarityName) {
           case "유니크":
-              return "2px solid pink";
+              return '3px solid #EB61AD';
           case "레어":
-              return "2px solid purple";
+              return '3px solid #9C5AFF';
           case "언커먼":
-              return "2px solid skyblue";
-          case "커먼":
-              return "2px solid white";  
-          // 다른 경우에 대한 처리 추가 가능
+              return '3px solid #3EB7FF';
           default:
-              return "1px solid transparent"; // 특정하지 않은 경우
+              return '3px solid #454545';  
       }
     }
   },
@@ -764,5 +717,19 @@ export default {
 }
 .font-bold {
     font-weight: bold;
+}
+
+.item-badge {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: calc(100% / 8); /* 이미지의 1/8 크기로 설정 */
+  max-width: calc(100% / 8); /* 이미지의 1/8 크기로 설정 */
+  height: auto;
+  background-color: #ED05A6;
+  display: block;
+  color: white;
+  font-size: 0.8em; /* 원하는 크기로 설정 */
+  text-align: center;
 }
 </style>
