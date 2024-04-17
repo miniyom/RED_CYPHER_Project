@@ -433,9 +433,9 @@ public class SearchService {
 						gameRecord.setPlayCharacterId(playInfo.getCharacterId());
 						gameRecord.setResult(matchedInfo.getPlayInfo().getResult());
 						gameRecord.setPositionName(playerDataInGame.getPosition().getName());
-						List<String> attributeIds = new ArrayList<>();
-						for (CyphersCharacterAttribute attribute : playerDataInGame.getPosition().getAttribute()) {
-							attributeIds.add(attribute.getId());
+						List<CyphersCharacterAttribute> attributeInfos = new ArrayList<>();
+						for (CyphersCharacterAttribute attributeInfo : playerDataInGame.getPosition().getAttribute()) {
+							attributeInfos.add(attributeInfo);
 						}
 						gameRecord.setKillParticipation(0);
 						if (totalKillCount > 0) {
@@ -443,7 +443,7 @@ public class SearchService {
 									100 * (playInfo.getKillCount() + playInfo.getAssistCount()) / totalKillCount);
 						}
 
-						gameRecord.setAttributeIds(attributeIds);
+						gameRecord.setAttributeInfos(attributeInfos);
 						gameRecord.setKillCount(playInfo.getKillCount());
 						gameRecord.setDeathCount(playInfo.getDeathCount());
 						gameRecord.setAssistCount(playInfo.getAssistCount());

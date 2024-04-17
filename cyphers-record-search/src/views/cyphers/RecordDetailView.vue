@@ -201,42 +201,43 @@
                       class="m-0 p-0 me-1" 
                       style="width: 40px; cursor: pointer;"
                       @click="fetchAttributeData(attribute.attributeId)"
+                      v-b-tooltip.hover :title=attribute.attributeName
                     >
                     </b-img>
                   </b-col>
                 </b-row>
                 <b-row>
                   <!-- 아이템 정보 -->
-                  <div>
-                    <div class="d-flex justify-content-between mb-2">
-                      <div 
-                        v-for="item in game.items.slice(0, 8)"
-                        :key="item.itemId"
-                        :style="{border: getBorderColor(item), position: 'relative', width: '100%', maxWidth: '100%'}"
-                        class="me-1"
-                      >
-                        <b-img 
-                          :src="item.itemId !== null ? item.itemImage : 'http://static.cyphers.co.kr/img/league/icon_nil.jpg'"
-                          style="width: 100%; height: auto; cursor: pointer;"
-                          fluid
-                          @click="fetchItemData(item.itemId)"
-                        ></b-img>
-                      </div>
+                  <div class="d-flex justify-content-between mb-2">
+                    <div 
+                      v-for="item in game.items.slice(0, 8)"
+                      :key="item.itemId"
+                      :style="{border: getBorderColor(item), position: 'relative', width: '100%', maxWidth: '100%'}"
+                      class="me-1"
+                      v-b-tooltip.hover :title=item.itemName
+                    >
+                      <b-img 
+                        :src="item.itemId !== null ? item.itemImage : 'http://static.cyphers.co.kr/img/league/icon_nil.jpg'"
+                        style="width: 100%; height: auto; cursor: pointer;"
+                        fluid
+                        @click="fetchItemData(item.itemId)"
+                      ></b-img>
                     </div>
-                    <div class="d-flex justify-content-between mb-2">
-                      <div 
-                        v-for="item in game.items.slice(8, 16)"
-                        :key="item.itemId"
-                        :style="{border: getBorderColor(item), position: 'relative', width: '100%', maxWidth: '100%'}"
-                        class="me-1"
-                      >
-                        <b-img 
-                          :src="item.itemId !== null ? item.itemImage : 'http://static.cyphers.co.kr/img/league/icon_nil.jpg'"
-                          style="width: 100%; height: auto; cursor: pointer;"
-                          fluid
-                          @click="fetchItemData(item.itemId)"
-                        ></b-img>
-                      </div>
+                  </div>
+                  <div class="d-flex justify-content-between mb-2">
+                    <div 
+                      v-for="item in game.items.slice(8, 16)"
+                      :key="item.itemId"
+                      :style="{border: getBorderColor(item), position: 'relative', width: '100%', maxWidth: '100%'}"
+                      class="me-1"
+                      v-b-tooltip.hover :title=item.itemName
+                    >
+                      <b-img 
+                        :src="item.itemId !== null ? item.itemImage : 'http://static.cyphers.co.kr/img/league/icon_nil.jpg'"
+                        style="width: 100%; height: auto; cursor: pointer;"
+                        fluid
+                        @click="fetchItemData(item.itemId)"
+                      ></b-img>
                     </div>
                   </div>
                 </b-row>
@@ -388,11 +389,9 @@ export default {
         postionImage: "@/public/img/tanker.png",
         attributes: [
           // {
-          //   image: "https://img-api.neople.co.kr/cy/position-attributes/e29cbec17de6ae981984c6d279400483",
+          //   attributeImage: "https://img-api.neople.co.kr/cy/position-attributes/e29cbec17de6ae981984c6d279400483",
           //   attributeId: "e29cbec17de6ae981984c6d279400483",
           //   attributeName: "완벽주의자",
-          //   explain: "체력이 80% 이상일시 스킬 공격력 +5%, 치명타 +3%",
-          //   positionName: "원거리딜러"
           // }
           //총 4개 특성
         ],
@@ -497,9 +496,10 @@ export default {
         result: record.result,
         characterImage: `https://img-api.neople.co.kr/cy/characters/${record.playCharacterId}?zoom=2`,  // 플레이어 캐릭터 이미지 URL
         positionImage: this.getPostionImage(record.positionName),
-        attributes: record.attributeIds.map(attributeId => ({
-          attributeId: attributeId,
-          attributeImage: `https://img-api.neople.co.kr/cy/position-attributes/${attributeId}`
+        attributes: record.attributeInfos.map(attributeInfo => ({
+          attributeId: attributeInfo.id,
+          attributeName: attributeInfo.name,
+          attributeImage: `https://img-api.neople.co.kr/cy/position-attributes/${attributeInfo.id}`
         })),  // 특성 이미지 URL 배열
         gameInfo: {
           kills: record.killCount,
