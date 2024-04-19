@@ -77,6 +77,11 @@ public class SearchService {
 //		cyPlayerRes.getRows().stream().limit(limit).map(CyphersPlayer::getNickname).collect(Collectors.toList());
 		return nicknameList;
 	}
+	
+	public String getNickname(String nickname) throws Exception {
+		CyphersPlayerResponse cyPlayerRes = cyApiService.searchPlayers(nickname, CyphersPlayerWordType.MATCH, null);
+		return cyPlayerRes.getRows().get(0).getNickname();
+	}
 
 	public IoSearchDetailResponse getDetailSearch(String nickname) throws Exception {
 

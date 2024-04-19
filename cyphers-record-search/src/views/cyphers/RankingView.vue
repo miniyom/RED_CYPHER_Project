@@ -436,7 +436,6 @@ export default {
         this.fetchTotalRanker();
         this.fetchRankers();
         if (this.$route.params.type !== 'all_list') {
-            console.log("파라미터 뭔데 시발: ", this.$route.params.type); 
             this.fetchSingleRanker();
         }
     }

@@ -51,7 +51,12 @@ public class SearchController {
                 .limit(5).collect(Collectors.toList());
     }
     
-    @GetMapping("/{nickname}")
+    @GetMapping("/nickname/{nickname}")
+    public String searchNickname(@PathVariable("nickname") String nickname) throws Exception {
+        return searchService.getNickname(nickname);
+    }
+    
+    @GetMapping("/player/detail/{nickname}")
     public SearchDetailResponse getSearchDetail(@PathVariable("nickname") String nickname) throws Exception {
     	SearchDetailResponse res = crsSearchService.getDetailSearch(nickname);
         return res;
@@ -60,8 +65,8 @@ public class SearchController {
     @GetMapping("/player/search/{nickname}")
     public CyphersPlayerInfo getPlayerInfo(@PathVariable("nickname") String nickname) throws Exception {
     	CyphersPlayerResponse cyPlayerResponse = cyApiService.searchPlayers(nickname, CyphersPlayerWordType.MATCH, null);
-    	CyphersPlayerInfo cyPlayerInfo = cyApiService.searchPlayerInfo(cyPlayerResponse.getRows().get(0).getPlayerId());
-    	return cyPlayerInfo;
+    	CyphersPlayerInfo res = cyApiService.searchPlayerInfo(cyPlayerResponse.getRows().get(0).getPlayerId());
+    	return res;
     }
     
     @GetMapping("/records/{gameType}/{playerId}")

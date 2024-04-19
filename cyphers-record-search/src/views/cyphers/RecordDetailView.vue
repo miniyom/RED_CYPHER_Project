@@ -11,20 +11,20 @@
           <img :src="playerCharacterImage" alt="프로필 이미지" class="img-fluid rounded-circle profile-image">
         </b-col>
         <b-col class="pl-0 text-left align-self-end">
-          <h2 class="mb-2">{{ this.playerNickname }}</h2>
-          <b-button variant="primary" class="me-2">전적갱신</b-button>
+          <h2 class="mb-2">{{ playerNickname }}</h2>
+          <b-button variant="primary" class="me-2" @click="fetchDetailData(playerNickname)">전적갱신</b-button>
           <span class="ml-2">최근 갱신: XX분 전</span>
         </b-col>
       </b-row>
     </b-container>
 
     <!-- 이동 탭 박스 -->
-    <b-container class="my-3 container-box">
+    <!-- <b-container class="my-3 container-box">
       <div class="d-flex justify-content-start">
         <b-button variant="primary" class="me-3">종합</b-button>
         <b-button variant="primary">캐릭터</b-button>
       </div>
-    </b-container>
+    </b-container> -->
 
     <!-- 플레이어에 대한 상세 지표 박스 -->
     <b-container class="my-3 ">
@@ -38,7 +38,6 @@
             </b-tab>
             <b-tab title="모스트 포지션">
               <!-- 모스트 포지션 내용 -->
-              <!-- 그래프 구현은 별도의 라이브러리를 사용해야 함 -->
               <b-col>
                 <b-row>
                   <PieGraph style="height: 500px;" />
@@ -71,7 +70,7 @@
           </b-tabs>
         </b-col>
 
-        <!-- 공식전 내용 -->
+        <!-- 공성전 전적 -->
         <b-col sm="5" class="container-box">
 
           <b-container class="my-3">
@@ -368,7 +367,6 @@ export default {
       playerId: '',
       playerCharacterImage: '',
       activeTab: '모스트 사이퍼', // 예시
-      // ... 나머지 데이터 구조
       cypherData: [
         {사이퍼: '사이퍼1', 승률: '75%', 게임횟수: '20'},
         {사이퍼: '사이퍼2', 승률: '60%', 게임횟수: '15'},
@@ -381,6 +379,19 @@ export default {
         {사이퍼: '사이퍼4', 승률: '80%', 게임횟수: '25'},
         {사이퍼: '사이퍼4', 승률: '80%', 게임횟수: '25'},
       ],
+      detailData: {
+        score: {
+          ratingGameTier: '',
+          ratingWinCount: 0,
+          ratingLoseCount: 0,
+          ratingStopCount: 0,
+          ratingWinRate: 0,
+          normalWinCount: 0,
+          normalLoseCount: 0,
+          normalStopCount: 0,
+          normalWinRate: 0,
+        },
+      },
       games: [{
         id: 0,
         type: "공식전",
@@ -537,12 +548,24 @@ export default {
 
       return transformedData;
     },
-    fetchPlayerData(playerId) {
+    fetchDetailData(nickname) {
+      axios.get(`/api/search/player/detail/${nickname}`)
+      .then((response) => {
+        const detail = response.data;
+        this.detailData.score = detail.playerId;
+      })
+      .catch((error) => {
+        alert("닉네임 정보가 없습니다.", error);
+        console.log("오류내용: ", error);
+        this.$router.go(); 
+      });
+    },
+    fetchGameData(playerId) {
       // 서버에서 사용자 데이터를 가져오는 API 호출
       axios.get(`/api/search/records/RATING/${playerId}`)
         .then((response) => {
-          const detailData = response.data;
-          this.games = this.transformGameData(detailData.gameRecords);
+          const gameData = response.data;
+          this.games = this.transformGameData(gameData.gameRecords);
         })
         .catch((error) => {
           alert("데이터를 불러오는 것에 실패했습니다", error);
@@ -668,16 +691,13 @@ export default {
         const playerData = response.data;
         this.playerId = playerData.playerId;
         this.playerCharacterImage = `https://img-api.neople.co.kr/cy/characters/${playerData.represent.characterId}?zoom=3`;
-        console.log(this.playerCharacterImage);
-        // 사용자 데이터를 서버에서 가져오기
-        this.fetchPlayerData(this.playerId);
+        this.fetchGameData(this.playerId);
       })
       .catch((error) => {
         alert("닉네임 정보가 없습니다.", error);
         console.log("오류내용: ", error);
-        this.$router.push('/'); 
+        this.$router.go(-1); 
       });
-    
   }
 }
 </script>

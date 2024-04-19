@@ -44,6 +44,7 @@ export default {
             isInputFocused: false,
             searchText: '',
             searchData: [],
+            searchNickname: '',
         }
     },
     methods: {
@@ -69,20 +70,33 @@ export default {
                 this.searchData = [];
                 return;
             } else {
-                this.fetchData();
+                this.fetchAutoCompleteData();
             }
         },
-        fetchData() {
+        fetchAutoCompleteData() {
             axios.get(`/api/search/auto-complete/${this.searchText}`)
                 .then(response => {
-                this.searchData = [];
+                    this.searchData = [];
                     for (let index = 0; index < response.data.length; index++) {
                         this.searchData.push({'text': response.data[index], 'id' : index});
                     }
                 });
         },
         search() {
-            this.$router.push({ name: 'RecordDetail', params: { nickname: this.searchText} });
+            if (this.$route.params.nickname !== this.searchText) {
+                axios.get(`/api/search/nickname/${this.searchText}`)
+                    .then(response => {
+                        this.searchNickname = response.data;
+                        this.$router.push({ name: 'RecordDetail', params: { nickname: this.searchNickname} });
+                    })
+                    .catch((error) => {
+                        alert("닉네임 정보가 없습니다.", error);
+                        console.log("오류내용: ", error);
+                        this.$router.go();
+                    });
+            } else {
+                this.$router.go();
+            }
         },
     },
     mounted() {
