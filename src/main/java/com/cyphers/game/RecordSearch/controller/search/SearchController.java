@@ -62,6 +62,16 @@ public class SearchController {
         return res;
     }
     
+    @GetMapping("/renewal/{nickname}")
+    public void renewalDetail(@PathVariable("nickname") String nickname) throws Exception {
+    	
+		IoSearchDetailResponse detailSearch = searchService.renewalDetailSearch(nickname);
+    	crsSearchService.upsert(detailSearch);
+//    	SearchDetailResponse searchDetailDTO = crsSearchService.getDetailSearch(nickname);
+//    	
+//        return searchDetailDTO;
+    }
+    
     @GetMapping("/player/search/{nickname}")
     public CyphersPlayerInfo getPlayerInfo(@PathVariable("nickname") String nickname) throws Exception {
     	CyphersPlayerResponse cyPlayerResponse = cyApiService.searchPlayers(nickname, CyphersPlayerWordType.MATCH, null);
@@ -84,16 +94,6 @@ public class SearchController {
     	GameRecordResponse res = searchService.getGameRecords(matches, playerId);
 
     	return res;
-    }
-    
-    @GetMapping("/renewal/{nickname}")
-    public SearchDetailResponse renewalDetail(@PathVariable("nickname") String nickname) throws Exception {
-    	
-		IoSearchDetailResponse detailSearch = searchService.getDetailSearch(nickname);
-    	crsSearchService.upsert(detailSearch);
-    	SearchDetailResponse searchDetailDTO = crsSearchService.getDetailSearch(nickname);
-    	
-        return searchDetailDTO;
     }
     
     @GetMapping("/item/{itemId}")

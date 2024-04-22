@@ -83,7 +83,7 @@ public class SearchService {
 		return cyPlayerRes.getRows().get(0).getNickname();
 	}
 
-	public IoSearchDetailResponse getDetailSearch(String nickname) throws Exception {
+	public IoSearchDetailResponse renewalDetailSearch(String nickname) throws Exception {
 
 		CyphersPlayerResponse cyPlayerResponse = cyApiService.searchPlayers(nickname, CyphersPlayerWordType.MATCH, null);
 
@@ -421,8 +421,7 @@ public class SearchService {
 
 			for (CyphersMatchedInfo matchedInfo : cyMatchedInfos) {
 				IoSearchDetailGameRecord gameRecord = new IoSearchDetailGameRecord();
-				String matchId = matchedInfo.getMatchId();
-				CyphersMatchingDetails matchingDetail = cyApiService.searchMatchingDetail(matchId);
+				CyphersMatchingDetails matchingDetail = cyApiService.searchMatchingDetail(matchedInfo.getMatchId());
 				Integer totalKillCount = 0;
 				for (CyphersPlayersInGame cyPlayersInGame : matchingDetail.getPlayers()) {
 					totalKillCount += cyPlayersInGame.getPlayInfo().getKillCount();
@@ -511,6 +510,7 @@ public class SearchService {
 						break;
 					}
 				}
+				gameRecord.setMatchId(matchedInfo.getMatchId());
 				gameRecord.setPlayDate(matchingDetail.getDate());
 				gameRecord.setTeamPlayerInfos(teamPlayerInfos);
 				gameRecords.add(gameRecord);

@@ -12,9 +12,9 @@
         <b-nav-item href="#/ranking/all_list">통합 랭킹</b-nav-item>
         
 
+        <b-nav-item href="#">통계</b-nav-item>
         <b-nav-item href="#">사이퍼 정보</b-nav-item>
         <b-nav-item href="#">캐릭터 코멘트</b-nav-item>
-        <b-nav-item href="#">게시판</b-nav-item>
       </b-navbar-nav>
 
       <b-navbar-brand href="https://cyphers.game.naver.com/" title="사이퍼즈 공식 홈페이지">

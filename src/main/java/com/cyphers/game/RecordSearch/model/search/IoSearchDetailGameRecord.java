@@ -20,6 +20,7 @@ import lombok.Setter;
 @Builder
 public class IoSearchDetailGameRecord {
 
+	private String matchId;
 	private String playDate;
     private CyphersGameType gameType;
     private String result;
