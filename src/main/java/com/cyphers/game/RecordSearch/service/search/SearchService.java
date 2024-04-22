@@ -77,8 +77,13 @@ public class SearchService {
 //		cyPlayerRes.getRows().stream().limit(limit).map(CyphersPlayer::getNickname).collect(Collectors.toList());
 		return nicknameList;
 	}
+	
+	public String getNickname(String nickname) throws Exception {
+		CyphersPlayerResponse cyPlayerRes = cyApiService.searchPlayers(nickname, CyphersPlayerWordType.MATCH, null);
+		return cyPlayerRes.getRows().get(0).getNickname();
+	}
 
-	public IoSearchDetailResponse getDetailSearch(String nickname) throws Exception {
+	public IoSearchDetailResponse renewalDetailSearch(String nickname) throws Exception {
 
 		CyphersPlayerResponse cyPlayerResponse = cyApiService.searchPlayers(nickname, CyphersPlayerWordType.MATCH, null);
 
@@ -416,8 +421,7 @@ public class SearchService {
 
 			for (CyphersMatchedInfo matchedInfo : cyMatchedInfos) {
 				IoSearchDetailGameRecord gameRecord = new IoSearchDetailGameRecord();
-				String matchId = matchedInfo.getMatchId();
-				CyphersMatchingDetails matchingDetail = cyApiService.searchMatchingDetail(matchId);
+				CyphersMatchingDetails matchingDetail = cyApiService.searchMatchingDetail(matchedInfo.getMatchId());
 				Integer totalKillCount = 0;
 				for (CyphersPlayersInGame cyPlayersInGame : matchingDetail.getPlayers()) {
 					totalKillCount += cyPlayersInGame.getPlayInfo().getKillCount();
@@ -433,9 +437,9 @@ public class SearchService {
 						gameRecord.setPlayCharacterId(playInfo.getCharacterId());
 						gameRecord.setResult(matchedInfo.getPlayInfo().getResult());
 						gameRecord.setPositionName(playerDataInGame.getPosition().getName());
-						List<String> attributeIds = new ArrayList<>();
-						for (CyphersCharacterAttribute attribute : playerDataInGame.getPosition().getAttribute()) {
-							attributeIds.add(attribute.getId());
+						List<CyphersCharacterAttribute> attributeInfos = new ArrayList<>();
+						for (CyphersCharacterAttribute attributeInfo : playerDataInGame.getPosition().getAttribute()) {
+							attributeInfos.add(attributeInfo);
 						}
 						gameRecord.setKillParticipation(0);
 						if (totalKillCount > 0) {
@@ -443,7 +447,7 @@ public class SearchService {
 									100 * (playInfo.getKillCount() + playInfo.getAssistCount()) / totalKillCount);
 						}
 
-						gameRecord.setAttributeIds(attributeIds);
+						gameRecord.setAttributeInfos(attributeInfos);
 						gameRecord.setKillCount(playInfo.getKillCount());
 						gameRecord.setDeathCount(playInfo.getDeathCount());
 						gameRecord.setAssistCount(playInfo.getAssistCount());
@@ -506,6 +510,7 @@ public class SearchService {
 						break;
 					}
 				}
+				gameRecord.setMatchId(matchedInfo.getMatchId());
 				gameRecord.setPlayDate(matchingDetail.getDate());
 				gameRecord.setTeamPlayerInfos(teamPlayerInfos);
 				gameRecords.add(gameRecord);

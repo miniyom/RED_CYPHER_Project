@@ -22,7 +22,6 @@ import com.cyphers.game.RecordSearch.model.search.entity.CrsRecentlyPlayCypherIn
 import com.cyphers.game.RecordSearch.model.search.entity.CrsWinAndLoseCountHistory;
 import com.cyphers.game.RecordSearch.service.search.repository.CrsDetailSearchRepository;
 
-import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 
@@ -32,16 +31,17 @@ import lombok.AllArgsConstructor;
 public class CrsSearchService {
 
 	private final CrsDetailSearchRepository crsDetailSearchRepository;
-	private final EntityManager em;
 	
 	public void upsert(IoSearchDetailResponse detailResponse) {
 		
-		CrsDetailSearch response = crsDetailSearchRepository.findByPlayerId(detailResponse.getPlayerId()).get();
+		Optional<CrsDetailSearch> cds = crsDetailSearchRepository.findByPlayerId(detailResponse.getPlayerId());
 		
-		if (response == null) {
+		if (!cds.isPresent()) {
 			insert(detailResponse);
 			return;
 		}
+		
+		CrsDetailSearch response = cds.get();
 		
 		response.setPlayerId(detailResponse.getPlayerId());
 		response.setProfileCharacterId(detailResponse.getProfileCharacterId());

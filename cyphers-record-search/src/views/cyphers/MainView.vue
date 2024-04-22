@@ -58,6 +58,7 @@ export default {
       isInputFocused: false,
       searchText: '',
       searchData: [],
+      searchNickname: '',
     }
   },
   methods: {
@@ -98,8 +99,16 @@ export default {
         });
     },
     search() {
-      // localStorage.setItem("nickname", this.searchText);
-      this.$router.push({ name: 'RecordDetail', params: { nickname: this.searchText} });
+      axios.get(`/api/search/nickname/${this.searchText}`)
+        .then(response => {
+            this.searchNickname = response.data;
+            this.$router.push({ name: 'RecordDetail', params: { nickname: this.searchNickname} });
+        })
+        .catch((error) => {
+            alert("닉네임 정보가 없습니다.", error);
+            console.log("오류내용: ", error);
+            this.$router.go();
+        });
     },
   },
   mounted() {

@@ -51,17 +51,32 @@ public class SearchController {
                 .limit(5).collect(Collectors.toList());
     }
     
-    @GetMapping("/{nickname}")
+    @GetMapping("/nickname/{nickname}")
+    public String searchNickname(@PathVariable("nickname") String nickname) throws Exception {
+        return searchService.getNickname(nickname);
+    }
+    
+    @GetMapping("/player/detail/{nickname}")
     public SearchDetailResponse getSearchDetail(@PathVariable("nickname") String nickname) throws Exception {
     	SearchDetailResponse res = crsSearchService.getDetailSearch(nickname);
         return res;
     }
     
+    @GetMapping("/renewal/{nickname}")
+    public void renewalDetail(@PathVariable("nickname") String nickname) throws Exception {
+    	
+		IoSearchDetailResponse detailSearch = searchService.renewalDetailSearch(nickname);
+    	crsSearchService.upsert(detailSearch);
+//    	SearchDetailResponse searchDetailDTO = crsSearchService.getDetailSearch(nickname);
+//    	
+//        return searchDetailDTO;
+    }
+    
     @GetMapping("/player/search/{nickname}")
     public CyphersPlayerInfo getPlayerInfo(@PathVariable("nickname") String nickname) throws Exception {
     	CyphersPlayerResponse cyPlayerResponse = cyApiService.searchPlayers(nickname, CyphersPlayerWordType.MATCH, null);
-    	CyphersPlayerInfo cyPlayerInfo = cyApiService.searchPlayerInfo(cyPlayerResponse.getRows().get(0).getPlayerId());
-    	return cyPlayerInfo;
+    	CyphersPlayerInfo res = cyApiService.searchPlayerInfo(cyPlayerResponse.getRows().get(0).getPlayerId());
+    	return res;
     }
     
     @GetMapping("/records/{gameType}/{playerId}")
@@ -79,16 +94,6 @@ public class SearchController {
     	GameRecordResponse res = searchService.getGameRecords(matches, playerId);
 
     	return res;
-    }
-    
-    @GetMapping("/renewal/{nickname}")
-    public SearchDetailResponse renewalDetail(@PathVariable("nickname") String nickname) throws Exception {
-    	
-		IoSearchDetailResponse detailSearch = searchService.getDetailSearch(nickname);
-    	crsSearchService.upsert(detailSearch);
-    	SearchDetailResponse searchDetailDTO = crsSearchService.getDetailSearch(nickname);
-    	
-        return searchDetailDTO;
     }
     
     @GetMapping("/item/{itemId}")

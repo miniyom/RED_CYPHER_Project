@@ -11,7 +11,7 @@
                 <b-col class="container-box mx-4">
                     <b-row><h5>Legend 커트 라인</h5></b-row>
                     <b-row class="align-items-center">
-                        <b-col><b-img src="/img/legend2.png" class="tier-image"></b-img></b-col>
+                        <b-col><b-img src="/img/legend.png" class="tier-image"></b-img></b-col>
                         <b-col><h2 :style="{ whiteSpace: 'pre-line' }">{{ legendCutPoint === 0 ? 'No\nLegends' : (legendCutPoint+"RP") }}</h2></b-col>
                     </b-row>
                     <b-row class="px-4 pt-3">
@@ -266,6 +266,10 @@ export default {
                     this.legendPlayerNum = index;
                     break;
                 }
+                
+            }
+            if (this.players[29].tier !== 'Legend') {
+                return 2800;
             }
             return this.players[lastLegendIndex].ratingPoint;
         },
@@ -283,6 +287,9 @@ export default {
                     this.heroPlayerNum = index;
                     break;
                 }
+            }
+            if (this.players[129].tier !== 'Hero') {
+                return 2800;
             }
             return this.players[lastHeroIndex].ratingPoint;
         },
@@ -436,7 +443,6 @@ export default {
         this.fetchTotalRanker();
         this.fetchRankers();
         if (this.$route.params.type !== 'all_list') {
-            console.log("파라미터 뭔데 시발: ", this.$route.params.type); 
             this.fetchSingleRanker();
         }
     }

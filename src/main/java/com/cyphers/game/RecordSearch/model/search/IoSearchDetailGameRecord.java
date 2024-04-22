@@ -2,6 +2,7 @@ package com.cyphers.game.RecordSearch.model.search;
 
 import java.util.List;
 
+import com.cyphers.game.RecordSearch.openapi.model.CyphersCharacterAttribute;
 import com.cyphers.game.RecordSearch.openapi.model.CyphersEquipItems;
 import com.cyphers.game.RecordSearch.openapi.model.CyphersPositionAttribute;
 import com.cyphers.game.RecordSearch.openapi.model.enumuration.CyphersGameType;
@@ -19,12 +20,13 @@ import lombok.Setter;
 @Builder
 public class IoSearchDetailGameRecord {
 
+	private String matchId;
 	private String playDate;
     private CyphersGameType gameType;
     private String result;
     private String playCharacterId;
     private String positionName;
-    private List<String> attributeIds;
+    private List<CyphersCharacterAttribute> attributeInfos;
 
     private Integer killCount;
     private Integer deathCount;

@@ -44,6 +44,7 @@ export default {
             isInputFocused: false,
             searchText: '',
             searchData: [],
+            searchNickname: '',
         }
     },
     methods: {
@@ -82,7 +83,16 @@ export default {
                 });
         },
         searchRank() {
-            this.$router.push({ name: 'Ranking', params: { type: this.searchText} });
+            axios.get(`/api/search/nickname/${this.searchText}`)
+                .then(response => {
+                    this.searchNickname = response.data;
+                    this.$router.push({ name: 'Ranking', params: { type: this.searchText} });
+                })
+                .catch((error) => {
+                    alert("닉네임 정보가 없습니다.", error);
+                    console.log("오류내용: ", error);
+                    this.$router.go();
+                });
         },
     },
     mounted() {
