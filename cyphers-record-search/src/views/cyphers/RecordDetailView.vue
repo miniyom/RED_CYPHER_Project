@@ -545,11 +545,11 @@ export default {
         },
         team1Players: record.teamPlayerInfos.slice(0, 5).map(player => ({
           image: `https://img-api.neople.co.kr/cy/characters/${player.characterId}?zoom=1`,
-          name: player.nickname
+          name: player.nickname !== null ? player.nickname : '???'
         })),
         team2Players: record.teamPlayerInfos.slice(5).map(player => ({
           image: `https://img-api.neople.co.kr/cy/characters/${player.characterId}?zoom=1`,
-          name: player.nickname
+          name: player.nickname !== null ? player.nickname : '???'
         }))
       }));
 
@@ -571,7 +571,6 @@ export default {
       axios.get(`/api/search/player/detail/${nickname}`)
       .then((response) => {
         this.detailData = response.data;
-        // console.log("디테일 데이터 내용: ", this.detailData);
       })
       .catch((error) => {
         alert("갱신된 정보가 없습니다.", error);
@@ -618,8 +617,6 @@ export default {
           } else {
             this.showLoadMoreGames = false;
           }
-          console.log("게임기록 개수: ",this.games.length);
-          console.log("게임기록 내용: ",this.games);
         })
         .catch((error) => {
           alert("추가 게임기록을 불러오는 것에 실패했습니다", error);
