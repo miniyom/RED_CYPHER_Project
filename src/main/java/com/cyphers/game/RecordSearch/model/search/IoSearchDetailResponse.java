@@ -17,7 +17,10 @@ public class IoSearchDetailResponse {
     private LocalDateTime recentlyUpdatedDate;
     
     private List<IoSearchDetailMostCypherInfo> mostCypherInfos;
-    private IoSearchDetailMostPositionInfo mostPositionInfos;
+    private Integer tankerUseRate;
+    private Integer rangeDealerUseRate;
+    private Integer supporterUseRate;
+    private Integer meleeDealerUseRate;
 
     private String ratingGameTier;
     private Integer ratingWinCount;

@@ -159,7 +159,7 @@
     <b-container class="my-3 container-box">
       <b-list-group>
         <!-- games 배열이 비어있을 때 메시지 표시 -->
-        <b-list-group-item v-if="this.games.length < 1">
+        <b-list-group-item v-if="this.games.length < 2">
           게임 기록이 없습니다.
         </b-list-group-item>
         <!-- games 배열이 비어있지 않을 때 게임 리스트 표시 -->
@@ -398,65 +398,65 @@ export default {
         normalWinRate: 0,
       },
       games: [
-        // {
-        //   matchId: '',    
-        //   type: "공식전",
-        //   result: "승리",
-        //   playDate: '',
-        //   characterImage: "https://placekitten.com/100/100",
-        //   postionImage: "@/public/img/tanker.png",
-        //   attributes: [
-        //     // {
-        //     //   attributeImage: "https://img-api.neople.co.kr/cy/position-attributes/e29cbec17de6ae981984c6d279400483",
-        //     //   attributeId: "e29cbec17de6ae981984c6d279400483",
-        //     //   attributeName: "완벽주의자",
-        //     // }
-        //     //총 4개 특성
-        //   ],
-        //   gameInfo: {
-        //     kills: 10,
-        //     deaths: 2,
-        //     assists: 5,
-        //     participationRate: 20,
-        //     kda: 2.5,
-        //     cs: 150
-        //   },
-        //   items: [
+        {
+          matchId: '',    
+          type: "공식전",
+          result: "승리",
+          playDate: '',
+          characterImage: "https://placekitten.com/100/100",
+          postionImage: "@/public/img/tanker.png",
+          attributes: [
             // {
-            //   image: "https://img-api.neople.co.kr/cy/items/19f0134c20a835546c760c38293ce67a",
-            //   itemId: "19f0134c20a835546c760c38293ce67a",
-            //   itemName: "E 파이어 포르테",
-            //   rarityName: "유니크",
-            //   rarityColor: "",
-            //   slotName: "발(이동)",
-            //   seasonName: "시즌 1 : Eclipse",
-            //   explainDetail: "\n\n[1레벨] : 장비레벨+3\n비용 650 coin\n이동속도 : +63\n\n[2레벨] : 장비레벨+3\n비용 850 coin\n이동속도 : +63\n불놀이(SL) 공격속도 : +6%\n\n난 언제나 내가 내린 결정에 확신이 있어. 같은 상황이 온다고 해도 언제나 내 답은 같아. "
-            // },
-            //총 16개 아이템
-        //   ],
-        //   details: {
-        //     heal: 5000,
-        //     damage: 15000,
-        //     takenDamage: 2000,
-        //     coins: 10000,
-        //     participation: 70,
-        //     vision: 12
-        //   },
-        //   team1Players: [
-        //     {image: "https://placekitten.com/90/90", name: "Player1"},
-        //     {image: "https://placekitten.com/91/91", name: "Player2"},
-        //     {image: "https://placekitten.com/92/92", name: "Player3"},
-        //     {image: "https://placekitten.com/93/93", name: "Player4"},
-        //     {image: "https://placekitten.com/94/94", name: "Player5"},
-        //   ],
-        //   team2Players: [
-        //     {image: "https://placekitten.com/95/95", name: "Player6"},
-        //     {image: "https://placekitten.com/96/96", name: "Player7"},
-        //     {image: "https://placekitten.com/97/97", name: "Player8"},
-        //     {image: "https://placekitten.com/98/98", name: "Player9"},
-        //     {image: "https://placekitten.com/99/99", name: "Player10"},
-        //   ]
-        // }
+            //   attributeImage: "https://img-api.neople.co.kr/cy/position-attributes/e29cbec17de6ae981984c6d279400483",
+            //   attributeId: "e29cbec17de6ae981984c6d279400483",
+            //   attributeName: "완벽주의자",
+            // }
+            //총 4개 특성
+          ],
+          gameInfo: {
+            kills: 10,
+            deaths: 2,
+            assists: 5,
+            participationRate: 20,
+            kda: 2.5,
+            cs: 150
+          },
+          items: [
+            {
+              image: "https://img-api.neople.co.kr/cy/items/19f0134c20a835546c760c38293ce67a",
+              itemId: "19f0134c20a835546c760c38293ce67a",
+              itemName: "E 파이어 포르테",
+              rarityName: "유니크",
+              rarityColor: "",
+              slotName: "발(이동)",
+              seasonName: "시즌 1 : Eclipse",
+              explainDetail: "\n\n[1레벨] : 장비레벨+3\n비용 650 coin\n이동속도 : +63\n\n[2레벨] : 장비레벨+3\n비용 850 coin\n이동속도 : +63\n불놀이(SL) 공격속도 : +6%\n\n난 언제나 내가 내린 결정에 확신이 있어. 같은 상황이 온다고 해도 언제나 내 답은 같아. "
+            },
+            // 총 16개 아이템
+          ],
+          details: {
+            heal: 5000,
+            damage: 15000,
+            takenDamage: 2000,
+            coins: 10000,
+            participation: 70,
+            vision: 12
+          },
+          team1Players: [
+            {image: "https://placekitten.com/90/90", name: "Player1"},
+            {image: "https://placekitten.com/91/91", name: "Player2"},
+            {image: "https://placekitten.com/92/92", name: "Player3"},
+            {image: "https://placekitten.com/93/93", name: "Player4"},
+            {image: "https://placekitten.com/94/94", name: "Player5"},
+          ],
+          team2Players: [
+            {image: "https://placekitten.com/95/95", name: "Player6"},
+            {image: "https://placekitten.com/96/96", name: "Player7"},
+            {image: "https://placekitten.com/97/97", name: "Player8"},
+            {image: "https://placekitten.com/98/98", name: "Player9"},
+            {image: "https://placekitten.com/99/99", name: "Player10"},
+          ]
+        }
       ],
       showItemModal: false,
       itemDetail: null,

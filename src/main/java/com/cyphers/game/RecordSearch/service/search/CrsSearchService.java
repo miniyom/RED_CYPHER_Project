@@ -24,7 +24,9 @@ import com.cyphers.game.RecordSearch.service.search.repository.CrsDetailSearchRe
 
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @Transactional
 @AllArgsConstructor
@@ -40,17 +42,19 @@ public class CrsSearchService {
 			insert(detailResponse);
 			return;
 		}
-		
+
 		CrsDetailSearch response = cds.get();
 		
 		response.setPlayerId(detailResponse.getPlayerId());
 		response.setProfileCharacterId(detailResponse.getProfileCharacterId());
 		response.setNickname(detailResponse.getNickname());
 		response.setRecentlyUpdatedDate(LocalDateTime.now());
-		response.setTankerUseRate(detailResponse.getMostPositionInfos().getTankerUseRate());
-		response.setRangeDealerUseRate(detailResponse.getMostPositionInfos().getRangeDealerUseRate());
-		response.setSupporterUseRate(detailResponse.getMostPositionInfos().getSupporterUseRate());
-		response.setMeleeDealerUseRate(detailResponse.getMostPositionInfos().getMeleeDealerUseRate());
+		
+		response.setTankerUseRate(detailResponse.getTankerUseRate());
+		response.setRangeDealerUseRate(detailResponse.getRangeDealerUseRate());
+		response.setSupporterUseRate(detailResponse.getSupporterUseRate());
+		response.setMeleeDealerUseRate(detailResponse.getMeleeDealerUseRate());
+		
 		response.setRatingGameTier(detailResponse.getRatingGameTier());
 		response.setRatingWinCount(detailResponse.getRatingWinCount());
 		response.setRatingLoseCount(detailResponse.getRatingLoseCount());
@@ -65,19 +69,19 @@ public class CrsSearchService {
 		response.setRecentlyKda(detailResponse.getRecentlyKda());
 		response.setRecentlyAverageSurvivalRate(detailResponse.getRecentlyAverageSurvivalRate());
 		
-		List<CrsMostCypherInfos> mostCypherInfos = new ArrayList<>();
-		for (IoSearchDetailMostCypherInfo ioMostCypherInfo : detailResponse.getMostCypherInfos()) {
-			CrsMostCypherInfos crsCypherInfos = CrsMostCypherInfos.builder()
-						.crsDetailSearch(response)
-						.characterId(ioMostCypherInfo.getCharacterId())
-						.characterName(ioMostCypherInfo.getCharacterName())
-						.winRate(ioMostCypherInfo.getWinRate())
-						.playCount(ioMostCypherInfo.getPlayCount())
-						.kda(ioMostCypherInfo.getKda())
-						.build();
-			mostCypherInfos.add(crsCypherInfos);
-		}
-		response.setMostCypherInfos(mostCypherInfos);
+		List<CrsMostCypherInfos> mostCypherInfos = response.getMostCypherInfos();
+		List<IoSearchDetailMostCypherInfo> ioMostCypherInfos = detailResponse.getMostCypherInfos();
+		
+        for (int i = 0; i < mostCypherInfos.size(); i++) {
+            CrsMostCypherInfos crsMostCypher = mostCypherInfos.get(i);
+            IoSearchDetailMostCypherInfo ioMostCypherInfo = ioMostCypherInfos.get(i);
+            
+            crsMostCypher.setCharacterId(ioMostCypherInfo.getCharacterId());
+            crsMostCypher.setCharacterName(ioMostCypherInfo.getCharacterName());
+            crsMostCypher.setWinRate(ioMostCypherInfo.getWinRate());
+            crsMostCypher.setPlayCount(ioMostCypherInfo.getPlayCount());
+            crsMostCypher.setKda(ioMostCypherInfo.getKda());
+        }
 		
 		List<CrsWinAndLoseCountHistory> outcomeHistory = new ArrayList<>();
 		for (IoSearchDetailWinAndLoseCountHistoryInfo outcomeHistoryInfo : detailResponse.getWinAndLoseCountHistoryInfos()) {
@@ -119,6 +123,10 @@ public class CrsSearchService {
 								.nickname(detailResponse.getNickname())
 								.recentlyUpdatedDate(LocalDateTime.now())
 								.mostCypherInfos(null)
+								.tankerUseRate(detailResponse.getTankerUseRate())
+								.rangeDealerUseRate(detailResponse.getRangeDealerUseRate())
+								.supporterUseRate(detailResponse.getSupporterUseRate())
+								.meleeDealerUseRate(detailResponse.getMeleeDealerUseRate())
 								.ratingGameTier(detailResponse.getRatingGameTier())
 								.ratingWinCount(detailResponse.getRatingWinCount())
 								.ratingLoseCount(detailResponse.getRatingLoseCount())

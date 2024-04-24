@@ -67,9 +67,7 @@ public class SearchController {
     	
 		IoSearchDetailResponse detailSearch = searchService.renewalDetailSearch(nickname);
     	crsSearchService.upsert(detailSearch);
-//    	SearchDetailResponse searchDetailDTO = crsSearchService.getDetailSearch(nickname);
-//    	
-//        return searchDetailDTO;
+    	
     }
     
     @GetMapping("/player/search/{nickname}")

@@ -65,6 +65,4 @@ public class CrsDetailSearch {
     @OneToMany(mappedBy = "crsDetailSearch", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<CrsRecentlyPlayCypherInfos> recentlyPlayCyphersInfos;
 
-//    @OneToMany(mappedBy = "crsDetailSearchResponse", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-//    private List<CrsGameRecord> gameRecords;
 }
