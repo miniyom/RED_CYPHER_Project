@@ -171,6 +171,7 @@
                 <div class="flex-wrap font-bold d-flex flex-column" :style="{ color : fontColorByResult(game.result)}">
                   <b-row>{{ game.type }}</b-row>
                   <b-row>{{ game.result }}</b-row>
+                  <b-row>{{ game.characterName }}</b-row>
                   <!-- <b-row class="mt-3" style="font-size: small;">{{ game.playDate }}</b-row> -->
                   <div style="font-size: small; position: absolute; bottom: 7px; left:7px">{{ game.playDate }}</div>
                 </div>
@@ -257,7 +258,7 @@
                     </div>
                   </b-col>
                   <!-- 상세정보1 -->
-                  <b-col sm="3" class="me-5"> 
+                  <b-col sm="4"> 
                     <b-row>
                       <b-col>
                         <div class="text-right">
@@ -404,6 +405,7 @@ export default {
           result: "승리",
           playDate: '',
           characterImage: "https://placekitten.com/100/100",
+          characterName: '엘리',
           postionImage: "@/public/img/tanker.png",
           attributes: [
             // {
@@ -512,7 +514,8 @@ export default {
         type: record.gameType === "RATING" ? "공식전" : "일반전",
         result: record.result,
         playDate: record.playDate,
-        characterImage: `https://img-api.neople.co.kr/cy/characters/${record.playCharacterId}?zoom=2`,  // 플레이어 캐릭터 이미지 URL
+        characterImage: `https://img-api.neople.co.kr/cy/characters/${record.characterId}?zoom=2`,  // 플레이어 캐릭터 이미지 URL
+        characterName: record.characterName,
         positionImage: this.getPostionImage(record.positionName),
         attributes: record.attributeInfos.map(attributeInfo => ({
           attributeId: attributeInfo.id,
@@ -610,7 +613,7 @@ export default {
           }
 
           this.games = this.games.concat(this.transformGameData(nextGameData.gameRecords));
-
+          console.log("게임기록 개수", this.games.length);
           if (nextGameData.next !== 'no more records') {
             this.showLoadMoreGames = true;
             this.nextGames = nextGameData.next;

@@ -58,7 +58,7 @@ public class SearchService {
 	@Autowired
 	CyphersApiService cyApiService;
 
-	final static Integer RECORDS_LIMIT = 20; // 한번에 가져올 기록의 개수
+	final static Integer RECORDS_LIMIT = 100; // 한번에 가져올 기록의 개수
 	final static Integer MOST_CYPHER_LENGTH = 10; // 모스트 사이퍼에서 보여줄 캐릭터 개수
 	final static Integer RECENT_CYPHER_LENGTH = 3; // 최근 2주간 데이터에서 보여줄 캐릭터 개수
 	final static Float PERFECT_KDA = -1.0f; // kda에서 death수가 0일 경우 리턴할 값
@@ -429,7 +429,8 @@ public class SearchService {
 					if (playerDataInGame.getPlayerId().equals(playerId)) {
 						CyphersPlayInfo playInfo = playerDataInGame.getPlayInfo();
 
-						gameRecord.setPlayCharacterId(playInfo.getCharacterId());
+						gameRecord.setCharacterId(playInfo.getCharacterId());
+						gameRecord.setCharacterName(playInfo.getCharacterName());
 						gameRecord.setResult(matchedInfo.getPlayInfo().getResult());
 						gameRecord.setPositionName(playerDataInGame.getPosition().getName());
 						List<CyphersCharacterAttribute> attributeInfos = new ArrayList<>();
