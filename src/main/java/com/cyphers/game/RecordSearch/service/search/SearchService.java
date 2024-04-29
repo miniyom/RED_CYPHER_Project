@@ -58,7 +58,7 @@ public class SearchService {
 	@Autowired
 	CyphersApiService cyApiService;
 
-	final static Integer RECORDS_LIMIT = 100; // 한번에 가져올 기록의 개수
+	final static Integer RECORDS_LIMIT = 20; // 한번에 가져올 기록의 개수
 	final static Integer MOST_CYPHER_LENGTH = 10; // 모스트 사이퍼에서 보여줄 캐릭터 개수
 	final static Integer RECENT_CYPHER_LENGTH = 3; // 최근 2주간 데이터에서 보여줄 캐릭터 개수
 	final static Float PERFECT_KDA = -1.0f; // kda에서 death수가 0일 경우 리턴할 값
@@ -97,14 +97,12 @@ public class SearchService {
 		CyphersCharacterSearch cyCharacter = cyApiService.searchCharacter();
 
 		// 플레이어 기본정보
-		String profileCharacterId = cyPlayer.getRepresent().getCharacterId();
-		String profileNickname = cyPlayer.getNickname();
 		ioDetailRes.setPlayerId(myPlayerId);
-		ioDetailRes.setProfileCharacterId(profileCharacterId);
-		ioDetailRes.setNickname(profileNickname);
+		ioDetailRes.setCharacterId(cyPlayer.getRepresent().getCharacterId());
+		ioDetailRes.setNickname(cyPlayer.getNickname());
 		
 
-		List<CyphersMatchedInfo> cyMatchedInfoRows = getMatchedInfos(myPlayerId); // 각 기능에서 쓰일 리스트
+		List<CyphersMatchedInfo> cyMatchedInfoRows = getRatingMatchedInfos(myPlayerId); // 각 기능에서 쓰일 리스트
 
 		Map<String, Pair<Integer, Integer>> characterIdMap = new HashMap<>(); // Pair의 첫번째는 전체 플레이 횟수, 두번째는 이긴 횟수
 		for (CyphersMatchedInfo cyMatchedInfo : cyMatchedInfoRows) {
@@ -519,6 +517,7 @@ public class SearchService {
 	}
 	
 	// 현재 시즌 공식전, 일반전 기록 가져오기
+	// API 사양은 90일씩만 허용하기 때문에 90일씩 두번 검색
 	public List<CyphersMatchedInfo> getMatchedInfos(String playerId) throws Exception {
 		CyphersMatchingHistory cyMatchingHistoryRating = cyApiService.searchMatchingHistory(playerId,
 				CyphersGameType.RATING, ApiDate.NINETY_DAYS_AGO, ApiDate.NOW);
@@ -552,6 +551,23 @@ public class SearchService {
 			}
 		};
 		Collections.sort(matchedInfos, comparator);
+		return matchedInfos;
+	}
+	
+	public List<CyphersMatchedInfo> getRatingMatchedInfos(String playerId) throws Exception {
+		CyphersMatchingHistory cyMatchingHistoryRating1 = cyApiService.searchMatchingHistory(playerId,
+				CyphersGameType.RATING, ApiDate.NINETY_DAYS_AGO, ApiDate.NOW);
+		CyphersMatchingHistory cyMatchingHistoryRating2 = cyApiService.searchMatchingHistory(playerId,
+				CyphersGameType.RATING, ApiDate.HALF_YEARS_AGO, ApiDate.NINETY_DAYS_AGO);
+
+		List<CyphersMatchedInfo> matchedInfos = new ArrayList<>();
+
+		for (CyphersMatchedInfo cyRatingMatchedInfo1 : cyMatchingHistoryRating1.getMatches().getRows()) {
+			matchedInfos.add(cyRatingMatchedInfo1);
+		}
+		for (CyphersMatchedInfo cyRatingMatchedInfo2 : cyMatchingHistoryRating2.getMatches().getRows()) {
+			matchedInfos.add(cyRatingMatchedInfo2);
+		}
 		return matchedInfos;
 	}
 	

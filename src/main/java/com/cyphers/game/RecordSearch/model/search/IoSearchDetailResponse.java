@@ -12,7 +12,7 @@ import java.util.List;
 @Builder
 public class IoSearchDetailResponse {
     private String playerId;
-    private String profileCharacterId;
+    private String characterId;
     private String nickname;
     private LocalDateTime recentlyUpdatedDate;
     

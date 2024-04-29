@@ -19,12 +19,12 @@
     </b-container>
 
     <!-- 이동 탭 박스 -->
-    <!-- <b-container class="my-3 container-box">
+    <b-container class="my-3 container-box">
       <div class="d-flex justify-content-start">
-        <b-button variant="primary" class="me-3">종합</b-button>
-        <b-button variant="primary">캐릭터</b-button>
+        <b-button variant="secondary" class="me-3">공식전</b-button>
+        <b-button variant="secondary">일반전</b-button>
       </div>
-    </b-container> -->
+    </b-container>
 
     <!-- 플레이어에 대한 상세 지표 박스 -->
     <b-container class="my-3 ">
@@ -110,46 +110,36 @@
     </b-container>
 
     <!-- 플레이어의 최근 플레이 지표 박스 -->
-    <b-container class="my-3 container-box">
+    <b-container class="my-3 container-box fluid">
       <b-row>
-        <b-col sm="2" class="br-1">
-          <h4>게임 수</h4>
-          <h2 class="mt-4">1</h2>
+        <b-col sm="7" class="br-1">
+          <b-row>
+            <b-col sm="3" class="br-1">
+              <h4>게임 수</h4>
+              <h2 class="mt-5 mb-5">{{ detailData.recentlyPlayCount }}경기</h2>
+            </b-col>
+            <b-col sm="3" class="br-1">
+              <h4>승률</h4>
+              <h2 class="mt-5 mb-5">{{ detailData.recentlyWinRate }}%</h2>
+            </b-col>
+            <b-col sm="3" class="br-1">
+              <h4>평균 KDA</h4>
+              <h2 class="mt-5 mb-5">{{ detailData.recentlyKda }}</h2>
+            </b-col>
+            <b-col sm="3">
+              <h4>평균 생존시간</h4>
+              <h2 class="mt-5 mb-5">{{ detailData.recentlyAverageSurvivalRate }}초</h2>
+            </b-col>
+          </b-row>
         </b-col>
-        <b-col sm="2" class="br-1">
-          <h4>승률</h4>
-          <h2 class="mt-4">20%</h2>
-        </b-col>
-        <b-col sm="2" class="br-1">
-          <h4>평균 KDA</h4>
-          <h2 class="mt-4">3.24</h2>
-        </b-col>
-        <b-col sm="2" class="br-1">
-          <h4>게임 점수</h4>
-          <h2 class="mt-4">176</h2>
-        </b-col>
-        <b-col sm="4">
+        <b-col sm="5">
           <b-list-group flush>
-            <b-list-group-item class="d-flex align-items-center py-2">
+            <b-list-group-item v-for="recentCypherInfo in detailData.recentlyPlayCyphersInfos" :key="recentCypherInfo.characterId" class="d-flex align-items-center py-2">
               <b-img src="https://img-api.neople.co.kr/cy/characters/c603a74ba02374026a535dc53e5b8d40?zoom=1" fluid alt="Character Image" class="mr-3"
                      style="width: 35px; height: 35px;"></b-img>
-              <div class="flex-fill">캐릭터 이름</div>
-              <div class="me-4">20승 5패</div>
-              <div class="ml-3">KDA: 10/2/5</div>
-            </b-list-group-item>
-            <b-list-group-item class="d-flex align-items-center py-2">
-              <b-img src="https://img-api.neople.co.kr/cy/characters/c603a74ba02374026a535dc53e5b8d40?zoom=1" fluid alt="Character Image" class="mr-3"
-                     style="width: 35px; height: 35px;"></b-img>
-              <div class="flex-fill">캐릭터 이름</div>
-              <div class="me-4">20승 5패</div>
-              <div class="ml-3">KDA: 10/2/5</div>
-            </b-list-group-item>
-            <b-list-group-item class="d-flex align-items-center py-2">
-              <b-img src="https://img-api.neople.co.kr/cy/characters/c603a74ba02374026a535dc53e5b8d40?zoom=1" fluid alt="Character Image" class="mr-3"
-                     style="width: 35px; height: 35px;"></b-img>
-              <div class="flex-fill">캐릭터 이름</div>
-              <div class="me-4">20승 5패</div>
-              <div class="ml-3">KDA: 10/2/5</div>
+              <div class="flex-fill">{{ recentCypherInfo.characterName }}</div>
+              <div class="me-4">{{ recentCypherInfo.winCount }}승 {{ recentCypherInfo.loseCount }}패</div>
+              <div class="ml-3">KDA: {{ recentCypherInfo.killCount }}/{{ recentCypherInfo.deathCount }}/{{ recentCypherInfo.assistCount }}</div>
             </b-list-group-item>
           </b-list-group>
         </b-col>
@@ -158,6 +148,10 @@
 
     <b-container class="my-3 container-box">
       <b-list-group>
+        <b-list-group-item class="d-flex justify-content-start align-items-center">
+          <b-button variant="secondary" class="me-3">공식전</b-button>
+          <b-button variant="secondary">일반전</b-button>
+        </b-list-group-item>
         <!-- games 배열이 비어있을 때 메시지 표시 -->
         <b-list-group-item v-if="this.games.length < 2">
           게임 기록이 없습니다.

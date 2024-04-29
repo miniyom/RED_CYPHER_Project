@@ -46,7 +46,7 @@ public class CrsSearchService {
 		CrsDetailSearch response = cds.get();
 		
 		response.setPlayerId(detailResponse.getPlayerId());
-		response.setProfileCharacterId(detailResponse.getProfileCharacterId());
+		response.setProfileCharacterId(detailResponse.getCharacterId());
 		response.setNickname(detailResponse.getNickname());
 		response.setRecentlyUpdatedDate(LocalDateTime.now());
 		
@@ -95,21 +95,21 @@ public class CrsSearchService {
 		}
 		response.setWinAndLoseCountHistory(outcomeHistory);
 		
-		List<CrsRecentlyPlayCypherInfos> recentCypherinfos = new ArrayList<>();
-		for (IoSearchDetailRecentlyPlayCyphersInfo recentCypherInfo : detailResponse.getRecentlyPlayCyphersInfos()) {
-			CrsRecentlyPlayCypherInfos crsRecentCypherInfo = CrsRecentlyPlayCypherInfos.builder()
-											.crsDetailSearch(response)
-											.characterId(recentCypherInfo.getCharacterId())
-											.characterName(recentCypherInfo.getCharacterName())
-											.winCount(recentCypherInfo.getWinCount())
-											.loseCount(recentCypherInfo.getLoseCount())
-											.killCount(recentCypherInfo.getKillCount())
-											.deathCount(recentCypherInfo.getKillCount())
-											.assistCount(recentCypherInfo.getAssistCount())
-											.build();
-			recentCypherinfos.add(crsRecentCypherInfo);
-		}
-		response.setRecentlyPlayCyphersInfos(recentCypherinfos);
+		List<CrsRecentlyPlayCypherInfos> recentCypherInfos = response.getRecentlyPlayCyphersInfos();
+		List<IoSearchDetailRecentlyPlayCyphersInfo> ioRecentlyPlayCypher = detailResponse.getRecentlyPlayCyphersInfos();
+		
+		for (int i = 0; i < recentCypherInfos.size(); i++) {
+			CrsRecentlyPlayCypherInfos crsRecentCypher = recentCypherInfos.get(i);
+			IoSearchDetailRecentlyPlayCyphersInfo ioRecentCypherInfo = ioRecentlyPlayCypher.get(i);
+            
+            crsRecentCypher.setCharacterId(ioRecentCypherInfo.getCharacterId());
+            crsRecentCypher.setCharacterName(ioRecentCypherInfo.getCharacterName());
+            crsRecentCypher.setWinCount(ioRecentCypherInfo.getWinCount());
+            crsRecentCypher.setLoseCount(ioRecentCypherInfo.getLoseCount());
+            crsRecentCypher.setKillCount(ioRecentCypherInfo.getKillCount());
+            crsRecentCypher.setDeathCount(ioRecentCypherInfo.getDeathCount());
+            crsRecentCypher.setAssistCount(ioRecentCypherInfo.getAssistCount());
+        }
 		
 		crsDetailSearchRepository.save(response);
 		
@@ -119,7 +119,7 @@ public class CrsSearchService {
 		
 		CrsDetailSearch response = CrsDetailSearch.builder()
 								.playerId(detailResponse.getPlayerId()) 
-								.profileCharacterId(detailResponse.getProfileCharacterId())
+								.profileCharacterId(detailResponse.getCharacterId())
 								.nickname(detailResponse.getNickname())
 								.recentlyUpdatedDate(LocalDateTime.now())
 								.mostCypherInfos(null)
