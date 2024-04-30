@@ -62,10 +62,11 @@ public class SearchController {
         return res;
     }
     
-    @GetMapping("/renewal/{nickname}")
-    public void renewalDetail(@PathVariable("nickname") String nickname) throws Exception {
+    @GetMapping("/renewal/{gameType}/{nickname}")
+    public void renewalDetail(@PathVariable("nickname") String nickname,
+    						  @PathVariable("gameType") String gameType) throws Exception {
     	
-		IoSearchDetailResponse detailSearch = searchService.renewalDetailSearch(nickname);
+		IoSearchDetailResponse detailSearch = searchService.renewalDetailSearch(nickname, gameType);
     	crsSearchService.upsert(detailSearch);
     	
     }

@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class IoSearchDetailWinAndLoseCountHistoryInfo {
+public class IoSearchDetailResultHistoryInfo {
     private Integer historyDate;
     private Integer winCount;
     private Integer loseCount;

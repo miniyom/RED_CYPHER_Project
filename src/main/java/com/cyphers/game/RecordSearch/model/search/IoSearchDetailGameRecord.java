@@ -45,5 +45,5 @@ public class IoSearchDetailGameRecord {
     private Integer battlePoint;
     private Integer sightPoint;
 
-    private List<TeamPlayerInfo> teamPlayerInfos;
+    private List<TeamPlayerResponse> teamPlayerInfos;
 }

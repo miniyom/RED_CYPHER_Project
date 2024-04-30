@@ -56,7 +56,7 @@ public class CrsDetailSearch {
     private Integer normalWinRate;
     
     @OneToMany(mappedBy = "crsDetailSearch", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private List<CrsWinAndLoseCountHistory> winAndLoseCountHistory;
+    private List<CrsResultHistory> resultHistory;
 
     private Integer recentlyPlayCount;
     private Integer recentlyWinRate;

@@ -22,9 +22,9 @@ import com.cyphers.game.RecordSearch.model.search.IoSearchDetailGameRecord;
 import com.cyphers.game.RecordSearch.model.search.IoSearchDetailMostCypherInfo;
 import com.cyphers.game.RecordSearch.model.search.IoSearchDetailRecentlyPlayCyphersInfo;
 import com.cyphers.game.RecordSearch.model.search.IoSearchDetailResponse;
-import com.cyphers.game.RecordSearch.model.search.IoSearchDetailWinAndLoseCountHistoryInfo;
+import com.cyphers.game.RecordSearch.model.search.IoSearchDetailResultHistoryInfo;
 import com.cyphers.game.RecordSearch.model.search.ItemInfoResponse;
-import com.cyphers.game.RecordSearch.model.search.TeamPlayerInfo;
+import com.cyphers.game.RecordSearch.model.search.TeamPlayerResponse;
 import com.cyphers.game.RecordSearch.openapi.model.CyphersCharacterAttribute;
 import com.cyphers.game.RecordSearch.openapi.model.CyphersCharacterInfo;
 import com.cyphers.game.RecordSearch.openapi.model.CyphersCharacterSearch;
@@ -82,7 +82,7 @@ public class SearchService {
 		return cyPlayerRes.getRows().get(0).getNickname();
 	}
 
-	public IoSearchDetailResponse renewalDetailSearch(String nickname) throws Exception {
+	public IoSearchDetailResponse renewalDetailSearch(String nickname, String gameType) throws Exception {
 
 		CyphersPlayerResponse cyPlayerResponse = cyApiService.searchPlayers(nickname, CyphersPlayerWordType.MATCH, null);
 
@@ -102,7 +102,7 @@ public class SearchService {
 		ioDetailRes.setNickname(cyPlayer.getNickname());
 		
 
-		List<CyphersMatchedInfo> cyMatchedInfoRows = getRatingMatchedInfos(myPlayerId); // 각 기능에서 쓰일 리스트
+		List<CyphersMatchedInfo> cyMatchedInfoRows = getMatchedInfos(myPlayerId, gameType); // 각 기능에서 쓰일 리스트
 
 		Map<String, Pair<Integer, Integer>> characterIdMap = new HashMap<>(); // Pair의 첫번째는 전체 플레이 횟수, 두번째는 이긴 횟수
 		for (CyphersMatchedInfo cyMatchedInfo : cyMatchedInfoRows) {
@@ -241,8 +241,8 @@ public class SearchService {
 			}
 		}
 
-		// 승, 패수 데이터(그래프)
-		List<IoSearchDetailWinAndLoseCountHistoryInfo> winAndLoseCountHistoryInfos = new ArrayList<>();
+		// 승패 데이터(그래프)
+		List<IoSearchDetailResultHistoryInfo> resultHistory = new ArrayList<>();
 		LocalDate today = LocalDate.now();
 		LocalDate oneWeekAgo = today.minusWeeks(1);
 		List<CyphersMatchedInfo> weeklyMatchedInfoRows = filterDataByDate(cyMatchedInfoRows, oneWeekAgo, today);
@@ -251,16 +251,16 @@ public class SearchService {
 		Pair<LocalDate, Integer> matchedDateAndInt = Pair.of(today, WIN_AND_LOSE_KEY);
 
 		for (int i = 0; i <= WIN_AND_LOSE_KEY; i++) {
-			IoSearchDetailWinAndLoseCountHistoryInfo defaultWinAndLoseHisory = new IoSearchDetailWinAndLoseCountHistoryInfo();
-			defaultWinAndLoseHisory.setHistoryDate(i);
-			defaultWinAndLoseHisory.setWinCount(0);
-			defaultWinAndLoseHisory.setLoseCount(0);
-			winAndLoseCountHistoryInfos.add(defaultWinAndLoseHisory);
+			IoSearchDetailResultHistoryInfo defaultResultHisory = new IoSearchDetailResultHistoryInfo();
+			defaultResultHisory.setHistoryDate(i);
+			defaultResultHisory.setWinCount(0);
+			defaultResultHisory.setLoseCount(0);
+			resultHistory.add(defaultResultHisory);
 			cyMatchingHistoryMap.put(i, Pair.of(0, 0));
 		}
 
 		for (CyphersMatchedInfo weeklyMatchedInfo : weeklyMatchedInfoRows) {
-			IoSearchDetailWinAndLoseCountHistoryInfo winAndLoseHisory = new IoSearchDetailWinAndLoseCountHistoryInfo();
+			IoSearchDetailResultHistoryInfo winAndLoseHisory = new IoSearchDetailResultHistoryInfo();
 			LocalDate weeklyMatchedDate = weeklyMatchedInfo.getDate().toLocalDate();
 			if (!weeklyMatchedDate.isEqual(matchedDateAndInt.getFirst())) {
 				matchedDateAndInt = Pair.of(matchedDateAndInt.getFirst().minusDays(1),
@@ -285,10 +285,10 @@ public class SearchService {
 			winAndLoseHisory.setHistoryDate(matchedDateAndInt.getSecond());
 			winAndLoseHisory.setWinCount(cyMatchingHistoryMap.get(matchedDateAndInt.getSecond()).getFirst());
 			winAndLoseHisory.setLoseCount(cyMatchingHistoryMap.get(matchedDateAndInt.getSecond()).getSecond());
-			winAndLoseCountHistoryInfos.set(matchedDateAndInt.getSecond(), winAndLoseHisory);
+			resultHistory.set(matchedDateAndInt.getSecond(), winAndLoseHisory);
 		}
 
-		ioDetailRes.setWinAndLoseCountHistoryInfos(winAndLoseCountHistoryInfos);
+		ioDetailRes.setResultHistory(resultHistory);
 
 		// 최근 2주간 게임 데이터
 		LocalDate twoWeekAgo = LocalDate.now().minus(2, ChronoUnit.WEEKS);
@@ -420,7 +420,7 @@ public class SearchService {
 					totalKillCount += cyPlayersInGame.getPlayInfo().getKillCount();
 				}
 
-				List<TeamPlayerInfo> teamPlayerInfos = new ArrayList<>();
+				List<TeamPlayerResponse> teamPlayerRes = new ArrayList<>();
 
 				for (CyphersPlayersInGame playerDataInGame : matchingDetail.getPlayers()) {
 					
@@ -488,7 +488,7 @@ public class SearchService {
 						gameRecord.setBattlePoint(playInfo.getBattlePoint());
 						gameRecord.setSightPoint(playInfo.getSightPoint());
 					}
-					teamPlayerInfos.add(TeamPlayerInfo.builder()
+					teamPlayerRes.add(TeamPlayerResponse.builder()
 										.characterId(playerDataInGame.getPlayInfo().getCharacterId())
 										.nickname(playerDataInGame.getNickname())
 										.build());
@@ -506,7 +506,7 @@ public class SearchService {
 				}
 				gameRecord.setMatchId(matchedInfo.getMatchId());
 				gameRecord.setPlayDate(matchingDetail.getDate());
-				gameRecord.setTeamPlayerInfos(teamPlayerInfos);
+				gameRecord.setTeamPlayerInfos(teamPlayerRes);
 				gameRecords.add(gameRecord);
 
 				gameRecordsInfo.setGameRecords(gameRecords);
@@ -518,7 +518,8 @@ public class SearchService {
 	
 	// 현재 시즌 공식전, 일반전 기록 가져오기
 	// API 사양은 90일씩만 허용하기 때문에 90일씩 두번 검색
-	public List<CyphersMatchedInfo> getMatchedInfos(String playerId) throws Exception {
+	public List<CyphersMatchedInfo> getAllMatchedInfos(String playerId) throws Exception {
+		
 		CyphersMatchingHistory cyMatchingHistoryRating = cyApiService.searchMatchingHistory(playerId,
 				CyphersGameType.RATING, ApiDate.NINETY_DAYS_AGO, ApiDate.NOW);
 		CyphersMatchingHistory cyMatchingHistoryRating2 = cyApiService.searchMatchingHistory(playerId,
@@ -554,19 +555,19 @@ public class SearchService {
 		return matchedInfos;
 	}
 	
-	public List<CyphersMatchedInfo> getRatingMatchedInfos(String playerId) throws Exception {
-		CyphersMatchingHistory cyMatchingHistoryRating1 = cyApiService.searchMatchingHistory(playerId,
-				CyphersGameType.RATING, ApiDate.NINETY_DAYS_AGO, ApiDate.NOW);
-		CyphersMatchingHistory cyMatchingHistoryRating2 = cyApiService.searchMatchingHistory(playerId,
-				CyphersGameType.RATING, ApiDate.HALF_YEARS_AGO, ApiDate.NINETY_DAYS_AGO);
+	public List<CyphersMatchedInfo> getMatchedInfos(String playerId, String gameType) throws Exception {
+		CyphersMatchingHistory cyMatchingHistory1 = cyApiService.searchMatchingHistory(playerId,
+				getGameType(gameType), ApiDate.NINETY_DAYS_AGO, ApiDate.NOW);
+		CyphersMatchingHistory cyMatchingHistory2 = cyApiService.searchMatchingHistory(playerId,
+				getGameType(gameType), ApiDate.HALF_YEARS_AGO, ApiDate.NINETY_DAYS_AGO);
 
 		List<CyphersMatchedInfo> matchedInfos = new ArrayList<>();
 
-		for (CyphersMatchedInfo cyRatingMatchedInfo1 : cyMatchingHistoryRating1.getMatches().getRows()) {
-			matchedInfos.add(cyRatingMatchedInfo1);
+		for (CyphersMatchedInfo cyMatchedInfo1 : cyMatchingHistory1.getMatches().getRows()) {
+			matchedInfos.add(cyMatchedInfo1);
 		}
-		for (CyphersMatchedInfo cyRatingMatchedInfo2 : cyMatchingHistoryRating2.getMatches().getRows()) {
-			matchedInfos.add(cyRatingMatchedInfo2);
+		for (CyphersMatchedInfo cyMatchedInfo2 : cyMatchingHistory2.getMatches().getRows()) {
+			matchedInfos.add(cyMatchedInfo2);
 		}
 		return matchedInfos;
 	}
@@ -606,5 +607,18 @@ public class SearchService {
 							.positionName(cyAttrDetail.getPositionName())
 							.build();
 		return attrRes;
+	}
+	
+	public CyphersGameType getGameType(String gameType) {
+		switch (gameType) {
+			case "rating": {
+				return CyphersGameType.RATING;
+			}
+			case "normal": {
+				return CyphersGameType.NORMAL;
+			}
+			default:
+				throw new IllegalArgumentException("잘못된 게임타입: " + gameType);
+			}
 	}
 }

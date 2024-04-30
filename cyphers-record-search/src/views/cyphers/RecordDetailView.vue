@@ -12,7 +12,7 @@
         </b-col>
         <b-col class="pl-0 text-left align-self-end">
           <h2 class="mb-2">{{ playerNickname }}</h2>
-          <b-button variant="primary" class="me-2" @click="renewalDetailData(playerNickname)">전적갱신</b-button>
+          <b-button variant="primary" class="me-2" @click="renewalAllDetailData(playerNickname)">전적갱신</b-button>
           <span class="ml-2">최근 갱신: {{ detailData.renewalTime }}</span>
         </b-col>
       </b-row>
@@ -85,7 +85,7 @@
                     <b-list-group flush>
                       <b-list-group-item>{{ detailData.ratingGameTier }}</b-list-group-item>
                       <b-list-group-item>{{ detailData.ratingWinCount }}승 {{ detailData.ratingLoseCount }}패 {{ detailData.ratingStopCount }}중단</b-list-group-item>
-                      <b-list-group-item>{{ detailData.ratingWinRate }}%</b-list-group-item>
+                      <b-list-group-item>승률: {{ detailData.ratingWinRate }}%</b-list-group-item>
                     </b-list-group>
                   </b-col>
                 </b-row>
@@ -94,7 +94,7 @@
                 <h3>일반전</h3>
                 <b-list-group flush>
                   <b-list-group-item>{{ detailData.normalWinCount }}승 {{ detailData.normalLoseCount }}패 {{ detailData.normalStopCount }}중단</b-list-group-item>
-                  <b-list-group-item>{{ detailData.normalWinRate }}%</b-list-group-item>
+                  <b-list-group-item>승률: {{ detailData.normalWinRate }}%</b-list-group-item>
                 </b-list-group>
               </b-col>
             </b-row>
@@ -149,6 +149,7 @@
     <b-container class="my-3 container-box">
       <b-list-group>
         <b-list-group-item class="d-flex justify-content-start align-items-center">
+          <b-button variant="secondary" class="me-3">전체</b-button>
           <b-button variant="secondary" class="me-3">공식전</b-button>
           <b-button variant="secondary">일반전</b-button>
         </b-list-group-item>
@@ -175,10 +176,6 @@
               <b-col sm="auto">
                 <b-img :src="game.characterImage" rounded="circle" alt="Character" class="me-4" style="width: 85px;"></b-img>
               </b-col>
-
-              <!-- <b-col sm="auto" class="me-2">
-                <b-button @click="showItems(game.id)">아이템 보기</b-button>
-              </b-col> -->
 
               <b-col sm="3">
                 <b-row class="mb-2 pb-2" style="border-bottom: solid 1px #6E7474;">
@@ -552,10 +549,14 @@ export default {
 
       return transformedData;
     },
-    renewalDetailData(nickname) {
-      axios.get(`/api/search/renewal/${nickname}`)
+    renewalAllDetailData(nickname) {
+      this.renewalDetailData(nickname, 'rating');
+      this.renewalDetailData(nickname, 'normal');
+    },
+    renewalDetailData(nickname, gameType) {
+      axios.get(`/api/search/renewal/${gameType}/${nickname}`)
       .then(() => {
-        alert("갱신이 완료되었습니다.");
+        alert(`${gameType}의 데이터 갱신이 완료되었습니다.`);
         this.$router.go();
       })
       .catch((error) => {

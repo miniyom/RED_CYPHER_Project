@@ -9,17 +9,17 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 import com.cyphers.game.RecordSearch.model.search.IoSearchDetailMostCypherInfo;
+import com.cyphers.game.RecordSearch.model.search.IoSearchDetailResultHistoryInfo;
 import com.cyphers.game.RecordSearch.model.search.IoSearchDetailRecentlyPlayCyphersInfo;
 import com.cyphers.game.RecordSearch.model.search.IoSearchDetailResponse;
-import com.cyphers.game.RecordSearch.model.search.IoSearchDetailWinAndLoseCountHistoryInfo;
 import com.cyphers.game.RecordSearch.model.search.MostCypherInfoResponse;
+import com.cyphers.game.RecordSearch.model.search.ResultHistoryResponse;
 import com.cyphers.game.RecordSearch.model.search.RecentlyPlayCypherInfoResponse;
 import com.cyphers.game.RecordSearch.model.search.SearchDetailResponse;
-import com.cyphers.game.RecordSearch.model.search.WinAndLoseCountHistoryResponse;
 import com.cyphers.game.RecordSearch.model.search.entity.CrsDetailSearch;
 import com.cyphers.game.RecordSearch.model.search.entity.CrsMostCypherInfos;
+import com.cyphers.game.RecordSearch.model.search.entity.CrsResultHistory;
 import com.cyphers.game.RecordSearch.model.search.entity.CrsRecentlyPlayCypherInfos;
-import com.cyphers.game.RecordSearch.model.search.entity.CrsWinAndLoseCountHistory;
 import com.cyphers.game.RecordSearch.service.search.repository.CrsDetailSearchRepository;
 
 import jakarta.transaction.Transactional;
@@ -83,17 +83,17 @@ public class CrsSearchService {
             crsMostCypher.setKda(ioMostCypherInfo.getKda());
         }
 		
-		List<CrsWinAndLoseCountHistory> outcomeHistory = new ArrayList<>();
-		for (IoSearchDetailWinAndLoseCountHistoryInfo outcomeHistoryInfo : detailResponse.getWinAndLoseCountHistoryInfos()) {
-			CrsWinAndLoseCountHistory crsOutcomeHistory = CrsWinAndLoseCountHistory.builder()
-										.crsDetailSearch(response)
-										.historyDate(outcomeHistoryInfo.getHistoryDate())
-										.winCount(outcomeHistoryInfo.getWinCount())
-										.loseCount(outcomeHistoryInfo.getLoseCount())
-										.build();
-			outcomeHistory.add(crsOutcomeHistory);
-		}
-		response.setWinAndLoseCountHistory(outcomeHistory);
+		List<CrsResultHistory> resultHistory = response.getResultHistory();
+		List<IoSearchDetailResultHistoryInfo> ioRPHistory = detailResponse.getResultHistory();
+		
+		for (int i = 0; i < mostCypherInfos.size(); i++) {
+            CrsResultHistory crsResultHistory = resultHistory.get(i);
+            IoSearchDetailResultHistoryInfo ioResultInfo = ioRPHistory.get(i);
+            
+            crsResultHistory.setHistoryDate(ioResultInfo.getHistoryDate());
+            crsResultHistory.setWinCount(ioResultInfo.getWinCount());
+            crsResultHistory.setLoseCount(ioResultInfo.getLoseCount());
+        }
 		
 		List<CrsRecentlyPlayCypherInfos> recentCypherInfos = response.getRecentlyPlayCyphersInfos();
 		List<IoSearchDetailRecentlyPlayCyphersInfo> ioRecentlyPlayCypher = detailResponse.getRecentlyPlayCyphersInfos();
@@ -136,7 +136,7 @@ public class CrsSearchService {
 								.normalLoseCount(detailResponse.getNormalLoseCount())
 								.normalStopCount(detailResponse.getNormalStopCount())
 								.normalWinRate(detailResponse.getNormalWinRate())
-								.winAndLoseCountHistory(null)
+								.resultHistory(null)
 								.recentlyPlayCount(detailResponse.getRecentlyPlayCount())
 								.recentlyWinRate(detailResponse.getRecentlyWinRate())
 								.recentlyKda(detailResponse.getRecentlyKda())
@@ -160,17 +160,17 @@ public class CrsSearchService {
 		}
 		response.setMostCypherInfos(mostCypherInfos);
 		
-		List<CrsWinAndLoseCountHistory> outcomeHistory = new ArrayList<>();
-		for (IoSearchDetailWinAndLoseCountHistoryInfo outcomeHistoryInfo : detailResponse.getWinAndLoseCountHistoryInfos()) {
-			CrsWinAndLoseCountHistory crsOutcomeHistory = CrsWinAndLoseCountHistory.builder()
-													.crsDetailSearch(response)
-													.historyDate(outcomeHistoryInfo.getHistoryDate())
-													.winCount(outcomeHistoryInfo.getWinCount())
-													.loseCount(outcomeHistoryInfo.getLoseCount())
-													.build();
-			outcomeHistory.add(crsOutcomeHistory);
+		List<CrsResultHistory> resultHistory = new ArrayList<>();
+		for (IoSearchDetailResultHistoryInfo resultInfo : detailResponse.getResultHistory()) {
+			CrsResultHistory crsResultHistory = CrsResultHistory.builder()
+											.crsDetailSearch(response)
+											.historyDate(resultInfo.getHistoryDate())
+											.winCount(resultInfo.getWinCount())
+											.loseCount(resultInfo.getLoseCount())
+											.build();
+			resultHistory.add(crsResultHistory);
 		}
-		response.setWinAndLoseCountHistory(outcomeHistory);
+		response.setResultHistory(resultHistory);
 		
 		List<CrsRecentlyPlayCypherInfos> recentCypherinfos = new ArrayList<>();
 		for (IoSearchDetailRecentlyPlayCyphersInfo recentCypherInfo : detailResponse.getRecentlyPlayCyphersInfos()) {
@@ -211,13 +211,13 @@ public class CrsSearchService {
     		mres.setKda(crsMostCypher.getKda());
     		mostCypherResponse.add(mres);
 		}
-    	List<WinAndLoseCountHistoryResponse> outcomeResponse = new ArrayList<>();
-    	for (CrsWinAndLoseCountHistory crsOutcome : cds.getWinAndLoseCountHistory()) {
-    		WinAndLoseCountHistoryResponse wres = new WinAndLoseCountHistoryResponse();
-    		wres.setHistoryDate(crsOutcome.getHistoryDate());
-    		wres.setWinCount(crsOutcome.getWinCount());
-    		wres.setLoseCount(crsOutcome.getLoseCount());
-    		outcomeResponse.add(wres);
+    	List<ResultHistoryResponse> resultHistoryRes = new ArrayList<>();
+    	for (CrsResultHistory crsResult : cds.getResultHistory()) {
+    		ResultHistoryResponse resultRes = new ResultHistoryResponse();
+    		resultRes.setHistoryDate(crsResult.getHistoryDate());
+    		resultRes.setWinCount(crsResult.getWinCount());
+    		resultRes.setLoseCount(crsResult.getLoseCount());
+    		resultHistoryRes.add(resultRes);
 		}
     	List<RecentlyPlayCypherInfoResponse> recentCypherResponse = new ArrayList<>();
     	for (CrsRecentlyPlayCypherInfos crsRecentCypher : cds.getRecentlyPlayCyphersInfos()) {
@@ -251,7 +251,7 @@ public class CrsSearchService {
 			.normalLoseCount(cds.getNormalLoseCount())
 			.normalStopCount(cds.getNormalStopCount())
 			.normalWinRate(cds.getNormalWinRate())
-			.winAndLoseCountHistory(outcomeResponse)
+			.winAndLoseCountHistory(resultHistoryRes)
 			.recentlyPlayCount(cds.getRecentlyPlayCount())
 			.recentlyWinRate(cds.getRecentlyWinRate())
 			.recentlyKda(cds.getRecentlyKda())

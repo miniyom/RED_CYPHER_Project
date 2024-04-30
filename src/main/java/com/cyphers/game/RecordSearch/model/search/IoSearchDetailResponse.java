@@ -33,7 +33,7 @@ public class IoSearchDetailResponse {
     private Integer normalStopCount;
     private Integer normalWinRate;
     
-    private List<IoSearchDetailWinAndLoseCountHistoryInfo> winAndLoseCountHistoryInfos;
+    private List<IoSearchDetailResultHistoryInfo> resultHistory;
 
     private Integer recentlyPlayCount;
     private Integer recentlyWinRate;
