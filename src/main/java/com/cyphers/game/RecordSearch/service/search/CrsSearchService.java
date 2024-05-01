@@ -76,7 +76,7 @@ public class CrsSearchService {
             CrsMostCypherInfos crsMostCypher = mostCypherInfos.get(i);
             IoSearchDetailMostCypherInfo ioMostCypherInfo = ioMostCypherInfos.get(i);
             
-            crsMostCypher.setCharacterId(ioMostCypherInfo.getCharacterId());
+            crsMostCypher.setCharacterImage(ioMostCypherInfo.getCharacterImage());
             crsMostCypher.setCharacterName(ioMostCypherInfo.getCharacterName());
             crsMostCypher.setWinRate(ioMostCypherInfo.getWinRate());
             crsMostCypher.setPlayCount(ioMostCypherInfo.getPlayCount());
@@ -150,7 +150,7 @@ public class CrsSearchService {
 		for (IoSearchDetailMostCypherInfo ioMostCypherInfo : detailResponse.getMostCypherInfos()) {
 			CrsMostCypherInfos crsCypherInfos = CrsMostCypherInfos.builder()
 										.crsDetailSearch(response)
-										.characterId(ioMostCypherInfo.getCharacterId())
+										.characterImage(ioMostCypherInfo.getCharacterImage())
 										.characterName(ioMostCypherInfo.getCharacterName())
 										.winRate(ioMostCypherInfo.getWinRate())
 										.playCount(ioMostCypherInfo.getPlayCount())
@@ -204,7 +204,7 @@ public class CrsSearchService {
     	List<MostCypherInfoResponse> mostCypherResponse = new ArrayList<>();
     	for (CrsMostCypherInfos crsMostCypher : cds.getMostCypherInfos()) {
     		MostCypherInfoResponse mres = new MostCypherInfoResponse();
-    		mres.setCharacterId(crsMostCypher.getCharacterId());
+    		mres.setCharacterImage(crsMostCypher.getCharacterImage());
     		mres.setCharacterName(crsMostCypher.getCharacterName());
     		mres.setWinRate(crsMostCypher.getWinRate());
     		mres.setPlayCount(crsMostCypher.getPlayCount());
@@ -251,7 +251,7 @@ public class CrsSearchService {
 			.normalLoseCount(cds.getNormalLoseCount())
 			.normalStopCount(cds.getNormalStopCount())
 			.normalWinRate(cds.getNormalWinRate())
-			.winAndLoseCountHistory(resultHistoryRes)
+			.resultHistory(resultHistoryRes)
 			.recentlyPlayCount(cds.getRecentlyPlayCount())
 			.recentlyWinRate(cds.getRecentlyWinRate())
 			.recentlyKda(cds.getRecentlyKda())

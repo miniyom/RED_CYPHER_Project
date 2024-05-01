@@ -33,7 +33,7 @@ public class CrsMostCypherInfos {
 	@JoinColumn(name = "PLAYER_ID")
 	private CrsDetailSearch crsDetailSearch;
 	
-	private String characterId;
+	private String characterImage;
     private String characterName;
     private Integer winRate;
     private Integer playCount;

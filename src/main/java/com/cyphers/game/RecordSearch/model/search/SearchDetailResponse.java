@@ -42,7 +42,7 @@ public class SearchDetailResponse {
     private Integer normalStopCount;
     private Integer normalWinRate;
     
-    private List<ResultHistoryResponse> winAndLoseCountHistory;
+    private List<ResultHistoryResponse> resultHistory;
 
     private Integer recentlyPlayCount;
     private Integer recentlyWinRate;

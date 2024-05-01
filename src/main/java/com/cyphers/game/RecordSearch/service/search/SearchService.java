@@ -126,7 +126,7 @@ public class SearchService {
 
 			for (int i = 0; i < MOST_CYPHER_LENGTH; i++) {
 				IoSearchDetailMostCypherInfo mostCypherInfo = new IoSearchDetailMostCypherInfo();
-				mostCypherInfo.setCharacterId(idList.get(i));
+				mostCypherInfo.setCharacterImage("https://img-api.neople.co.kr/cy/characters/"+idList.get(i)+"?zoom=3");
 				for (CyphersCharacterInfo characterInfo : cyCharacter.getRows()) {
 					if (characterInfo.getCharacterId().equals(idList.get(i))) {
 						mostCypherInfo.setCharacterName(characterInfo.getCharacterName());

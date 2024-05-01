@@ -8,7 +8,7 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 public class IoSearchDetailMostCypherInfo {
-    private String characterId;
+    private String characterImage;
     private String characterName;
     private Integer winRate;
     private Integer playCount;

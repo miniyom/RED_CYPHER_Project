@@ -34,7 +34,23 @@
           <b-tabs>
             <b-tab title="모스트 사이퍼" active>
               <!-- 모스트 사이퍼 내용 -->
-              <b-table :items="cypherData"></b-table>
+              <b-table :items="detailData.mostCypherInfos" :fields="mostCypherFields">
+                <template #cell(characterImage)="data">
+                  <img :src="data.value" alt="Character Image" style="width: 30px; height: 30px; border-radius: 50%;">
+                </template>
+                <template #cell(characterName)="data">
+                  {{ data.value }}
+                </template>
+                <template #cell(winRate)="data">
+                  {{ data.value }}%
+                </template>
+                <template #cell(playCount)="data">
+                  {{ data.value }}
+                </template>
+                <template #cell(kda)="data">
+                  {{ data.value }}
+                </template>
+              </b-table>
             </b-tab>
             <b-tab title="모스트 포지션">
               <!-- 모스트 포지션 내용 -->
@@ -99,8 +115,13 @@
               </b-col>
             </b-row>
 
-            <b-row style="height: 300px;">
-              <LineGraph/>
+            <b-row style="height: 300px;" class="mt-4">
+              <!-- LineGraph 컴포넌트를 import하여 사용하고, 필요한 데이터를 props로 전달 -->
+              <LineGraph
+                :dateLabels="chartData.labels"
+                :winData="chartData.datasets[0].data"
+                :loseData="chartData.datasets[1].data"
+              />
             </b-row>
 
           </b-container>
@@ -110,6 +131,9 @@
     </b-container>
 
     <!-- 플레이어의 최근 플레이 지표 박스 -->
+    <b-container>
+      <p class="p-font d-flex justify-content-start">2주간의 게임기록을 분석한 데이터입니다.</p>
+    </b-container>
     <b-container class="my-3 container-box fluid">
       <b-row>
         <b-col sm="7" class="br-1">
@@ -149,7 +173,6 @@
     <b-container class="my-3 container-box">
       <b-list-group>
         <b-list-group-item class="d-flex justify-content-start align-items-center">
-          <b-button variant="secondary" class="me-3">전체</b-button>
           <b-button variant="secondary" class="me-3">공식전</b-button>
           <b-button variant="secondary">일반전</b-button>
         </b-list-group-item>
@@ -365,17 +388,12 @@ export default {
       playerId: '',
       playerCharacterImage: '',
       activeTab: '모스트 사이퍼', // 예시
-      cypherData: [
-        {사이퍼: '사이퍼1', 승률: '75%', 게임횟수: '20'},
-        {사이퍼: '사이퍼2', 승률: '60%', 게임횟수: '15'},
-        {사이퍼: '사이퍼3', 승률: '55%', 게임횟수: '10'},
-        {사이퍼: '사이퍼4', 승률: '80%', 게임횟수: '25'},
-        {사이퍼: '사이퍼4', 승률: '80%', 게임횟수: '25'},
-        {사이퍼: '사이퍼4', 승률: '80%', 게임횟수: '25'},
-        {사이퍼: '사이퍼4', 승률: '80%', 게임횟수: '25'},
-        {사이퍼: '사이퍼4', 승률: '80%', 게임횟수: '25'},
-        {사이퍼: '사이퍼4', 승률: '80%', 게임횟수: '25'},
-        {사이퍼: '사이퍼4', 승률: '80%', 게임횟수: '25'},
+      mostCypherFields: [
+          { key: 'characterImage', label: '능력자' },
+          { key: 'characterName', label: '능력자명' },
+          { key: 'winRate', label: '승률' },
+          { key: 'playCount', label: '게임 수' },
+          { key: 'kda', label: 'KDA' }
       ],
       detailData: {
         renewalTime: '없음',
@@ -388,6 +406,26 @@ export default {
         normalLoseCount: 0,
         normalStopCount: 0,
         normalWinRate: 0,
+
+        recentlyPlayCount: 0,
+        recentlyWinRate: 0,
+        recentlyKda: 0.0,
+        recentlyAverageSurvivalRate: 0,
+      },
+      chartData: {
+        labels: [], // 날짜 라벨
+        datasets: [
+          {
+            label: '승수',
+            backgroundColor: '#f87979',
+            data: [] // 승수 데이터
+          },
+          {
+            label: '패수',
+            backgroundColor: '#f87979',
+            data: [] // 패수 데이터
+          },
+        ]
       },
       games: [
         {
@@ -569,11 +607,41 @@ export default {
       axios.get(`/api/search/player/detail/${nickname}`)
       .then((response) => {
         this.detailData = response.data;
+
+        // 날짜 라벨 생성
+        const dateLabels = this.generateDateLabels();
+
+        // 데이터셋 설정
+        const winData = this.detailData.resultHistory.map(entry => entry.winCount);
+        const loseData = this.detailData.resultHistory.map(entry => entry.loseCount);
+
+        // 데이터 업데이트
+        this.chartData.labels = dateLabels;
+        this.chartData.datasets[0].data = winData;
+        this.chartData.datasets[1].data = loseData;
       })
       .catch((error) => {
         alert("갱신된 정보가 없습니다.", error);
         console.log("오류내용: ", error);
       });
+    },
+    generateDateLabels() {
+      const today = new Date(); 
+      const dateLabels = [];
+
+      for (let i = 6; i >= 0; i--) {
+        const date = new Date(today);
+        date.setDate(today.getDate() - i);
+        const formattedDate = this.formatDate(date); 
+        dateLabels.push(formattedDate);
+      }
+
+      return dateLabels; 
+    },
+    formatDate(date) {
+      const month = String(date.getMonth() + 1).padStart(2, '0'); 
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${month}-${day}`; 
     },
     fetchGameData(playerId) {
       // 서버에서 사용자 데이터를 가져오는 API 호출
@@ -792,6 +860,10 @@ export default {
 
 .br-1 {
   border-right: 1px solid black;
+}
+
+.p-font {
+    color : #BDBDBD;
 }
 
 .custom-link {
