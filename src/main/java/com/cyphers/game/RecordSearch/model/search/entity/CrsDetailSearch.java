@@ -8,8 +8,8 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
+import jakarta.persistence.IdClass;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -30,12 +30,16 @@ public class CrsDetailSearch {
 	@Id
 	@Column(name = "PLAYER_ID")
 	private String playerId;
+	
+//	@Id
+//	private String gameType;
 
 	private String profileCharacterId;
 	private String nickname;
 	
 	private LocalDateTime recentlyUpdatedDate;
 	
+	//////////////////////////////////////////
 	private Integer tankerUseRate;
 	private Integer rangeDealerUseRate;
 	private Integer supporterUseRate;

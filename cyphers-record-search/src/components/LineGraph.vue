@@ -1,15 +1,17 @@
 <template>
-  <LineChartGenerator
-      :options="chartOptions"
-      :data="chartData"
-      :chart-id="chartId"
-      :dataset-id-key="datasetIdKey"
-      :plugins="plugins"
-      :css-classes="cssClasses"
-      :styles="styles"
-      :width="width"
-      :height="height"
-  />
+    <LineChartGenerator
+        v-if="loaded"
+        :options="chartOptions"
+        :data="chartData"
+        :chart-id="chartId"
+        :dataset-id-key="datasetIdKey"
+        :plugins="plugins"
+        :css-classes="cssClasses"
+        :styles="styles"
+        :width="width"
+        :height="height"
+        ref="lineGraph"
+    />
 </template>
 
 
@@ -76,18 +78,28 @@ export default {
   },
   data() {
     return {
+      loaded: false,
       chartData: {
+        // labels: [
+        //   '08-19',
+        //   '08-20',
+        //   '08-21',
+        //   '08-22',
+        //   '08-23',
+        //   '08-24',
+        //   '08-25'
+        // ],
         labels: [],
         datasets: [
           {
             label: '승수',
             backgroundColor: '#f87979',
-            data: []
+            data: [40, 66, 10, 40, 39, 500, 40]
           },
           {
             label: '패수',
             backgroundColor: '#f87979',
-            data: []
+            data: [13, 22, 80, 60, 47, 252, 40]
           },
         ]
       },
@@ -97,39 +109,25 @@ export default {
       },
     }
   },
-  watch: {
-    dateLabels(newVal) {
-      this.chartData.labels = newVal;
-    },
-    winData(newVal) {
-      this.chartData.datasets[0].data = newVal;
-    },
-    loseData(newVal) {
-      this.chartData.datasets[1].data = newVal;
-    }
-  },
   created() {
     this.fetchChartData();
   },
   methods: {
     fetchChartData() {
       axios.get(`/api/search/player/detail/${this.$route.params.nickname}`)
-      .then((response) => {
-        const detailData = response.data;
-        this.chartData.labels = this.generateDateLabels();
+        .then((response) => {
+          const detailData = response.data;
+          this.chartData.labels = this.generateDateLabels();
 
-        console.log("날짜 라벨 : ", this.chartData.labels);
-        
-        this.chartData.datasets[0].data = detailData.resultHistory.map(entry => entry.winCount);
-        this.chartData.datasets[1].data = detailData.resultHistory.map(entry => entry.loseCount);
+          this.chartData.datasets[0].data = detailData.resultHistory.map(entry => entry.winCount);
+          this.chartData.datasets[1].data = detailData.resultHistory.map(entry => entry.loseCount);
+          this.loaded = true;
 
-        console.log("데이터 배열 : ", this.chartData.datasets);
-
-      })
-      .catch((error) => {
-        alert("승패 데이터를 가져올 수 없습니다..", error);
-        console.log("오류내용: ", error);
-      });
+        })
+        .catch((error) => {
+          alert("승패 데이터를 가져올 수 없습니다..", error);
+          console.log("오류내용: ", error);
+        });
     },
     generateDateLabels() {
       const today = new Date(); 
