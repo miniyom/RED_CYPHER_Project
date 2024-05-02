@@ -20,7 +20,6 @@ const routes = [
         name: 'RecordDetail',
         component: RecordDetailView,
         props: true,
-        meta: {refresh: true}
     },
     {
         path: '/ranking/:type',

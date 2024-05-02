@@ -8,18 +8,19 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
+import com.cyphers.game.RecordSearch.model.search.CrsDetailResponse;
+import com.cyphers.game.RecordSearch.model.search.IoSearchDetail;
 import com.cyphers.game.RecordSearch.model.search.IoSearchDetailMostCypherInfo;
-import com.cyphers.game.RecordSearch.model.search.IoSearchDetailResultHistoryInfo;
 import com.cyphers.game.RecordSearch.model.search.IoSearchDetailRecentlyPlayCyphersInfo;
-import com.cyphers.game.RecordSearch.model.search.IoSearchDetailResponse;
+import com.cyphers.game.RecordSearch.model.search.IoSearchDetailResultHistoryInfo;
 import com.cyphers.game.RecordSearch.model.search.MostCypherInfoResponse;
-import com.cyphers.game.RecordSearch.model.search.ResultHistoryResponse;
 import com.cyphers.game.RecordSearch.model.search.RecentlyPlayCypherInfoResponse;
-import com.cyphers.game.RecordSearch.model.search.SearchDetailResponse;
+import com.cyphers.game.RecordSearch.model.search.ResultHistoryResponse;
 import com.cyphers.game.RecordSearch.model.search.entity.CrsDetailSearch;
 import com.cyphers.game.RecordSearch.model.search.entity.CrsMostCypherInfos;
-import com.cyphers.game.RecordSearch.model.search.entity.CrsResultHistory;
 import com.cyphers.game.RecordSearch.model.search.entity.CrsRecentlyPlayCypherInfos;
+import com.cyphers.game.RecordSearch.model.search.entity.CrsResultHistory;
+import com.cyphers.game.RecordSearch.openapi.model.enumuration.CyphersGameType;
 import com.cyphers.game.RecordSearch.service.search.repository.CrsDetailSearchRepository;
 
 import jakarta.transaction.Transactional;
@@ -34,19 +35,19 @@ public class CrsSearchService {
 
 	private final CrsDetailSearchRepository crsDetailSearchRepository;
 	
-	public void upsert(IoSearchDetailResponse detailResponse) {
+	public void upsertDetailSearch(IoSearchDetail detailResponse, CyphersGameType gameType) {
 		
-		Optional<CrsDetailSearch> cds = crsDetailSearchRepository.findByPlayerId(detailResponse.getPlayerId());
+		Optional<CrsDetailSearch> crsDetail = crsDetailSearchRepository.findByPlayerIdAndGameType(detailResponse.getPlayerId(), gameType);
 		
-		if (!cds.isPresent()) {
-			insert(detailResponse);
+		if (crsDetail.isPresent()) {
+			insertDetailSearch(detailResponse);
 			return;
 		}
 
-		CrsDetailSearch response = cds.get();
+		CrsDetailSearch response = crsDetail.get();
 		
 		response.setPlayerId(detailResponse.getPlayerId());
-		response.setProfileCharacterId(detailResponse.getCharacterId());
+		response.setGameType(gameType);
 		response.setNickname(detailResponse.getNickname());
 		response.setRecentlyUpdatedDate(LocalDateTime.now());
 		
@@ -55,15 +56,6 @@ public class CrsSearchService {
 		response.setSupporterUseRate(detailResponse.getSupporterUseRate());
 		response.setMeleeDealerUseRate(detailResponse.getMeleeDealerUseRate());
 		
-		response.setRatingGameTier(detailResponse.getRatingGameTier());
-		response.setRatingWinCount(detailResponse.getRatingWinCount());
-		response.setRatingLoseCount(detailResponse.getRatingLoseCount());
-		response.setRatingStopCount(detailResponse.getRatingStopCount());
-		response.setRatingWinRate(detailResponse.getRatingWinRate());
-		response.setNormalWinCount(detailResponse.getNormalWinCount());
-		response.setNormalLoseCount(detailResponse.getNormalLoseCount());
-		response.setNormalStopCount(detailResponse.getNormalStopCount());
-		response.setNormalWinRate(detailResponse.getNormalWinRate());
 		response.setRecentlyPlayCount(detailResponse.getRecentlyPlayCount());
 		response.setRecentlyWinRate(detailResponse.getRecentlyWinRate());
 		response.setRecentlyKda(detailResponse.getRecentlyKda());
@@ -115,27 +107,16 @@ public class CrsSearchService {
 		
 	}
 	
-	public void insert(IoSearchDetailResponse detailResponse) {
+	public void insertDetailSearch(IoSearchDetail detailResponse) {
 		
 		CrsDetailSearch response = CrsDetailSearch.builder()
 								.playerId(detailResponse.getPlayerId()) 
-								.profileCharacterId(detailResponse.getCharacterId())
-								.nickname(detailResponse.getNickname())
 								.recentlyUpdatedDate(LocalDateTime.now())
 								.mostCypherInfos(null)
 								.tankerUseRate(detailResponse.getTankerUseRate())
 								.rangeDealerUseRate(detailResponse.getRangeDealerUseRate())
 								.supporterUseRate(detailResponse.getSupporterUseRate())
 								.meleeDealerUseRate(detailResponse.getMeleeDealerUseRate())
-								.ratingGameTier(detailResponse.getRatingGameTier())
-								.ratingWinCount(detailResponse.getRatingWinCount())
-								.ratingLoseCount(detailResponse.getRatingLoseCount())
-								.ratingStopCount(detailResponse.getRatingStopCount())
-								.ratingWinRate(detailResponse.getRatingWinRate())
-								.normalWinCount(detailResponse.getNormalWinCount())
-								.normalLoseCount(detailResponse.getNormalLoseCount())
-								.normalStopCount(detailResponse.getNormalStopCount())
-								.normalWinRate(detailResponse.getNormalWinRate())
 								.resultHistory(null)
 								.recentlyPlayCount(detailResponse.getRecentlyPlayCount())
 								.recentlyWinRate(detailResponse.getRecentlyWinRate())
@@ -192,8 +173,9 @@ public class CrsSearchService {
 		
 	}
 	
-	public SearchDetailResponse getDetailSearch(String nickname) throws Exception {
-		Optional<CrsDetailSearch> crsDetailSearch = crsDetailSearchRepository.findByNickname(nickname);
+	//DB의 디테일 데이터 가져오기
+	public CrsDetailResponse getDetailSearch(String nickname, CyphersGameType gameType) throws Exception {
+		Optional<CrsDetailSearch> crsDetailSearch = crsDetailSearchRepository.findByNicknameAndGameType(nickname, gameType);
 		if (crsDetailSearch.isEmpty()) {
 			throw new Exception("닉네임이 존재하지 않습니다.");
 		}
@@ -231,10 +213,9 @@ public class CrsSearchService {
     		rcres.setAssistCount(crsRecentCypher.getAssistCount());
     		recentCypherResponse.add(rcres);
 		}
-    	SearchDetailResponse sdDTO = SearchDetailResponse.builder()
+    	CrsDetailResponse crsDetailRes = CrsDetailResponse.builder()
     		.renewalTime(renewalTime)
 			.playerId(cds.getPlayerId())
-			.profileCharacterId(cds.getProfileCharacterId())
 			.nickname(cds.getNickname())
 			.recentlyUpdatedDate(cds.getRecentlyUpdatedDate())
 			.mostCypherInfos(mostCypherResponse)
@@ -242,15 +223,6 @@ public class CrsSearchService {
 	    	.rangeDealerUseRate(cds.getRangeDealerUseRate())
 	    	.supporterUseRate(cds.getSupporterUseRate())
 	    	.meleeDealerUseRate(cds.getMeleeDealerUseRate())
-			.ratingGameTier(cds.getRatingGameTier())
-			.ratingWinCount(cds.getRatingWinCount())
-			.ratingLoseCount(cds.getRatingLoseCount())
-			.ratingStopCount(cds.getRatingStopCount())
-			.ratingWinRate(cds.getRatingWinRate())
-			.normalWinCount(cds.getNormalWinCount())
-			.normalLoseCount(cds.getNormalLoseCount())
-			.normalStopCount(cds.getNormalStopCount())
-			.normalWinRate(cds.getNormalWinRate())
 			.resultHistory(resultHistoryRes)
 			.recentlyPlayCount(cds.getRecentlyPlayCount())
 			.recentlyWinRate(cds.getRecentlyWinRate())
@@ -259,9 +231,10 @@ public class CrsSearchService {
 			.recentlyPlayCyphersInfos(recentCypherResponse)
 			.build();
     	
-		return sdDTO;
+		return crsDetailRes;
 	}
 	
+	//갱신 시간 가져오기
 	public String getRenewalTime(LocalDateTime recentTime) {
 		LocalDateTime now = LocalDateTime.now();
 		Duration duration = Duration.between(recentTime, now);

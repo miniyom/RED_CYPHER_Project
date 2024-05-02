@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.cyphers.game.RecordSearch.model.search.AttributeInfoResponse;
 import com.cyphers.game.RecordSearch.model.search.GameRecordResponse;
-import com.cyphers.game.RecordSearch.model.search.IoSearchDetailResponse;
+import com.cyphers.game.RecordSearch.model.search.IoSearchDetail;
 import com.cyphers.game.RecordSearch.model.search.ItemInfoResponse;
-import com.cyphers.game.RecordSearch.model.search.SearchDetailResponse;
+import com.cyphers.game.RecordSearch.model.search.CrsDetailResponse;
 import com.cyphers.game.RecordSearch.model.search.entity.CrsDetailSearch;
 import com.cyphers.game.RecordSearch.openapi.model.CyphersMatches;
 import com.cyphers.game.RecordSearch.openapi.model.CyphersPlayerInfo;
@@ -38,7 +38,6 @@ public class SearchController {
 
     private final SearchService searchService;
     private final CrsSearchService crsSearchService;
-    private final CrsDetailSearchRepository crsSearchRepository;
     private final CyphersApiService cyApiService;
 
     @GetMapping("/auto-complete/{nickname}")
@@ -53,18 +52,20 @@ public class SearchController {
         return searchService.getNickname(nickname);
     }
     
-    @GetMapping("/player/detail/{nickname}")
-    public SearchDetailResponse getSearchDetail(@PathVariable("nickname") String nickname) throws Exception {
-    	SearchDetailResponse res = crsSearchService.getDetailSearch(nickname);
+    @GetMapping("/player/detail/{gameType}/{nickname}")
+    public CrsDetailResponse getSearchDetail(@PathVariable("nickname") String nickname,
+    										 @PathVariable("gameType") CyphersGameType gameType) throws Exception {
+    	CrsDetailResponse res = crsSearchService.getDetailSearch(nickname, gameType);
         return res;
     }
     
-    @GetMapping("/renewal/{gameType}/{nickname}")
-    public void renewalDetail(@PathVariable("nickname") String nickname,
-    						  @PathVariable("gameType") String gameType) throws Exception {
+    @GetMapping("/renewal/{nickname}")
+    public void renewalDetail(@PathVariable("nickname") String nickname) throws Exception {
     	
-		IoSearchDetailResponse detailSearch = searchService.renewalDetailSearch(nickname, gameType);
-    	crsSearchService.upsert(detailSearch);
+		IoSearchDetail detailSearchRating = searchService.renewalDetailSearch(nickname, CyphersGameType.RATING);
+		IoSearchDetail detailSearchNormal = searchService.renewalDetailSearch(nickname, CyphersGameType.NORMAL);
+    	crsSearchService.upsertDetailSearch(detailSearchRating, CyphersGameType.RATING);
+    	crsSearchService.upsertDetailSearch(detailSearchNormal, CyphersGameType.NORMAL);
     	
     }
     
@@ -96,12 +97,6 @@ public class SearchController {
     public ItemInfoResponse getItemDetail(@PathVariable("itemId") String itemId) throws Exception {
     	ItemInfoResponse itemInfoRes = searchService.getItemDetailInfo(itemId);
     	return itemInfoRes;
-    }
-    
-    @GetMapping("/find/id/{playerId}")
-    public CrsDetailSearch findCyphersUserInfo(@PathVariable("playerId") String playerId) throws Exception {
-    	CrsDetailSearch res = crsSearchRepository.findByPlayerId(playerId).get();
-        return null;
     }
     
     @GetMapping("/attribute/{attributeId}")
