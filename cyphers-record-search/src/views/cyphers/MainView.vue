@@ -106,7 +106,7 @@ export default {
         })
         .catch((error) => {
             alert("닉네임 정보가 없습니다.", error);
-            console.log("오류내용: ", error);
+            console.log("error: ", error);
             this.$router.go();
         });
     },

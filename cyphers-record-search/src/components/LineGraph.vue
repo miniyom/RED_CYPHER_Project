@@ -80,26 +80,25 @@ export default {
     return {
       loaded: false,
       chartData: {
-        // labels: [
-        //   '08-19',
-        //   '08-20',
-        //   '08-21',
-        //   '08-22',
-        //   '08-23',
-        //   '08-24',
-        //   '08-25'
-        // ],
-        labels: [],
+        labels: [
+          '08-19',
+          '08-20',
+          '08-21',
+          '08-22',
+          '08-23',
+          '08-24',
+          '08-25'
+        ],
         datasets: [
           {
             label: '승수',
             backgroundColor: '#f87979',
-            data: [40, 66, 10, 40, 39, 500, 40]
+            data: [0, 0, 0, 0, 0, 0, 0]
           },
           {
             label: '패수',
             backgroundColor: '#f87979',
-            data: [13, 22, 80, 60, 47, 252, 40]
+            data: [0, 0, 0, 0, 0, 0, 0]
           },
         ]
       },
@@ -125,8 +124,8 @@ export default {
 
         })
         .catch((error) => {
-          alert("승패 데이터를 가져올 수 없습니다..", error);
-          console.log("오류내용: ", error);
+          alert("승패 데이터를 가져올 수 없습니다.", error);
+          console.log("chart error: ", error);
         });
     },
     generateDateLabels() {

@@ -12,7 +12,7 @@
         </b-col>
         <b-col class="pl-0 text-left align-self-end">
           <h2 class="mb-2">{{ playerNickname }}</h2>
-          <b-button variant="primary" class="me-2" @click="renewalAllDetailData(playerNickname)">전적갱신</b-button>
+          <b-button variant="primary" class="me-2" @click="renewalDetailData(playerNickname)">전적갱신</b-button>
           <span class="ml-2">최근 갱신: {{ detailData.renewalTime }}</span>
         </b-col>
       </b-row>
@@ -95,13 +95,13 @@
                 <h3>공식전</h3>
                 <b-row>
                   <b-col cols="4" class="d-flex align-items-center justify-content-center">
-                    <b-img :src="getTierImage(detailData.ratingGameTier)" fluid alt="Tier Image"/>
+                    <b-img :src="getTierImage(ratingGameTier)" fluid alt="Tier Image"/>
                   </b-col>
                   <b-col cols="8">
                     <b-list-group flush>
-                      <b-list-group-item>{{ detailData.ratingGameTier }}</b-list-group-item>
-                      <b-list-group-item>{{ detailData.ratingWinCount }}승 {{ detailData.ratingLoseCount }}패 {{ detailData.ratingStopCount }}중단</b-list-group-item>
-                      <b-list-group-item>승률: {{ detailData.ratingWinRate }}%</b-list-group-item>
+                      <b-list-group-item>{{ ratingGameTier }}</b-list-group-item>
+                      <b-list-group-item>{{ ratingWinCount }}승 {{ ratingLoseCount }}패 {{ ratingStopCount }}중단</b-list-group-item>
+                      <b-list-group-item>승률: {{ ratingWinRate }}%</b-list-group-item>
                     </b-list-group>
                   </b-col>
                 </b-row>
@@ -109,19 +109,15 @@
               <b-col sm="6">
                 <h3>일반전</h3>
                 <b-list-group flush>
-                  <b-list-group-item>{{ detailData.normalWinCount }}승 {{ detailData.normalLoseCount }}패 {{ detailData.normalStopCount }}중단</b-list-group-item>
-                  <b-list-group-item>승률: {{ detailData.normalWinRate }}%</b-list-group-item>
+                  <b-list-group-item>{{ normalWinCount }}승 {{ normalLoseCount }}패 {{ normalStopCount }}중단</b-list-group-item>
+                  <b-list-group-item>승률: {{ normalWinRate }}%</b-list-group-item>
                 </b-list-group>
               </b-col>
             </b-row>
 
             <b-row style="height: 300px;" class="mt-4">
               <!-- LineGraph 컴포넌트를 import하여 사용하고, 필요한 데이터를 props로 전달 -->
-              <LineGraph
-                :dateLabels="chartData.labels"
-                :winData="chartData.datasets[0].data"
-                :loseData="chartData.datasets[1].data"
-              />
+              <LineGraph/>
             </b-row>
 
           </b-container>
@@ -374,7 +370,7 @@ export default {
     nickname: String
   },
   created() {
-    
+    console.log("이건 나오겠지?");
   },
   components: {
     Header,
@@ -395,37 +391,22 @@ export default {
           { key: 'playCount', label: '게임 수' },
           { key: 'kda', label: 'KDA' }
       ],
+      ratingGameTier: 'UNRANK',
+      ratingWinCount: 0,
+      ratingLoseCount: 0,
+      ratingStopCount: 0,
+      ratingWinRate: 0,
+      normalWinCount: 0,
+      normalLoseCount: 0,
+      normalStopCount: 0,
+      normalWinRate: 0,
       detailData: {
         renewalTime: '없음',
-        ratingGameTier: 'UNRANK',
-        ratingWinCount: 0,
-        ratingLoseCount: 0,
-        ratingStopCount: 0,
-        ratingWinRate: 0,
-        normalWinCount: 0,
-        normalLoseCount: 0,
-        normalStopCount: 0,
-        normalWinRate: 0,
 
         recentlyPlayCount: 0,
         recentlyWinRate: 0,
         recentlyKda: 0.0,
         recentlyAverageSurvivalRate: 0,
-      },
-      chartData: {
-        labels: [], // 날짜 라벨
-        datasets: [
-          {
-            label: '승수',
-            backgroundColor: '#f87979',
-            data: [] // 승수 데이터
-          },
-          {
-            label: '패수',
-            backgroundColor: '#f87979',
-            data: [] // 패수 데이터
-          },
-        ]
       },
       games: [
         {
@@ -587,56 +568,29 @@ export default {
 
       return transformedData;
     },
-    renewalAllDetailData(nickname) {
-      this.renewalDetailData(nickname, 'rating');
-      this.renewalDetailData(nickname, 'normal');
-    },
-    renewalDetailData(nickname, gameType) {
-      axios.get(`/api/search/renewal/${gameType}/${nickname}`)
+    renewalDetailData(nickname) {
+      axios.get(`/api/search/renewal/${nickname}`)
       .then(() => {
-        alert(`${gameType}의 데이터 갱신이 완료되었습니다.`);
+        alert(`갱신이 완료되었습니다.`);
         this.$router.go();
       })
       .catch((error) => {
-        alert("닉네임 정보가 없습니다.", error);
-        console.log("오류내용: ", error);
+        alert("닉네임을 찾을 수 없습니다.", error);
+        console.log("아아 이건 오류다: ", error);
         this.$router.go(); 
       });
     },
-    fetchDetailData(nickname) {
-      axios.get(`/api/search/player/detail/${nickname}`)
+    fetchDetailData(nickname, gameType) {
+      axios.get(`/api/search/player/detail/${gameType}/${nickname}`)
       .then((response) => {
+
         this.detailData = response.data;
 
-        // 날짜 라벨 생성
-        const dateLabels = this.generateDateLabels();
-
-        // 데이터셋 설정
-        const winData = this.detailData.resultHistory.map(entry => entry.winCount);
-        const loseData = this.detailData.resultHistory.map(entry => entry.loseCount);
-
-        // 데이터 업데이트
-        this.chartData.labels = dateLabels;
-        this.chartData.datasets[0].data = winData;
-        this.chartData.datasets[1].data = loseData;
       })
       .catch((error) => {
         alert("갱신된 정보가 없습니다.", error);
-        console.log("오류내용: ", error);
+        console.log("음음 이건 오류야: ", error);
       });
-    },
-    generateDateLabels() {
-      const today = new Date(); 
-      const dateLabels = [];
-
-      for (let i = 6; i >= 0; i--) {
-        const date = new Date(today);
-        date.setDate(today.getDate() - i);
-        const formattedDate = this.formatDate(date); 
-        dateLabels.push(formattedDate);
-      }
-
-      return dateLabels; 
     },
     formatDate(date) {
       const month = String(date.getMonth() + 1).padStart(2, '0'); 
@@ -826,12 +780,20 @@ export default {
         const playerData = response.data;
         this.playerId = playerData.playerId;
         this.playerCharacterImage = `https://img-api.neople.co.kr/cy/characters/${playerData.represent.characterId}?zoom=3`;
+        this.ratingGameTier = playerData.tierTest ? playerData.tierName : 'UNRANK';
+        this.ratingWinCount = playerData.record[0].winCount;
+        this.ratingLoseCount = playerData.record[0].loseCount;
+        this.ratingStopCount = playerData.record[0].stopCount;
+        this.normalWinCount = playerData.record[1].winCount;
+        this.normalLoseCount = playerData.record[1].loseCount;
+        this.normalStopCount = playerData.record[1].stopCount;
+
         this.fetchGameData(this.playerId);
-        this.fetchDetailData(this.$route.params.nickname);
+        this.fetchDetailData(this.playerNickname, 'RATING');
       })
       .catch((error) => {
         alert("닉네임 정보가 없습니다.", error);
-        console.log("오류내용: ", error);
+        console.log("이건 오류라네: ", error);
         this.$router.go(-1); 
       });
   }

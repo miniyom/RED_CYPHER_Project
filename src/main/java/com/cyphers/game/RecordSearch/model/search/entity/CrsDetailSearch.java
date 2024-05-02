@@ -3,9 +3,13 @@ package com.cyphers.game.RecordSearch.model.search.entity;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.cyphers.game.RecordSearch.openapi.model.enumuration.CyphersGameType;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.IdClass;
@@ -25,21 +29,22 @@ import lombok.ToString;
 @ToString
 @Builder
 @Entity
+@IdClass(CrsDetailSearchPK.class)
 @Table(name = "crs_detail_search")
 public class CrsDetailSearch {
 	@Id
 	@Column(name = "PLAYER_ID")
 	private String playerId;
 	
-//	@Id
-//	private String gameType;
+	@Id
+	@Column(name = "GAME_TYPE")
+	@Enumerated(EnumType.STRING)
+	private CyphersGameType gameType;
 
-	private String profileCharacterId;
 	private String nickname;
 	
 	private LocalDateTime recentlyUpdatedDate;
 	
-	//////////////////////////////////////////
 	private Integer tankerUseRate;
 	private Integer rangeDealerUseRate;
 	private Integer supporterUseRate;
@@ -48,17 +53,6 @@ public class CrsDetailSearch {
 	@OneToMany(mappedBy = "crsDetailSearch", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	private List<CrsMostCypherInfos> mostCypherInfos;
 
-    private String ratingGameTier;
-    private Integer ratingWinCount;
-    private Integer ratingLoseCount;
-    private Integer ratingStopCount;
-    private Integer ratingWinRate;
-
-    private Integer normalWinCount;
-    private Integer normalLoseCount;
-    private Integer normalStopCount;
-    private Integer normalWinRate;
-    
     @OneToMany(mappedBy = "crsDetailSearch", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<CrsResultHistory> resultHistory;
 
