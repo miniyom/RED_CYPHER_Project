@@ -8,8 +8,8 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
+import jakarta.persistence.IdClass;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -30,12 +30,16 @@ public class CrsDetailSearch {
 	@Id
 	@Column(name = "PLAYER_ID")
 	private String playerId;
+	
+//	@Id
+//	private String gameType;
 
 	private String profileCharacterId;
 	private String nickname;
 	
 	private LocalDateTime recentlyUpdatedDate;
 	
+	//////////////////////////////////////////
 	private Integer tankerUseRate;
 	private Integer rangeDealerUseRate;
 	private Integer supporterUseRate;
@@ -56,7 +60,7 @@ public class CrsDetailSearch {
     private Integer normalWinRate;
     
     @OneToMany(mappedBy = "crsDetailSearch", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private List<CrsWinAndLoseCountHistory> winAndLoseCountHistory;
+    private List<CrsResultHistory> resultHistory;
 
     private Integer recentlyPlayCount;
     private Integer recentlyWinRate;
@@ -65,6 +69,4 @@ public class CrsDetailSearch {
     @OneToMany(mappedBy = "crsDetailSearch", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<CrsRecentlyPlayCypherInfos> recentlyPlayCyphersInfos;
 
-//    @OneToMany(mappedBy = "crsDetailSearchResponse", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-//    private List<CrsGameRecord> gameRecords;
 }

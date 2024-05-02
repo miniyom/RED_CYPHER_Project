@@ -12,12 +12,15 @@ import java.util.List;
 @Builder
 public class IoSearchDetailResponse {
     private String playerId;
-    private String profileCharacterId;
+    private String characterId;
     private String nickname;
     private LocalDateTime recentlyUpdatedDate;
     
     private List<IoSearchDetailMostCypherInfo> mostCypherInfos;
-    private IoSearchDetailMostPositionInfo mostPositionInfos;
+    private Integer tankerUseRate;
+    private Integer rangeDealerUseRate;
+    private Integer supporterUseRate;
+    private Integer meleeDealerUseRate;
 
     private String ratingGameTier;
     private Integer ratingWinCount;
@@ -30,7 +33,7 @@ public class IoSearchDetailResponse {
     private Integer normalStopCount;
     private Integer normalWinRate;
     
-    private List<IoSearchDetailWinAndLoseCountHistoryInfo> winAndLoseCountHistoryInfos;
+    private List<IoSearchDetailResultHistoryInfo> resultHistory;
 
     private Integer recentlyPlayCount;
     private Integer recentlyWinRate;

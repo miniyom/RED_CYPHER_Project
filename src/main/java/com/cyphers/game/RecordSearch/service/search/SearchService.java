@@ -20,12 +20,11 @@ import com.cyphers.game.RecordSearch.model.search.AttributeInfoResponse;
 import com.cyphers.game.RecordSearch.model.search.GameRecordResponse;
 import com.cyphers.game.RecordSearch.model.search.IoSearchDetailGameRecord;
 import com.cyphers.game.RecordSearch.model.search.IoSearchDetailMostCypherInfo;
-import com.cyphers.game.RecordSearch.model.search.IoSearchDetailMostPositionInfo;
 import com.cyphers.game.RecordSearch.model.search.IoSearchDetailRecentlyPlayCyphersInfo;
 import com.cyphers.game.RecordSearch.model.search.IoSearchDetailResponse;
-import com.cyphers.game.RecordSearch.model.search.IoSearchDetailWinAndLoseCountHistoryInfo;
+import com.cyphers.game.RecordSearch.model.search.IoSearchDetailResultHistoryInfo;
 import com.cyphers.game.RecordSearch.model.search.ItemInfoResponse;
-import com.cyphers.game.RecordSearch.model.search.TeamPlayerInfo;
+import com.cyphers.game.RecordSearch.model.search.TeamPlayerResponse;
 import com.cyphers.game.RecordSearch.openapi.model.CyphersCharacterAttribute;
 import com.cyphers.game.RecordSearch.openapi.model.CyphersCharacterInfo;
 import com.cyphers.game.RecordSearch.openapi.model.CyphersCharacterSearch;
@@ -83,7 +82,7 @@ public class SearchService {
 		return cyPlayerRes.getRows().get(0).getNickname();
 	}
 
-	public IoSearchDetailResponse renewalDetailSearch(String nickname) throws Exception {
+	public IoSearchDetailResponse renewalDetailSearch(String nickname, String gameType) throws Exception {
 
 		CyphersPlayerResponse cyPlayerResponse = cyApiService.searchPlayers(nickname, CyphersPlayerWordType.MATCH, null);
 
@@ -91,21 +90,19 @@ public class SearchService {
 			throw new Exception("닉네임 정보가 없습니다.");
 		}
 
-		IoSearchDetailResponse ioGameRecords = new IoSearchDetailResponse();
+		IoSearchDetailResponse ioDetailRes = new IoSearchDetailResponse();
 		CyphersPlayer cyPlayer = cyPlayerResponse.getRows().get(0);
 		String myPlayerId = cyPlayer.getPlayerId();
 		;
 		CyphersCharacterSearch cyCharacter = cyApiService.searchCharacter();
 
 		// 플레이어 기본정보
-		String profileCharacterId = cyPlayer.getRepresent().getCharacterId();
-		String profileNickname = cyPlayer.getNickname();
-		ioGameRecords.setPlayerId(myPlayerId);
-		ioGameRecords.setProfileCharacterId(profileCharacterId);
-		ioGameRecords.setNickname(profileNickname);
+		ioDetailRes.setPlayerId(myPlayerId);
+		ioDetailRes.setCharacterId(cyPlayer.getRepresent().getCharacterId());
+		ioDetailRes.setNickname(cyPlayer.getNickname());
 		
 
-		List<CyphersMatchedInfo> cyMatchedInfoRows = getMatchedInfos(myPlayerId); // 각 기능에서 쓰일 리스트
+		List<CyphersMatchedInfo> cyMatchedInfoRows = getMatchedInfos(myPlayerId, gameType); // 각 기능에서 쓰일 리스트
 
 		Map<String, Pair<Integer, Integer>> characterIdMap = new HashMap<>(); // Pair의 첫번째는 전체 플레이 횟수, 두번째는 이긴 횟수
 		for (CyphersMatchedInfo cyMatchedInfo : cyMatchedInfoRows) {
@@ -122,14 +119,14 @@ public class SearchService {
 		;
 
 		// 모스트 사이퍼
-		ioGameRecords.setMostCypherInfos(Collections.emptyList());
+		ioDetailRes.setMostCypherInfos(Collections.emptyList());
 
 		if (cyMatchedInfoRows.size() != 0) {
 			List<IoSearchDetailMostCypherInfo> mostCypherRows = new ArrayList<>();
 
 			for (int i = 0; i < MOST_CYPHER_LENGTH; i++) {
 				IoSearchDetailMostCypherInfo mostCypherInfo = new IoSearchDetailMostCypherInfo();
-				mostCypherInfo.setCharacterId(idList.get(i));
+				mostCypherInfo.setCharacterImage("https://img-api.neople.co.kr/cy/characters/"+idList.get(i)+"?zoom=3");
 				for (CyphersCharacterInfo characterInfo : cyCharacter.getRows()) {
 					if (characterInfo.getCharacterId().equals(idList.get(i))) {
 						mostCypherInfo.setCharacterName(characterInfo.getCharacterName());
@@ -160,24 +157,21 @@ public class SearchService {
 
 				mostCypherRows.add(mostCypherInfo);
 			}
-			ioGameRecords.setMostCypherInfos(mostCypherRows);
+			ioDetailRes.setMostCypherInfos(mostCypherRows);
 
 		}
 
 		// 모스트 포지션
-		IoSearchDetailMostPositionInfo mostPositionInfo = new IoSearchDetailMostPositionInfo();
-
 		Integer tankerUseCount = 0;
 		Integer rangeDealerUseCount = 0;
 		Integer supporterUseCount = 0;
 		Integer meleeDealerUseCount = 0;
 		Integer mostPositionPlayCount = cyMatchedInfoRows.size();
 
-		mostPositionInfo.setTankerUseRate(0);
-		mostPositionInfo.setRangeDealerUseRate(0);
-		mostPositionInfo.setSupporterUseRate(0);
-		mostPositionInfo.setMeleeDealerUseRate(0);
-		ioGameRecords.setMostPositionInfos(mostPositionInfo);
+		ioDetailRes.setTankerUseRate(0);
+		ioDetailRes.setRangeDealerUseRate(0);
+		ioDetailRes.setSupporterUseRate(0);
+		ioDetailRes.setMeleeDealerUseRate(0);
 
 		if (mostPositionPlayCount != 0) {
 			for (CyphersMatchedInfo cyMatchedInfo : cyMatchedInfoRows) {
@@ -201,55 +195,54 @@ public class SearchService {
 				}
 				}
 			}
-			mostPositionInfo.setTankerUseRate((100 * tankerUseCount) / mostPositionPlayCount);
-			mostPositionInfo.setRangeDealerUseRate((100 * rangeDealerUseCount) / mostPositionPlayCount);
-			mostPositionInfo.setSupporterUseRate((100 * supporterUseCount) / mostPositionPlayCount);
-			mostPositionInfo.setMeleeDealerUseRate((100 * meleeDealerUseCount) / mostPositionPlayCount);
-			ioGameRecords.setMostPositionInfos(mostPositionInfo);
+			ioDetailRes.setTankerUseRate((100 * tankerUseCount) / mostPositionPlayCount);
+			ioDetailRes.setRangeDealerUseRate((100 * rangeDealerUseCount) / mostPositionPlayCount);
+			ioDetailRes.setSupporterUseRate((100 * supporterUseCount) / mostPositionPlayCount);
+			ioDetailRes.setMeleeDealerUseRate((100 * meleeDealerUseCount) / mostPositionPlayCount);
 		}
 
 		// 공식전, 일반전 데이터
 		CyphersPlayerInfo cyPlayerInfo = cyApiService.searchPlayerInfo(myPlayerId);
 
-		ioGameRecords.setRatingGameTier("-");
-		ioGameRecords.setRatingWinCount(0);
-		ioGameRecords.setRatingLoseCount(0);
-		ioGameRecords.setRatingStopCount(0);
-		ioGameRecords.setRatingWinRate(0);
-		ioGameRecords.setNormalWinCount(0);
-		ioGameRecords.setNormalLoseCount(0);
-		ioGameRecords.setNormalStopCount(0);
-		ioGameRecords.setNormalWinRate(0);
+		ioDetailRes.setRatingGameTier("-");
+		ioDetailRes.setRatingWinCount(0);
+		ioDetailRes.setRatingLoseCount(0);
+		ioDetailRes.setRatingStopCount(0);
+		ioDetailRes.setRatingWinRate(0);
+		ioDetailRes.setNormalWinCount(0);
+		ioDetailRes.setNormalLoseCount(0);
+		ioDetailRes.setNormalStopCount(0);
+		ioDetailRes.setNormalWinRate(0);
 
 		if (cyPlayerInfo.getRecords().size() != 0) {
 			String gameTypeIdRow0 = cyPlayerInfo.getRecords().get(0).getGameTypeId(); // Rows의 0번째를 가져옴
 
 			if (gameTypeIdRow0.equals("rating")) {
 				CyphersRecords cyPlayerRatingRecord = cyPlayerInfo.getRecords().get(0);
-				ioGameRecords.setRatingGameTier(cyPlayerInfo.getTierName());
-				ioGameRecords.setRatingWinCount(cyPlayerRatingRecord.getWinCount());
-				ioGameRecords.setRatingLoseCount(cyPlayerRatingRecord.getLoseCount());
-				ioGameRecords.setRatingStopCount(cyPlayerRatingRecord.getStopCount());
+				ioDetailRes.setRatingGameTier(cyPlayerInfo.getTierName());
+				ioDetailRes.setRatingWinCount(cyPlayerRatingRecord.getWinCount());
+				ioDetailRes.setRatingLoseCount(cyPlayerRatingRecord.getLoseCount());
+				ioDetailRes.setRatingStopCount(cyPlayerRatingRecord.getStopCount());
 				if (cyPlayerRatingRecord.getWinCount() + cyPlayerRatingRecord.getLoseCount() != 0) {
-					ioGameRecords.setRatingWinRate(100 * cyPlayerRatingRecord.getWinCount()
+					ioDetailRes.setRatingWinRate(100 * cyPlayerRatingRecord.getWinCount()
 							/ (cyPlayerRatingRecord.getLoseCount() + cyPlayerRatingRecord.getWinCount()));
 				}
 			}
 			if (gameTypeIdRow0.equals("normal") || cyPlayerInfo.getRecords().size() == 2) {
 				Integer recordsLength = Math.max(0, cyPlayerInfo.getRecords().size() - 1);
 				CyphersRecords cyPlayerNormalRecord = cyPlayerInfo.getRecords().get(recordsLength);
-				ioGameRecords.setNormalWinCount(cyPlayerNormalRecord.getWinCount());
-				ioGameRecords.setNormalLoseCount(cyPlayerNormalRecord.getLoseCount());
-				ioGameRecords.setNormalStopCount(cyPlayerNormalRecord.getStopCount());
+				ioDetailRes.setNormalWinCount(cyPlayerNormalRecord.getWinCount());
+				ioDetailRes.setNormalLoseCount(cyPlayerNormalRecord.getLoseCount());
+				ioDetailRes.setNormalStopCount(cyPlayerNormalRecord.getStopCount());
 				if (cyPlayerNormalRecord.getWinCount() + cyPlayerNormalRecord.getLoseCount() != 0) {
-					ioGameRecords.setNormalWinRate(100 * cyPlayerNormalRecord.getWinCount()
+					ioDetailRes.setNormalWinRate(100 * cyPlayerNormalRecord.getWinCount()
 							/ (cyPlayerNormalRecord.getLoseCount() + cyPlayerNormalRecord.getWinCount()));
 				}
 			}
 		}
 
-		// 승, 패수 데이터(그래프)
-		List<IoSearchDetailWinAndLoseCountHistoryInfo> winAndLoseCountHistoryInfos = new ArrayList<>();
+		// 승패 데이터(그래프)
+		List<IoSearchDetailResultHistoryInfo> resultHistory = new ArrayList<>();
 		LocalDate today = LocalDate.now();
 		LocalDate oneWeekAgo = today.minusWeeks(1);
 		List<CyphersMatchedInfo> weeklyMatchedInfoRows = filterDataByDate(cyMatchedInfoRows, oneWeekAgo, today);
@@ -258,16 +251,16 @@ public class SearchService {
 		Pair<LocalDate, Integer> matchedDateAndInt = Pair.of(today, WIN_AND_LOSE_KEY);
 
 		for (int i = 0; i <= WIN_AND_LOSE_KEY; i++) {
-			IoSearchDetailWinAndLoseCountHistoryInfo defaultWinAndLoseHisory = new IoSearchDetailWinAndLoseCountHistoryInfo();
-			defaultWinAndLoseHisory.setHistoryDate(i);
-			defaultWinAndLoseHisory.setWinCount(0);
-			defaultWinAndLoseHisory.setLoseCount(0);
-			winAndLoseCountHistoryInfos.add(defaultWinAndLoseHisory);
+			IoSearchDetailResultHistoryInfo defaultResultHisory = new IoSearchDetailResultHistoryInfo();
+			defaultResultHisory.setHistoryDate(i);
+			defaultResultHisory.setWinCount(0);
+			defaultResultHisory.setLoseCount(0);
+			resultHistory.add(defaultResultHisory);
 			cyMatchingHistoryMap.put(i, Pair.of(0, 0));
 		}
 
 		for (CyphersMatchedInfo weeklyMatchedInfo : weeklyMatchedInfoRows) {
-			IoSearchDetailWinAndLoseCountHistoryInfo winAndLoseHisory = new IoSearchDetailWinAndLoseCountHistoryInfo();
+			IoSearchDetailResultHistoryInfo winAndLoseHisory = new IoSearchDetailResultHistoryInfo();
 			LocalDate weeklyMatchedDate = weeklyMatchedInfo.getDate().toLocalDate();
 			if (!weeklyMatchedDate.isEqual(matchedDateAndInt.getFirst())) {
 				matchedDateAndInt = Pair.of(matchedDateAndInt.getFirst().minusDays(1),
@@ -292,10 +285,10 @@ public class SearchService {
 			winAndLoseHisory.setHistoryDate(matchedDateAndInt.getSecond());
 			winAndLoseHisory.setWinCount(cyMatchingHistoryMap.get(matchedDateAndInt.getSecond()).getFirst());
 			winAndLoseHisory.setLoseCount(cyMatchingHistoryMap.get(matchedDateAndInt.getSecond()).getSecond());
-			winAndLoseCountHistoryInfos.set(matchedDateAndInt.getSecond(), winAndLoseHisory);
+			resultHistory.set(matchedDateAndInt.getSecond(), winAndLoseHisory);
 		}
 
-		ioGameRecords.setWinAndLoseCountHistoryInfos(winAndLoseCountHistoryInfos);
+		ioDetailRes.setResultHistory(resultHistory);
 
 		// 최근 2주간 게임 데이터
 		LocalDate twoWeekAgo = LocalDate.now().minus(2, ChronoUnit.WEEKS);
@@ -303,15 +296,15 @@ public class SearchService {
 				LocalDate.now());
 
 		Integer recentlyPlayCount = recentMatchedInfoRows.size();
-		ioGameRecords.setRecentlyPlayCount(0);
-		ioGameRecords.setRecentlyWinRate(0);
-		ioGameRecords.setRecentlyKda(0.0f);
-		ioGameRecords.setRecentlyAverageSurvivalRate(0);
-		ioGameRecords.setRecentlyPlayCyphersInfos(Collections.emptyList());
+		ioDetailRes.setRecentlyPlayCount(0);
+		ioDetailRes.setRecentlyWinRate(0);
+		ioDetailRes.setRecentlyKda(0.0f);
+		ioDetailRes.setRecentlyAverageSurvivalRate(0);
+		ioDetailRes.setRecentlyPlayCyphersInfos(Collections.emptyList());
 
 		if (recentlyPlayCount != 0) {
 
-			ioGameRecords.setRecentlyPlayCount(recentlyPlayCount);
+			ioDetailRes.setRecentlyPlayCount(recentlyPlayCount);
 
 			Integer recentlyWinCount = 0;
 			for (CyphersMatchedInfo recentMatchedInfo : recentMatchedInfoRows) {
@@ -320,7 +313,7 @@ public class SearchService {
 					recentlyWinCount++;
 				}
 			}
-			ioGameRecords.setRecentlyWinRate(100 * recentlyWinCount / recentlyPlayCount);
+			ioDetailRes.setRecentlyWinRate(100 * recentlyWinCount / recentlyPlayCount);
 
 			Float totalKillCount = 0.0f;
 			Float totalDeathCount = 0.0f;
@@ -332,10 +325,10 @@ public class SearchService {
 				totalAssistCount += cyPlayInfo.getAssistCount();
 			}
 			if (totalDeathCount != 0) {
-				ioGameRecords.setRecentlyKda(
+				ioDetailRes.setRecentlyKda(
 						Math.round((totalKillCount + totalAssistCount) / totalDeathCount * 100) / 100.0f);
 			} else {
-				ioGameRecords.setRecentlyKda(PERFECT_KDA);
+				ioDetailRes.setRecentlyKda(PERFECT_KDA);
 			}
 
 			Integer avgSurvivalRate = 0;
@@ -345,7 +338,7 @@ public class SearchService {
 
 				avgSurvivalRate += 100 * (playTime - responseTime) / playTime;
 			}
-			ioGameRecords.setRecentlyAverageSurvivalRate(avgSurvivalRate / recentlyPlayCount);
+			ioDetailRes.setRecentlyAverageSurvivalRate(avgSurvivalRate / recentlyPlayCount);
 
 			// top3 캐릭터 데이터
 			List<IoSearchDetailRecentlyPlayCyphersInfo> recentCypherRows = new ArrayList<>();
@@ -385,10 +378,10 @@ public class SearchService {
 				recentCypherRows.add(recentCypherInfo);
 			}
 
-			ioGameRecords.setRecentlyPlayCyphersInfos(recentCypherRows);
+			ioDetailRes.setRecentlyPlayCyphersInfos(recentCypherRows);
 		}
 
-		return ioGameRecords;
+		return ioDetailRes;
 	}
 	
 	public CyphersMatches getGameRecordsNext(String playerId, String next) throws Exception {
@@ -427,14 +420,15 @@ public class SearchService {
 					totalKillCount += cyPlayersInGame.getPlayInfo().getKillCount();
 				}
 
-				List<TeamPlayerInfo> teamPlayerInfos = new ArrayList<>();
+				List<TeamPlayerResponse> teamPlayerRes = new ArrayList<>();
 
 				for (CyphersPlayersInGame playerDataInGame : matchingDetail.getPlayers()) {
 					
 					if (playerDataInGame.getPlayerId().equals(playerId)) {
 						CyphersPlayInfo playInfo = playerDataInGame.getPlayInfo();
 
-						gameRecord.setPlayCharacterId(playInfo.getCharacterId());
+						gameRecord.setCharacterId(playInfo.getCharacterId());
+						gameRecord.setCharacterName(playInfo.getCharacterName());
 						gameRecord.setResult(matchedInfo.getPlayInfo().getResult());
 						gameRecord.setPositionName(playerDataInGame.getPosition().getName());
 						List<CyphersCharacterAttribute> attributeInfos = new ArrayList<>();
@@ -494,7 +488,7 @@ public class SearchService {
 						gameRecord.setBattlePoint(playInfo.getBattlePoint());
 						gameRecord.setSightPoint(playInfo.getSightPoint());
 					}
-					teamPlayerInfos.add(TeamPlayerInfo.builder()
+					teamPlayerRes.add(TeamPlayerResponse.builder()
 										.characterId(playerDataInGame.getPlayInfo().getCharacterId())
 										.nickname(playerDataInGame.getNickname())
 										.build());
@@ -512,7 +506,7 @@ public class SearchService {
 				}
 				gameRecord.setMatchId(matchedInfo.getMatchId());
 				gameRecord.setPlayDate(matchingDetail.getDate());
-				gameRecord.setTeamPlayerInfos(teamPlayerInfos);
+				gameRecord.setTeamPlayerInfos(teamPlayerRes);
 				gameRecords.add(gameRecord);
 
 				gameRecordsInfo.setGameRecords(gameRecords);
@@ -523,7 +517,9 @@ public class SearchService {
 	}
 	
 	// 현재 시즌 공식전, 일반전 기록 가져오기
-	public List<CyphersMatchedInfo> getMatchedInfos(String playerId) throws Exception {
+	// API 사양은 90일씩만 허용하기 때문에 90일씩 두번 검색
+	public List<CyphersMatchedInfo> getAllMatchedInfos(String playerId) throws Exception {
+		
 		CyphersMatchingHistory cyMatchingHistoryRating = cyApiService.searchMatchingHistory(playerId,
 				CyphersGameType.RATING, ApiDate.NINETY_DAYS_AGO, ApiDate.NOW);
 		CyphersMatchingHistory cyMatchingHistoryRating2 = cyApiService.searchMatchingHistory(playerId,
@@ -556,6 +552,23 @@ public class SearchService {
 			}
 		};
 		Collections.sort(matchedInfos, comparator);
+		return matchedInfos;
+	}
+	
+	public List<CyphersMatchedInfo> getMatchedInfos(String playerId, String gameType) throws Exception {
+		CyphersMatchingHistory cyMatchingHistory1 = cyApiService.searchMatchingHistory(playerId,
+				getGameType(gameType), ApiDate.NINETY_DAYS_AGO, ApiDate.NOW);
+		CyphersMatchingHistory cyMatchingHistory2 = cyApiService.searchMatchingHistory(playerId,
+				getGameType(gameType), ApiDate.HALF_YEARS_AGO, ApiDate.NINETY_DAYS_AGO);
+
+		List<CyphersMatchedInfo> matchedInfos = new ArrayList<>();
+
+		for (CyphersMatchedInfo cyMatchedInfo1 : cyMatchingHistory1.getMatches().getRows()) {
+			matchedInfos.add(cyMatchedInfo1);
+		}
+		for (CyphersMatchedInfo cyMatchedInfo2 : cyMatchingHistory2.getMatches().getRows()) {
+			matchedInfos.add(cyMatchedInfo2);
+		}
 		return matchedInfos;
 	}
 	
@@ -594,5 +607,18 @@ public class SearchService {
 							.positionName(cyAttrDetail.getPositionName())
 							.build();
 		return attrRes;
+	}
+	
+	public CyphersGameType getGameType(String gameType) {
+		switch (gameType) {
+			case "rating": {
+				return CyphersGameType.RATING;
+			}
+			case "normal": {
+				return CyphersGameType.NORMAL;
+			}
+			default:
+				throw new IllegalArgumentException("잘못된 게임타입: " + gameType);
+			}
 	}
 }

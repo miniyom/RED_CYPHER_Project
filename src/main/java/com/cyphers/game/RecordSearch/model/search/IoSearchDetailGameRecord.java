@@ -24,7 +24,8 @@ public class IoSearchDetailGameRecord {
 	private String playDate;
     private CyphersGameType gameType;
     private String result;
-    private String playCharacterId;
+    private String characterId;
+    private String characterName;
     private String positionName;
     private List<CyphersCharacterAttribute> attributeInfos;
 
@@ -44,5 +45,5 @@ public class IoSearchDetailGameRecord {
     private Integer battlePoint;
     private Integer sightPoint;
 
-    private List<TeamPlayerInfo> teamPlayerInfos;
+    private List<TeamPlayerResponse> teamPlayerInfos;
 }

@@ -8,7 +8,7 @@
         </b-container>
         <b-container>
             <b-row class="mt-5 mb-3 pl-3 d-flex justifty-content-between">
-                <b-col class="container-box mx-4">
+                <b-col class="shadow container-box mx-4">
                     <b-row><h5>Legend 커트 라인</h5></b-row>
                     <b-row class="align-items-center">
                         <b-col><b-img src="/img/legend.png" class="tier-image"></b-img></b-col>
@@ -27,7 +27,7 @@
                         </b-col>
                     </b-row>
                 </b-col>
-                <b-col class="container-box mx-4">
+                <b-col class="shadow container-box mx-4">
                     <b-row><h5>Hero 커트 라인</h5></b-row>
                     <b-row class="align-items-center">
                         <b-col class="justify-content-center"><b-img src="/img/hero.png" class="tier-image"></b-img></b-col>
@@ -46,7 +46,7 @@
                         </b-col>
                     </b-row>
                 </b-col>
-                <b-col class="container-box mx-4">
+                <b-col class="shadow container-box mx-4">
                     <b-row>
                         <h3 class="mt-3 font-bold">랭킹 산정 기준</h3>
                         <ul class="p-3 m-2 text-left">

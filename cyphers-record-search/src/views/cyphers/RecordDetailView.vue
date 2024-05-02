@@ -12,19 +12,19 @@
         </b-col>
         <b-col class="pl-0 text-left align-self-end">
           <h2 class="mb-2">{{ playerNickname }}</h2>
-          <b-button variant="primary" class="me-2" @click="renewalDetailData(playerNickname)">전적갱신</b-button>
+          <b-button variant="primary" class="me-2" @click="renewalAllDetailData(playerNickname)">전적갱신</b-button>
           <span class="ml-2">최근 갱신: {{ detailData.renewalTime }}</span>
         </b-col>
       </b-row>
     </b-container>
 
     <!-- 이동 탭 박스 -->
-    <!-- <b-container class="my-3 container-box">
+    <b-container class="my-3 container-box">
       <div class="d-flex justify-content-start">
-        <b-button variant="primary" class="me-3">종합</b-button>
-        <b-button variant="primary">캐릭터</b-button>
+        <b-button variant="secondary" class="me-3">공식전</b-button>
+        <b-button variant="secondary">일반전</b-button>
       </div>
-    </b-container> -->
+    </b-container>
 
     <!-- 플레이어에 대한 상세 지표 박스 -->
     <b-container class="my-3 ">
@@ -34,7 +34,23 @@
           <b-tabs>
             <b-tab title="모스트 사이퍼" active>
               <!-- 모스트 사이퍼 내용 -->
-              <b-table :items="cypherData"></b-table>
+              <b-table :items="detailData.mostCypherInfos" :fields="mostCypherFields">
+                <template #cell(characterImage)="data">
+                  <img :src="data.value" alt="Character Image" style="width: 30px; height: 30px; border-radius: 50%;">
+                </template>
+                <template #cell(characterName)="data">
+                  {{ data.value }}
+                </template>
+                <template #cell(winRate)="data">
+                  {{ data.value }}%
+                </template>
+                <template #cell(playCount)="data">
+                  {{ data.value }}
+                </template>
+                <template #cell(kda)="data">
+                  {{ data.value }}
+                </template>
+              </b-table>
             </b-tab>
             <b-tab title="모스트 포지션">
               <!-- 모스트 포지션 내용 -->
@@ -85,7 +101,7 @@
                     <b-list-group flush>
                       <b-list-group-item>{{ detailData.ratingGameTier }}</b-list-group-item>
                       <b-list-group-item>{{ detailData.ratingWinCount }}승 {{ detailData.ratingLoseCount }}패 {{ detailData.ratingStopCount }}중단</b-list-group-item>
-                      <b-list-group-item>{{ detailData.ratingWinRate }}%</b-list-group-item>
+                      <b-list-group-item>승률: {{ detailData.ratingWinRate }}%</b-list-group-item>
                     </b-list-group>
                   </b-col>
                 </b-row>
@@ -94,13 +110,18 @@
                 <h3>일반전</h3>
                 <b-list-group flush>
                   <b-list-group-item>{{ detailData.normalWinCount }}승 {{ detailData.normalLoseCount }}패 {{ detailData.normalStopCount }}중단</b-list-group-item>
-                  <b-list-group-item>{{ detailData.normalWinRate }}%</b-list-group-item>
+                  <b-list-group-item>승률: {{ detailData.normalWinRate }}%</b-list-group-item>
                 </b-list-group>
               </b-col>
             </b-row>
 
-            <b-row style="height: 300px;">
-              <LineGraph/>
+            <b-row style="height: 300px;" class="mt-4">
+              <!-- LineGraph 컴포넌트를 import하여 사용하고, 필요한 데이터를 props로 전달 -->
+              <LineGraph
+                :dateLabels="chartData.labels"
+                :winData="chartData.datasets[0].data"
+                :loseData="chartData.datasets[1].data"
+              />
             </b-row>
 
           </b-container>
@@ -110,46 +131,39 @@
     </b-container>
 
     <!-- 플레이어의 최근 플레이 지표 박스 -->
-    <b-container class="my-3 container-box">
+    <b-container>
+      <p class="p-font d-flex justify-content-start">2주간의 게임기록을 분석한 데이터입니다.</p>
+    </b-container>
+    <b-container class="my-3 container-box fluid">
       <b-row>
-        <b-col sm="2" class="br-1">
-          <h4>게임 수</h4>
-          <h2 class="mt-4">1</h2>
+        <b-col sm="7" class="br-1">
+          <b-row>
+            <b-col sm="3" class="br-1">
+              <h4>게임 수</h4>
+              <h2 class="mt-5 mb-5">{{ detailData.recentlyPlayCount }}경기</h2>
+            </b-col>
+            <b-col sm="3" class="br-1">
+              <h4>승률</h4>
+              <h2 class="mt-5 mb-5">{{ detailData.recentlyWinRate }}%</h2>
+            </b-col>
+            <b-col sm="3" class="br-1">
+              <h4>평균 KDA</h4>
+              <h2 class="mt-5 mb-5">{{ detailData.recentlyKda }}</h2>
+            </b-col>
+            <b-col sm="3">
+              <h4>평균 생존시간</h4>
+              <h2 class="mt-5 mb-5">{{ detailData.recentlyAverageSurvivalRate }}초</h2>
+            </b-col>
+          </b-row>
         </b-col>
-        <b-col sm="2" class="br-1">
-          <h4>승률</h4>
-          <h2 class="mt-4">20%</h2>
-        </b-col>
-        <b-col sm="2" class="br-1">
-          <h4>평균 KDA</h4>
-          <h2 class="mt-4">3.24</h2>
-        </b-col>
-        <b-col sm="2" class="br-1">
-          <h4>게임 점수</h4>
-          <h2 class="mt-4">176</h2>
-        </b-col>
-        <b-col sm="4">
+        <b-col sm="5">
           <b-list-group flush>
-            <b-list-group-item class="d-flex align-items-center py-2">
+            <b-list-group-item v-for="recentCypherInfo in detailData.recentlyPlayCyphersInfos" :key="recentCypherInfo.characterId" class="d-flex align-items-center py-2">
               <b-img src="https://img-api.neople.co.kr/cy/characters/c603a74ba02374026a535dc53e5b8d40?zoom=1" fluid alt="Character Image" class="mr-3"
                      style="width: 35px; height: 35px;"></b-img>
-              <div class="flex-fill">캐릭터 이름</div>
-              <div class="me-4">20승 5패</div>
-              <div class="ml-3">KDA: 10/2/5</div>
-            </b-list-group-item>
-            <b-list-group-item class="d-flex align-items-center py-2">
-              <b-img src="https://img-api.neople.co.kr/cy/characters/c603a74ba02374026a535dc53e5b8d40?zoom=1" fluid alt="Character Image" class="mr-3"
-                     style="width: 35px; height: 35px;"></b-img>
-              <div class="flex-fill">캐릭터 이름</div>
-              <div class="me-4">20승 5패</div>
-              <div class="ml-3">KDA: 10/2/5</div>
-            </b-list-group-item>
-            <b-list-group-item class="d-flex align-items-center py-2">
-              <b-img src="https://img-api.neople.co.kr/cy/characters/c603a74ba02374026a535dc53e5b8d40?zoom=1" fluid alt="Character Image" class="mr-3"
-                     style="width: 35px; height: 35px;"></b-img>
-              <div class="flex-fill">캐릭터 이름</div>
-              <div class="me-4">20승 5패</div>
-              <div class="ml-3">KDA: 10/2/5</div>
+              <div class="flex-fill">{{ recentCypherInfo.characterName }}</div>
+              <div class="me-4">{{ recentCypherInfo.winCount }}승 {{ recentCypherInfo.loseCount }}패</div>
+              <div class="ml-3">KDA: {{ recentCypherInfo.killCount }}/{{ recentCypherInfo.deathCount }}/{{ recentCypherInfo.assistCount }}</div>
             </b-list-group-item>
           </b-list-group>
         </b-col>
@@ -158,8 +172,12 @@
 
     <b-container class="my-3 container-box">
       <b-list-group>
+        <b-list-group-item class="d-flex justify-content-start align-items-center">
+          <b-button variant="secondary" class="me-3">공식전</b-button>
+          <b-button variant="secondary">일반전</b-button>
+        </b-list-group-item>
         <!-- games 배열이 비어있을 때 메시지 표시 -->
-        <b-list-group-item v-if="this.games.length < 1">
+        <b-list-group-item v-if="this.games.length < 2">
           게임 기록이 없습니다.
         </b-list-group-item>
         <!-- games 배열이 비어있지 않을 때 게임 리스트 표시 -->
@@ -171,6 +189,7 @@
                 <div class="flex-wrap font-bold d-flex flex-column" :style="{ color : fontColorByResult(game.result)}">
                   <b-row>{{ game.type }}</b-row>
                   <b-row>{{ game.result }}</b-row>
+                  <b-row>{{ game.characterName }}</b-row>
                   <!-- <b-row class="mt-3" style="font-size: small;">{{ game.playDate }}</b-row> -->
                   <div style="font-size: small; position: absolute; bottom: 7px; left:7px">{{ game.playDate }}</div>
                 </div>
@@ -180,10 +199,6 @@
               <b-col sm="auto">
                 <b-img :src="game.characterImage" rounded="circle" alt="Character" class="me-4" style="width: 85px;"></b-img>
               </b-col>
-
-              <!-- <b-col sm="auto" class="me-2">
-                <b-button @click="showItems(game.id)">아이템 보기</b-button>
-              </b-col> -->
 
               <b-col sm="3">
                 <b-row class="mb-2 pb-2" style="border-bottom: solid 1px #6E7474;">
@@ -257,7 +272,7 @@
                     </div>
                   </b-col>
                   <!-- 상세정보1 -->
-                  <b-col sm="3" class="me-5"> 
+                  <b-col sm="4"> 
                     <b-row>
                       <b-col>
                         <div class="text-right">
@@ -373,17 +388,12 @@ export default {
       playerId: '',
       playerCharacterImage: '',
       activeTab: '모스트 사이퍼', // 예시
-      cypherData: [
-        {사이퍼: '사이퍼1', 승률: '75%', 게임횟수: '20'},
-        {사이퍼: '사이퍼2', 승률: '60%', 게임횟수: '15'},
-        {사이퍼: '사이퍼3', 승률: '55%', 게임횟수: '10'},
-        {사이퍼: '사이퍼4', 승률: '80%', 게임횟수: '25'},
-        {사이퍼: '사이퍼4', 승률: '80%', 게임횟수: '25'},
-        {사이퍼: '사이퍼4', 승률: '80%', 게임횟수: '25'},
-        {사이퍼: '사이퍼4', 승률: '80%', 게임횟수: '25'},
-        {사이퍼: '사이퍼4', 승률: '80%', 게임횟수: '25'},
-        {사이퍼: '사이퍼4', 승률: '80%', 게임횟수: '25'},
-        {사이퍼: '사이퍼4', 승률: '80%', 게임횟수: '25'},
+      mostCypherFields: [
+          { key: 'characterImage', label: '능력자' },
+          { key: 'characterName', label: '능력자명' },
+          { key: 'winRate', label: '승률' },
+          { key: 'playCount', label: '게임 수' },
+          { key: 'kda', label: 'KDA' }
       ],
       detailData: {
         renewalTime: '없음',
@@ -396,67 +406,88 @@ export default {
         normalLoseCount: 0,
         normalStopCount: 0,
         normalWinRate: 0,
+
+        recentlyPlayCount: 0,
+        recentlyWinRate: 0,
+        recentlyKda: 0.0,
+        recentlyAverageSurvivalRate: 0,
+      },
+      chartData: {
+        labels: [], // 날짜 라벨
+        datasets: [
+          {
+            label: '승수',
+            backgroundColor: '#f87979',
+            data: [] // 승수 데이터
+          },
+          {
+            label: '패수',
+            backgroundColor: '#f87979',
+            data: [] // 패수 데이터
+          },
+        ]
       },
       games: [
-        // {
-        //   matchId: '',    
-        //   type: "공식전",
-        //   result: "승리",
-        //   playDate: '',
-        //   characterImage: "https://placekitten.com/100/100",
-        //   postionImage: "@/public/img/tanker.png",
-        //   attributes: [
-        //     // {
-        //     //   attributeImage: "https://img-api.neople.co.kr/cy/position-attributes/e29cbec17de6ae981984c6d279400483",
-        //     //   attributeId: "e29cbec17de6ae981984c6d279400483",
-        //     //   attributeName: "완벽주의자",
-        //     // }
-        //     //총 4개 특성
-        //   ],
-        //   gameInfo: {
-        //     kills: 10,
-        //     deaths: 2,
-        //     assists: 5,
-        //     participationRate: 20,
-        //     kda: 2.5,
-        //     cs: 150
-        //   },
-        //   items: [
+        {
+          matchId: '',    
+          type: "공식전",
+          result: "승리",
+          playDate: '',
+          characterImage: "https://placekitten.com/100/100",
+          characterName: '엘리',
+          postionImage: "@/public/img/tanker.png",
+          attributes: [
             // {
-            //   image: "https://img-api.neople.co.kr/cy/items/19f0134c20a835546c760c38293ce67a",
-            //   itemId: "19f0134c20a835546c760c38293ce67a",
-            //   itemName: "E 파이어 포르테",
-            //   rarityName: "유니크",
-            //   rarityColor: "",
-            //   slotName: "발(이동)",
-            //   seasonName: "시즌 1 : Eclipse",
-            //   explainDetail: "\n\n[1레벨] : 장비레벨+3\n비용 650 coin\n이동속도 : +63\n\n[2레벨] : 장비레벨+3\n비용 850 coin\n이동속도 : +63\n불놀이(SL) 공격속도 : +6%\n\n난 언제나 내가 내린 결정에 확신이 있어. 같은 상황이 온다고 해도 언제나 내 답은 같아. "
-            // },
-            //총 16개 아이템
-        //   ],
-        //   details: {
-        //     heal: 5000,
-        //     damage: 15000,
-        //     takenDamage: 2000,
-        //     coins: 10000,
-        //     participation: 70,
-        //     vision: 12
-        //   },
-        //   team1Players: [
-        //     {image: "https://placekitten.com/90/90", name: "Player1"},
-        //     {image: "https://placekitten.com/91/91", name: "Player2"},
-        //     {image: "https://placekitten.com/92/92", name: "Player3"},
-        //     {image: "https://placekitten.com/93/93", name: "Player4"},
-        //     {image: "https://placekitten.com/94/94", name: "Player5"},
-        //   ],
-        //   team2Players: [
-        //     {image: "https://placekitten.com/95/95", name: "Player6"},
-        //     {image: "https://placekitten.com/96/96", name: "Player7"},
-        //     {image: "https://placekitten.com/97/97", name: "Player8"},
-        //     {image: "https://placekitten.com/98/98", name: "Player9"},
-        //     {image: "https://placekitten.com/99/99", name: "Player10"},
-        //   ]
-        // }
+            //   attributeImage: "https://img-api.neople.co.kr/cy/position-attributes/e29cbec17de6ae981984c6d279400483",
+            //   attributeId: "e29cbec17de6ae981984c6d279400483",
+            //   attributeName: "완벽주의자",
+            // }
+            //총 4개 특성
+          ],
+          gameInfo: {
+            kills: 10,
+            deaths: 2,
+            assists: 5,
+            participationRate: 20,
+            kda: 2.5,
+            cs: 150
+          },
+          items: [
+            {
+              image: "https://img-api.neople.co.kr/cy/items/19f0134c20a835546c760c38293ce67a",
+              itemId: "19f0134c20a835546c760c38293ce67a",
+              itemName: "E 파이어 포르테",
+              rarityName: "유니크",
+              rarityColor: "",
+              slotName: "발(이동)",
+              seasonName: "시즌 1 : Eclipse",
+              explainDetail: "\n\n[1레벨] : 장비레벨+3\n비용 650 coin\n이동속도 : +63\n\n[2레벨] : 장비레벨+3\n비용 850 coin\n이동속도 : +63\n불놀이(SL) 공격속도 : +6%\n\n난 언제나 내가 내린 결정에 확신이 있어. 같은 상황이 온다고 해도 언제나 내 답은 같아. "
+            },
+            // 총 16개 아이템
+          ],
+          details: {
+            heal: 5000,
+            damage: 15000,
+            takenDamage: 2000,
+            coins: 10000,
+            participation: 70,
+            vision: 12
+          },
+          team1Players: [
+            {image: "https://placekitten.com/90/90", name: "Player1"},
+            {image: "https://placekitten.com/91/91", name: "Player2"},
+            {image: "https://placekitten.com/92/92", name: "Player3"},
+            {image: "https://placekitten.com/93/93", name: "Player4"},
+            {image: "https://placekitten.com/94/94", name: "Player5"},
+          ],
+          team2Players: [
+            {image: "https://placekitten.com/95/95", name: "Player6"},
+            {image: "https://placekitten.com/96/96", name: "Player7"},
+            {image: "https://placekitten.com/97/97", name: "Player8"},
+            {image: "https://placekitten.com/98/98", name: "Player9"},
+            {image: "https://placekitten.com/99/99", name: "Player10"},
+          ]
+        }
       ],
       showItemModal: false,
       itemDetail: null,
@@ -512,7 +543,8 @@ export default {
         type: record.gameType === "RATING" ? "공식전" : "일반전",
         result: record.result,
         playDate: record.playDate,
-        characterImage: `https://img-api.neople.co.kr/cy/characters/${record.playCharacterId}?zoom=2`,  // 플레이어 캐릭터 이미지 URL
+        characterImage: `https://img-api.neople.co.kr/cy/characters/${record.characterId}?zoom=2`,  // 플레이어 캐릭터 이미지 URL
+        characterName: record.characterName,
         positionImage: this.getPostionImage(record.positionName),
         attributes: record.attributeInfos.map(attributeInfo => ({
           attributeId: attributeInfo.id,
@@ -545,20 +577,24 @@ export default {
         },
         team1Players: record.teamPlayerInfos.slice(0, 5).map(player => ({
           image: `https://img-api.neople.co.kr/cy/characters/${player.characterId}?zoom=1`,
-          name: player.nickname
+          name: player.nickname !== null ? player.nickname : '???'
         })),
         team2Players: record.teamPlayerInfos.slice(5).map(player => ({
           image: `https://img-api.neople.co.kr/cy/characters/${player.characterId}?zoom=1`,
-          name: player.nickname
+          name: player.nickname !== null ? player.nickname : '???'
         }))
       }));
 
       return transformedData;
     },
-    renewalDetailData(nickname) {
-      axios.get(`/api/search/renewal/${nickname}`)
+    renewalAllDetailData(nickname) {
+      this.renewalDetailData(nickname, 'rating');
+      this.renewalDetailData(nickname, 'normal');
+    },
+    renewalDetailData(nickname, gameType) {
+      axios.get(`/api/search/renewal/${gameType}/${nickname}`)
       .then(() => {
-        alert("갱신이 완료되었습니다.");
+        alert(`${gameType}의 데이터 갱신이 완료되었습니다.`);
         this.$router.go();
       })
       .catch((error) => {
@@ -571,12 +607,41 @@ export default {
       axios.get(`/api/search/player/detail/${nickname}`)
       .then((response) => {
         this.detailData = response.data;
-        // console.log("디테일 데이터 내용: ", this.detailData);
+
+        // 날짜 라벨 생성
+        const dateLabels = this.generateDateLabels();
+
+        // 데이터셋 설정
+        const winData = this.detailData.resultHistory.map(entry => entry.winCount);
+        const loseData = this.detailData.resultHistory.map(entry => entry.loseCount);
+
+        // 데이터 업데이트
+        this.chartData.labels = dateLabels;
+        this.chartData.datasets[0].data = winData;
+        this.chartData.datasets[1].data = loseData;
       })
       .catch((error) => {
         alert("갱신된 정보가 없습니다.", error);
         console.log("오류내용: ", error);
       });
+    },
+    generateDateLabels() {
+      const today = new Date(); 
+      const dateLabels = [];
+
+      for (let i = 6; i >= 0; i--) {
+        const date = new Date(today);
+        date.setDate(today.getDate() - i);
+        const formattedDate = this.formatDate(date); 
+        dateLabels.push(formattedDate);
+      }
+
+      return dateLabels; 
+    },
+    formatDate(date) {
+      const month = String(date.getMonth() + 1).padStart(2, '0'); 
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${month}-${day}`; 
     },
     fetchGameData(playerId) {
       // 서버에서 사용자 데이터를 가져오는 API 호출
@@ -611,15 +676,13 @@ export default {
           }
 
           this.games = this.games.concat(this.transformGameData(nextGameData.gameRecords));
-
+          console.log("게임기록 개수", this.games.length);
           if (nextGameData.next !== 'no more records') {
             this.showLoadMoreGames = true;
             this.nextGames = nextGameData.next;
           } else {
             this.showLoadMoreGames = false;
           }
-          console.log("게임기록 개수: ",this.games.length);
-          console.log("게임기록 내용: ",this.games);
         })
         .catch((error) => {
           alert("추가 게임기록을 불러오는 것에 실패했습니다", error);
@@ -797,6 +860,10 @@ export default {
 
 .br-1 {
   border-right: 1px solid black;
+}
+
+.p-font {
+    color : #BDBDBD;
 }
 
 .custom-link {

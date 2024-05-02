@@ -22,8 +22,8 @@ import lombok.ToString;
 @ToString
 @Builder
 @Entity
-@Table(name = "crs_outcome_history")
-public class CrsWinAndLoseCountHistory {
+@Table(name = "crs_result_history")
+public class CrsResultHistory {
 	@Id 
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "OH_ID")

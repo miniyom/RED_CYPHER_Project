@@ -11,7 +11,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class WinAndLoseCountHistoryResponse {
+public class ResultHistoryResponse {
 	private Integer historyDate;
     private Integer winCount;
     private Integer loseCount;

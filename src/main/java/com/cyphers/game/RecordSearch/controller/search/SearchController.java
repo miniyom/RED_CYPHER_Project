@@ -27,22 +27,19 @@ import com.cyphers.game.RecordSearch.service.search.repository.CrsDetailSearchRe
 import com.cyphers.game.RecordSearch.utils.ApiDate;
 
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequestMapping(value = "/api/search")
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Slf4j
 public class SearchController {
 
-    @Autowired
-    private SearchService searchService;
-    @Autowired
-    private CrsSearchService crsSearchService;
-    @Autowired
-    private CrsDetailSearchRepository crsSearchRepository;
-    @Autowired
-    private CyphersApiService cyApiService;
+    private final SearchService searchService;
+    private final CrsSearchService crsSearchService;
+    private final CrsDetailSearchRepository crsSearchRepository;
+    private final CyphersApiService cyApiService;
 
     @GetMapping("/auto-complete/{nickname}")
     public List<String> searchAutoComplete(@PathVariable("nickname") String nickname) throws Exception {
@@ -62,14 +59,13 @@ public class SearchController {
         return res;
     }
     
-    @GetMapping("/renewal/{nickname}")
-    public void renewalDetail(@PathVariable("nickname") String nickname) throws Exception {
+    @GetMapping("/renewal/{gameType}/{nickname}")
+    public void renewalDetail(@PathVariable("nickname") String nickname,
+    						  @PathVariable("gameType") String gameType) throws Exception {
     	
-		IoSearchDetailResponse detailSearch = searchService.renewalDetailSearch(nickname);
+		IoSearchDetailResponse detailSearch = searchService.renewalDetailSearch(nickname, gameType);
     	crsSearchService.upsert(detailSearch);
-//    	SearchDetailResponse searchDetailDTO = crsSearchService.getDetailSearch(nickname);
-//    	
-//        return searchDetailDTO;
+    	
     }
     
     @GetMapping("/player/search/{nickname}")

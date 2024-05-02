@@ -12,7 +12,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Builder
 public class MostCypherInfoResponse {
-	private String characterId;
+	private String characterImage;
     private String characterName;
     private Integer winRate;
     private Integer playCount;

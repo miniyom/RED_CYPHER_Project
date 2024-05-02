@@ -11,7 +11,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class TeamPlayerInfo {
+public class TeamPlayerResponse {
 	private String characterId;
 	private String nickname;
 }
