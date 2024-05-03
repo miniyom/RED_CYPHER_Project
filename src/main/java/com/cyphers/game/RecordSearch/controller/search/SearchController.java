@@ -63,8 +63,8 @@ public class SearchController {
     public void renewalDetail(@PathVariable("nickname") String nickname) throws Exception {
     	
 		IoSearchDetail detailSearchRating = searchService.renewalDetailSearch(nickname, CyphersGameType.RATING);
-		IoSearchDetail detailSearchNormal = searchService.renewalDetailSearch(nickname, CyphersGameType.NORMAL);
     	crsSearchService.upsertDetailSearch(detailSearchRating, CyphersGameType.RATING);
+		IoSearchDetail detailSearchNormal = searchService.renewalDetailSearch(nickname, CyphersGameType.NORMAL);
     	crsSearchService.upsertDetailSearch(detailSearchNormal, CyphersGameType.NORMAL);
     	
     }

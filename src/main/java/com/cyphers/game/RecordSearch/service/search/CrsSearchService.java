@@ -39,8 +39,8 @@ public class CrsSearchService {
 		
 		Optional<CrsDetailSearch> crsDetail = crsDetailSearchRepository.findByPlayerIdAndGameType(detailResponse.getPlayerId(), gameType);
 		
-		if (crsDetail.isPresent()) {
-			insertDetailSearch(detailResponse);
+		if (!crsDetail.isPresent()) {
+			insertDetailSearch(detailResponse, gameType);
 			return;
 		}
 
@@ -78,7 +78,7 @@ public class CrsSearchService {
 		List<CrsResultHistory> resultHistory = response.getResultHistory();
 		List<IoSearchDetailResultHistoryInfo> ioRPHistory = detailResponse.getResultHistory();
 		
-		for (int i = 0; i < mostCypherInfos.size(); i++) {
+		for (int i = 0; i < resultHistory.size(); i++) {
             CrsResultHistory crsResultHistory = resultHistory.get(i);
             IoSearchDetailResultHistoryInfo ioResultInfo = ioRPHistory.get(i);
             
@@ -107,10 +107,12 @@ public class CrsSearchService {
 		
 	}
 	
-	public void insertDetailSearch(IoSearchDetail detailResponse) {
+	public void insertDetailSearch(IoSearchDetail detailResponse, CyphersGameType gameType) {
 		
 		CrsDetailSearch response = CrsDetailSearch.builder()
 								.playerId(detailResponse.getPlayerId()) 
+								.nickname(detailResponse.getNickname())
+								.gameType(gameType)
 								.recentlyUpdatedDate(LocalDateTime.now())
 								.mostCypherInfos(null)
 								.tankerUseRate(detailResponse.getTankerUseRate())

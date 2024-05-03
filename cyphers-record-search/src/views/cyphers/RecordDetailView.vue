@@ -21,8 +21,21 @@
     <!-- 이동 탭 박스 -->
     <b-container class="my-3 container-box">
       <div class="d-flex justify-content-start">
-        <b-button variant="secondary" class="me-3">공식전</b-button>
-        <b-button variant="secondary">일반전</b-button>
+        <b-button
+          variant="success"
+          @click="switchRatingDetail(playerNickname)"
+          :disabled="isRatingDetail"
+          class="me-3"
+        >
+          공식전
+        </b-button>
+        <b-button
+          variant="success"
+          @click="switchNormalDetail(playerNickname)"
+          :disabled="!isRatingDetail"
+        >
+          일반전
+        </b-button>
       </div>
     </b-container>
 
@@ -56,7 +69,7 @@
               <!-- 모스트 포지션 내용 -->
               <b-col>
                 <b-row>
-                  <PieGraph style="height: 500px;" />
+                  <PieGraph v-if="pieGraphLoaded" :chartData="pieGraphData" style="height: 400px;" />
                 </b-row>
                 <b-row style="height: 100px;">
                   <b-col style="height: 100%;">
@@ -117,7 +130,7 @@
 
             <b-row style="height: 300px;" class="mt-4">
               <!-- LineGraph 컴포넌트를 import하여 사용하고, 필요한 데이터를 props로 전달 -->
-              <LineGraph/>
+              <LineGraph  v-if="lineGraphLoaded" :chartData="lineGraphData" />
             </b-row>
 
           </b-container>
@@ -166,14 +179,28 @@
       </b-row>
     </b-container>
 
+    <!-- 공식전, 일반전 게임기록 -->
     <b-container class="my-3 container-box">
       <b-list-group>
         <b-list-group-item class="d-flex justify-content-start align-items-center">
-          <b-button variant="secondary" class="me-3">공식전</b-button>
-          <b-button variant="secondary">일반전</b-button>
+          <b-button
+            variant="secondary"
+            @click="switchRatingRecord(playerId)"
+            :disabled="isRatingRecord"
+            class="me-3"
+          >
+            공식전
+          </b-button>
+          <b-button
+            variant="secondary"
+            @click="switchNormalRecord(playerId)"
+            :disabled="!isRatingRecord"
+          >
+            일반전
+          </b-button>
         </b-list-group-item>
         <!-- games 배열이 비어있을 때 메시지 표시 -->
-        <b-list-group-item v-if="this.games.length < 2">
+        <b-list-group-item v-if="this.games.length < 1">
           게임 기록이 없습니다.
         </b-list-group-item>
         <!-- games 배열이 비어있지 않을 때 게임 리스트 표시 -->
@@ -185,7 +212,6 @@
                 <div class="flex-wrap font-bold d-flex flex-column" :style="{ color : fontColorByResult(game.result)}">
                   <b-row>{{ game.type }}</b-row>
                   <b-row>{{ game.result }}</b-row>
-                  <b-row>{{ game.characterName }}</b-row>
                   <!-- <b-row class="mt-3" style="font-size: small;">{{ game.playDate }}</b-row> -->
                   <div style="font-size: small; position: absolute; bottom: 7px; left:7px">{{ game.playDate }}</div>
                 </div>
@@ -193,7 +219,7 @@
 
               <!-- 캐릭터 이미지 -->
               <b-col sm="auto">
-                <b-img :src="game.characterImage" rounded="circle" alt="Character" class="me-4" style="width: 85px;"></b-img>
+                <b-img v-b-tooltip.hover :title=game.characterName :src="game.characterImage" rounded="circle" alt="Character" class="me-4" style="width: 85px;"></b-img>
               </b-col>
 
               <b-col sm="3">
@@ -370,7 +396,6 @@ export default {
     nickname: String
   },
   created() {
-    console.log("이건 나오겠지?");
   },
   components: {
     Header,
@@ -383,7 +408,7 @@ export default {
       playerNickname: this.$route.params.nickname,
       playerId: '',
       playerCharacterImage: '',
-      activeTab: '모스트 사이퍼', // 예시
+      isRatingDetail: true,
       mostCypherFields: [
           { key: 'characterImage', label: '능력자' },
           { key: 'characterName', label: '능력자명' },
@@ -408,68 +433,103 @@ export default {
         recentlyKda: 0.0,
         recentlyAverageSurvivalRate: 0,
       },
-      games: [
-        {
-          matchId: '',    
-          type: "공식전",
-          result: "승리",
-          playDate: '',
-          characterImage: "https://placekitten.com/100/100",
-          characterName: '엘리',
-          postionImage: "@/public/img/tanker.png",
-          attributes: [
-            // {
-            //   attributeImage: "https://img-api.neople.co.kr/cy/position-attributes/e29cbec17de6ae981984c6d279400483",
-            //   attributeId: "e29cbec17de6ae981984c6d279400483",
-            //   attributeName: "완벽주의자",
-            // }
-            //총 4개 특성
-          ],
-          gameInfo: {
-            kills: 10,
-            deaths: 2,
-            assists: 5,
-            participationRate: 20,
-            kda: 2.5,
-            cs: 150
+      lineGraphData: {
+        labels: [
+          '08-19',
+          '08-20',
+          '08-21',
+          '08-22',
+          '08-23',
+          '08-24',
+          '08-25'
+        ],
+        datasets: [
+          {
+            label: '승수',
+            backgroundColor: '#f87979',
+            data: [0, 0, 0, 0, 0, 0, 0]
           },
-          items: [
-            {
-              image: "https://img-api.neople.co.kr/cy/items/19f0134c20a835546c760c38293ce67a",
-              itemId: "19f0134c20a835546c760c38293ce67a",
-              itemName: "E 파이어 포르테",
-              rarityName: "유니크",
-              rarityColor: "",
-              slotName: "발(이동)",
-              seasonName: "시즌 1 : Eclipse",
-              explainDetail: "\n\n[1레벨] : 장비레벨+3\n비용 650 coin\n이동속도 : +63\n\n[2레벨] : 장비레벨+3\n비용 850 coin\n이동속도 : +63\n불놀이(SL) 공격속도 : +6%\n\n난 언제나 내가 내린 결정에 확신이 있어. 같은 상황이 온다고 해도 언제나 내 답은 같아. "
-            },
-            // 총 16개 아이템
-          ],
-          details: {
-            heal: 5000,
-            damage: 15000,
-            takenDamage: 2000,
-            coins: 10000,
-            participation: 70,
-            vision: 12
+          {
+            label: '패수',
+            backgroundColor: '#f87979',
+            data: [0, 0, 0, 0, 0, 0, 0]
           },
-          team1Players: [
-            {image: "https://placekitten.com/90/90", name: "Player1"},
-            {image: "https://placekitten.com/91/91", name: "Player2"},
-            {image: "https://placekitten.com/92/92", name: "Player3"},
-            {image: "https://placekitten.com/93/93", name: "Player4"},
-            {image: "https://placekitten.com/94/94", name: "Player5"},
-          ],
-          team2Players: [
-            {image: "https://placekitten.com/95/95", name: "Player6"},
-            {image: "https://placekitten.com/96/96", name: "Player7"},
-            {image: "https://placekitten.com/97/97", name: "Player8"},
-            {image: "https://placekitten.com/98/98", name: "Player9"},
-            {image: "https://placekitten.com/99/99", name: "Player10"},
-          ]
-        }
-      ],
+        ]
+      },
+      lineGraphLoaded: false,
+      pieGraphData: {
+        type: 'pie',
+        labels: ['탱커', '원거리딜러', '서포터', '근거리딜러'],
+        datasets: [
+          {
+            backgroundColor: ['#b7d7ef', '#f5d7ee', '#ffecb3', '#ef9a9a'],
+            data: [40, 20, 80, 10],
+          },
+        ]
+      },
+      pieGraphLoaded: false,
+      games: [],
+        // {
+        //   matchId: '',    
+        //   type: "공식전",
+        //   result: "승리",
+        //   playDate: '',
+        //   characterImage: "https://placekitten.com/100/100",
+        //   characterName: '엘리',
+        //   postionImage: "@/public/img/tanker.png",
+        //   attributes: [
+        //     // {
+        //     //   attributeImage: "https://img-api.neople.co.kr/cy/position-attributes/e29cbec17de6ae981984c6d279400483",
+        //     //   attributeId: "e29cbec17de6ae981984c6d279400483",
+        //     //   attributeName: "완벽주의자",
+        //     // }
+        //     //총 4개 특성
+        //   ],
+        //   gameInfo: {
+        //     kills: 10,
+        //     deaths: 2,
+        //     assists: 5,
+        //     participationRate: 20,
+        //     kda: 2.5,
+        //     cs: 150
+        //   },
+        //   items: [
+        //     {
+        //       image: "https://img-api.neople.co.kr/cy/items/19f0134c20a835546c760c38293ce67a",
+        //       itemId: "19f0134c20a835546c760c38293ce67a",
+        //       itemName: "E 파이어 포르테",
+        //       rarityName: "유니크",
+        //       rarityColor: "",
+        //       slotName: "발(이동)",
+        //       seasonName: "시즌 1 : Eclipse",
+        //       explainDetail: "\n\n[1레벨] : 장비레벨+3\n비용 650 coin\n이동속도 : +63\n\n[2레벨] : 장비레벨+3\n비용 850 coin\n이동속도 : +63\n불놀이(SL) 공격속도 : +6%\n\n난 언제나 내가 내린 결정에 확신이 있어. 같은 상황이 온다고 해도 언제나 내 답은 같아. "
+        //     },
+        //     // 총 16개 아이템
+        //   ],
+        //   details: {
+        //     heal: 5000,
+        //     damage: 15000,
+        //     takenDamage: 2000,
+        //     coins: 10000,
+        //     participation: 70,
+        //     vision: 12
+        //   },
+        //   team1Players: [
+        //     {image: "https://placekitten.com/90/90", name: "Player1"},
+        //     {image: "https://placekitten.com/91/91", name: "Player2"},
+        //     {image: "https://placekitten.com/92/92", name: "Player3"},
+        //     {image: "https://placekitten.com/93/93", name: "Player4"},
+        //     {image: "https://placekitten.com/94/94", name: "Player5"},
+        //   ],
+        //   team2Players: [
+        //     {image: "https://placekitten.com/95/95", name: "Player6"},
+        //     {image: "https://placekitten.com/96/96", name: "Player7"},
+        //     {image: "https://placekitten.com/97/97", name: "Player8"},
+        //     {image: "https://placekitten.com/98/98", name: "Player9"},
+        //     {image: "https://placekitten.com/99/99", name: "Player10"},
+        //   ]
+        // }
+      isRatingRecord: true,
       showItemModal: false,
       itemDetail: null,
       // {
@@ -576,30 +636,48 @@ export default {
       })
       .catch((error) => {
         alert("닉네임을 찾을 수 없습니다.", error);
-        console.log("아아 이건 오류다: ", error);
-        this.$router.go(); 
+        console.log("renewal detail error: ", error);
       });
     },
-    fetchDetailData(nickname, gameType) {
+     fetchDetailData(gameType, nickname) {
       axios.get(`/api/search/player/detail/${gameType}/${nickname}`)
       .then((response) => {
+        this.pieGraphLoaded = false;
+        this.lineGraphLoaded = false;
 
         this.detailData = response.data;
 
+        this.lineGraphData.labels = this.generateDateLabels();
+        this.lineGraphData.datasets[0].data = this.detailData.resultHistory.map(entry => entry.winCount);
+        this.lineGraphData.datasets[1].data = this.detailData.resultHistory.map(entry => entry.loseCount);
+
+        this.pieGraphData.datasets[0].data = [this.detailData.tankerUseRate, this.detailData.rangeDealerUseRate, this.detailData.supporterUseRate, this.detailData.meleeDealerUseRate];
+
+      })
+      .then(()=> {
+        this.lineGraphLoaded = true;
+        this.pieGraphLoaded = true;
       })
       .catch((error) => {
         alert("갱신된 정보가 없습니다.", error);
-        console.log("음음 이건 오류야: ", error);
+        console.log("fetch detail error: ", error);
       });
     },
-    formatDate(date) {
-      const month = String(date.getMonth() + 1).padStart(2, '0'); 
-      const day = String(date.getDate()).padStart(2, '0');
-      return `${month}-${day}`; 
+    switchRatingDetail(nickname) {
+      if (!this.isRatingDetail) {
+        this.isRatingDetail = true;
+      }
+      this.fetchDetailData('RATING', nickname);
     },
-    fetchGameData(playerId) {
+    switchNormalDetail(nickname) {
+      if (this.isRatingDetail) {
+        this.isRatingDetail = false;
+      }
+      this.fetchDetailData('NORMAL', nickname);
+    },
+    fetchGameData(gameType, playerId) {
       // 서버에서 사용자 데이터를 가져오는 API 호출
-      axios.get(`/api/search/records/RATING/${playerId}`)
+      axios.get(`/api/search/records/${gameType}/${playerId}`)
         .then((response) => {
           const gameData = response.data;
 
@@ -608,6 +686,12 @@ export default {
           }
 
           this.games = this.transformGameData(gameData.gameRecords);
+          if (gameData.next !== 'no more records') {
+            this.showLoadMoreGames = true;
+            this.nextGames = gameData.next;
+          } else {
+            this.showLoadMoreGames = false;
+          }
 
           if (gameData.next !== 'no more records') {
             this.showLoadMoreGames = true;
@@ -617,8 +701,20 @@ export default {
         })
         .catch((error) => {
           alert("게임기록을 불러오는 것에 실패했습니다", error);
-          console.log("error: ", error);
+          console.log("fetch gamerecord error: ", error);
         });
+    },
+    switchRatingRecord(playerId) {
+      if (!this.isRatingRecord) {
+        this.isRatingRecord = true;
+      }
+      this.fetchGameData('RATING', playerId);
+    },
+    switchNormalRecord(playerId) {
+      if (this.isRatingRecord) {
+        this.isRatingRecord = false;
+      }
+      this.fetchGameData('NORMAL', playerId);
     },
     loadMoreGames() {
       axios.get(`/api/search/records/next/${this.playerId}/${this.nextGames}`)
@@ -640,7 +736,7 @@ export default {
         })
         .catch((error) => {
           alert("추가 게임기록을 불러오는 것에 실패했습니다", error);
-          console.log("error: ", error);
+          console.log("load more gamerecord error: ", error);
         });
     },
     fetchItemData(itemId) {
@@ -657,7 +753,7 @@ export default {
         })
         .catch((error) => {
           alert("아이템 정보를 불러오는 것에 실패했습니다", error);
-          console.log("error: ", error);
+          console.log("fetch item error: ", error);
         });
     },
     fetchAttributeData(attributeId) {
@@ -673,7 +769,7 @@ export default {
         })
         .catch((error) => {
           alert("특성 정보를 불러오는 것에 실패했습니다", error);
-          console.log("error: ", error);
+          console.log("fetch attribute error: ", error);
         });
     },
     forwardDetail(playerName) {
@@ -773,6 +869,24 @@ export default {
               return '3px solid #454545';  
       }
     },
+    generateDateLabels() {
+      const today = new Date(); 
+      const dateLabels = [];
+
+      for (let i = 6; i >= 0; i--) {
+        const date = new Date(today);
+        date.setDate(today.getDate() - i);
+        const formattedDate = this.formatDate(date); 
+        dateLabels.push(formattedDate);
+      }
+
+      return dateLabels; 
+    },
+    formatDate(date) {
+      const month = String(date.getMonth() + 1).padStart(2, '0'); 
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${month}-${day}`; 
+    },
   },
   mounted() {
     axios.get(`/api/search/player/search/${this.$route.params.nickname}`)
@@ -781,19 +895,19 @@ export default {
         this.playerId = playerData.playerId;
         this.playerCharacterImage = `https://img-api.neople.co.kr/cy/characters/${playerData.represent.characterId}?zoom=3`;
         this.ratingGameTier = playerData.tierTest ? playerData.tierName : 'UNRANK';
-        this.ratingWinCount = playerData.record[0].winCount;
-        this.ratingLoseCount = playerData.record[0].loseCount;
-        this.ratingStopCount = playerData.record[0].stopCount;
-        this.normalWinCount = playerData.record[1].winCount;
-        this.normalLoseCount = playerData.record[1].loseCount;
-        this.normalStopCount = playerData.record[1].stopCount;
+        this.ratingWinCount = playerData.records[0].winCount;
+        this.ratingLoseCount = playerData.records[0].loseCount;
+        this.ratingStopCount = playerData.records[0].stopCount;
+        this.normalWinCount = playerData.records[1].winCount;
+        this.normalLoseCount = playerData.records[1].loseCount;
+        this.normalStopCount = playerData.records[1].stopCount;
 
-        this.fetchGameData(this.playerId);
-        this.fetchDetailData(this.playerNickname, 'RATING');
+        this.fetchGameData('RATING', this.playerId);
+        this.fetchDetailData('RATING', this.playerNickname);
       })
       .catch((error) => {
         alert("닉네임 정보가 없습니다.", error);
-        console.log("이건 오류라네: ", error);
+        console.log("mount error: ", error);
         this.$router.go(-1); 
       });
   }
