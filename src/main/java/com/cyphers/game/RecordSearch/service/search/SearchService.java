@@ -92,6 +92,7 @@ public class SearchService {
 
 		// pk가 될 플레이어ID
 		ioDetail.setPlayerId(myPlayerId);
+		ioDetail.setNickname(nickname);
 
 		List<CyphersMatchedInfo> cyMatchedInfoRows = getMatchedInfos(myPlayerId, gameType); // 각 기능에서 쓰일 리스트
 
@@ -112,11 +113,13 @@ public class SearchService {
 
 		// 모스트 사이퍼
 		ioDetail.setMostCypherInfos(Collections.emptyList());
+		log.info("idList 크기: "+idList.size());
 
 		if (cyMatchedInfoRows.size() != 0) {
 			List<IoSearchDetailMostCypherInfo> mostCypherRows = new ArrayList<>();
-
-			for (int i = 0; i < MOST_CYPHER_LENGTH; i++) {
+			
+			//만약 모스트 사이퍼에 선정할 캐릭터가 MOST_CYPHER_LENGTH보다 적다면 idList만큼만 생성
+			for (int i = 0; i < (idList.size() >= MOST_CYPHER_LENGTH ? MOST_CYPHER_LENGTH : idList.size()); i++) {
 				IoSearchDetailMostCypherInfo mostCypherInfo = new IoSearchDetailMostCypherInfo();
 				mostCypherInfo.setCharacterImage("https://img-api.neople.co.kr/cy/characters/"+idList.get(i)+"?zoom=3");
 				for (CyphersCharacterInfo characterInfo : cyCharacter.getRows()) {
@@ -514,7 +517,10 @@ public class SearchService {
 				gameType, ApiDate.NINETY_DAYS_AGO, ApiDate.NOW);
 		CyphersMatchingHistory cyMatchingHistory2 = cyApiService.searchMatchingHistory(playerId,
 				gameType, ApiDate.HALF_YEARS_AGO, ApiDate.NINETY_DAYS_AGO);
-
+		
+		log.info("매칭기록1: ", cyMatchingHistory1);
+		log.info("매칭기록2: ", cyMatchingHistory2);
+		
 		List<CyphersMatchedInfo> matchedInfos = new ArrayList<>();
 
 		for (CyphersMatchedInfo cyMatchedInfo1 : cyMatchingHistory1.getMatches().getRows()) {
