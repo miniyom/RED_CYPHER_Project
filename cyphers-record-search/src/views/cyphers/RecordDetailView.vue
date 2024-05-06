@@ -167,12 +167,15 @@
         </b-col>
         <b-col sm="5">
           <b-list-group flush>
-            <b-list-group-item v-for="recentCypherInfo in detailData.recentlyPlayCyphersInfos" :key="recentCypherInfo.characterId" class="d-flex align-items-center py-2">
-              <b-img src="https://img-api.neople.co.kr/cy/characters/c603a74ba02374026a535dc53e5b8d40?zoom=1" fluid alt="Character Image" class="mr-3"
+            <b-list-group-item v-for="recentCypherInfo in detailData.recentlyPlayCyphersInfos" :key="recentCypherInfo.characterId" class="d-flex align-items-center py-2 text-left">
+              <b-col sm="1" class="me-2">
+                <b-img :src="recentCypherInfo.characterImage" fluid alt="Character Image" class="rounded-circle mr-3"
                      style="width: 35px; height: 35px;"></b-img>
-              <div class="flex-fill">{{ recentCypherInfo.characterName }}</div>
-              <div class="me-4">{{ recentCypherInfo.winCount }}승 {{ recentCypherInfo.loseCount }}패</div>
-              <div class="ml-3">KDA: {{ recentCypherInfo.killCount }}/{{ recentCypherInfo.deathCount }}/{{ recentCypherInfo.assistCount }}</div>
+              </b-col>
+              <b-col sm="2" class="me-2">{{ recentCypherInfo.characterName }}</b-col>
+              <b-col sm="2" class="me-3">{{ recentCypherInfo.winCount }}승 {{ recentCypherInfo.loseCount }}패</b-col>
+              <b-col sm="4" >K/D/A: {{ recentCypherInfo.killCount }}/{{ recentCypherInfo.deathCount }}/{{ recentCypherInfo.assistCount }}</b-col>
+              <b-col sm="2" >KDA: {{ formatSmallNumber((recentCypherInfo.killCount+recentCypherInfo.assistCount)/recentCypherInfo.deathCount) }}</b-col>
             </b-list-group-item>
           </b-list-group>
         </b-col>
@@ -308,12 +311,12 @@
                       </b-col>
                       <b-col>
                         <div class="text-right">
-                          <div>{{ formatNumber(game.details.heal) }}</div>
-                          <div>{{ formatNumber(game.details.damage) }}</div>
-                          <div>{{ formatNumber(game.details.takenDamage) }}</div>
-                          <div>{{ formatNumber(game.details.coins) }}</div>
-                          <div>{{ formatNumber(game.details.participation) }}</div>
-                          <div>{{ formatNumber(game.details.vision) }}</div>
+                          <div>{{ formatBigNumber(game.details.heal) }}</div>
+                          <div>{{ formatBigNumber(game.details.damage) }}</div>
+                          <div>{{ formatBigNumber(game.details.takenDamage) }}</div>
+                          <div>{{ formatBigNumber(game.details.coins) }}</div>
+                          <div>{{ formatBigNumber(game.details.participation) }}</div>
+                          <div>{{ formatBigNumber(game.details.vision) }}</div>
                         </div>
                       </b-col>
                     </b-row>
@@ -432,6 +435,15 @@ export default {
         recentlyWinRate: 0,
         recentlyKda: 0.0,
         recentlyAverageSurvivalRate: 0,
+        recentlyPlayCyphersInfos: [
+          {
+            characterImage: '',
+            characterName: '',
+            winRate: 0,
+            playCount: 0,
+            kda: 0,
+          }
+        ]
       },
       lineGraphData: {
         labels: [
@@ -819,12 +831,18 @@ export default {
       // 그 외에는 원래의 이름 그대로 반환
       return name;
     },
-    formatNumber(number) {
+    formatBigNumber(number) {
       //1000이상 수치를 k단위로 변환
       if (number >= 10000) {
         return (number / 1000).toFixed(1) + 'k';
       }
       return number.toString();
+    },
+    formatSmallNumber(value) {
+      if (typeof value !== 'number') {
+        return value;
+      }
+      return value.toFixed(2);
     },
     backgroundColorByResult(result) {
       if (result === 'win') {

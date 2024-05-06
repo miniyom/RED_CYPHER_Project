@@ -57,7 +57,7 @@ public class SearchService {
 	final static Integer MOST_CYPHER_LENGTH = 10; // 모스트 사이퍼에서 보여줄 캐릭터 개수
 	final static Integer RECENT_CYPHER_LENGTH = 3; // 최근 2주간 데이터에서 보여줄 캐릭터 개수
 	final static Float PERFECT_KDA = -1.0f; // kda에서 death수가 0일 경우 리턴할 값
-	final static Integer WIN_AND_LOSE_KEY = 6; // 승패 그래프에서 보여줄 데이터 키(0~6, 총 7개)
+	final static Integer WIN_AND_LOSE_KEY = 13; // 승패 그래프에서 보여줄 데이터 키(0~6, 총 7개)
 	
 	public List<String> getNicknameList(String nickname) throws Exception {
 		List<String> nicknameList = new ArrayList<>();
@@ -113,7 +113,6 @@ public class SearchService {
 
 		// 모스트 사이퍼
 		ioDetail.setMostCypherInfos(Collections.emptyList());
-		log.info("idList 크기: "+idList.size());
 
 		if (cyMatchedInfoRows.size() != 0) {
 			List<IoSearchDetailMostCypherInfo> mostCypherRows = new ArrayList<>();
@@ -201,8 +200,8 @@ public class SearchService {
 		// 승패 데이터(그래프)
 		List<IoSearchDetailResultHistoryInfo> resultHistory = new ArrayList<>();
 		LocalDate today = LocalDate.now();
-		LocalDate oneWeekAgo = today.minusWeeks(1);
-		List<CyphersMatchedInfo> weeklyMatchedInfoRows = filterDataByDate(cyMatchedInfoRows, oneWeekAgo, today);
+		LocalDate twoWeekAgo = today.minusWeeks(2);
+		List<CyphersMatchedInfo> weeklyMatchedInfoRows = filterDataByDate(cyMatchedInfoRows, twoWeekAgo, today);
 
 		Map<Integer, Pair<Integer, Integer>> cyMatchingHistoryMap = new HashMap<>(); // pair 앞은 승수, 뒤는 패수
 		Pair<LocalDate, Integer> matchedDateAndInt = Pair.of(today, WIN_AND_LOSE_KEY);
@@ -243,12 +242,13 @@ public class SearchService {
 			winAndLoseHisory.setWinCount(cyMatchingHistoryMap.get(matchedDateAndInt.getSecond()).getFirst());
 			winAndLoseHisory.setLoseCount(cyMatchingHistoryMap.get(matchedDateAndInt.getSecond()).getSecond());
 			resultHistory.set(matchedDateAndInt.getSecond(), winAndLoseHisory);
+			log.info("날짜데이터"+winAndLoseHisory.getHistoryDate().toString());
 		}
 
 		ioDetail.setResultHistory(resultHistory);
 
 		// 최근 2주간 게임 데이터
-		LocalDate twoWeekAgo = LocalDate.now().minus(2, ChronoUnit.WEEKS);
+//		LocalDate twoWeekAgo = LocalDate.now().minus(2, ChronoUnit.WEEKS);
 		List<CyphersMatchedInfo> recentMatchedInfoRows = filterDataByDate(cyMatchedInfoRows, twoWeekAgo,
 				LocalDate.now());
 
@@ -302,7 +302,7 @@ public class SearchService {
 
 			for (int i = 0; i < RECENT_CYPHER_LENGTH; i++) {
 				IoSearchDetailRecentlyPlayCyphersInfo recentCypherInfo = new IoSearchDetailRecentlyPlayCyphersInfo();
-				recentCypherInfo.setCharacterId(idList.get(i));
+				recentCypherInfo.setCharacterImage("https://img-api.neople.co.kr/cy/characters/"+idList.get(i)+"?zoom=3");
 				for (CyphersCharacterInfo characterInfo : cyCharacter.getRows()) {
 					if (characterInfo.getCharacterId().equals(idList.get(i))) {
 						recentCypherInfo.setCharacterName(characterInfo.getCharacterName());
@@ -517,9 +517,6 @@ public class SearchService {
 				gameType, ApiDate.NINETY_DAYS_AGO, ApiDate.NOW);
 		CyphersMatchingHistory cyMatchingHistory2 = cyApiService.searchMatchingHistory(playerId,
 				gameType, ApiDate.HALF_YEARS_AGO, ApiDate.NINETY_DAYS_AGO);
-		
-		log.info("매칭기록1: ", cyMatchingHistory1);
-		log.info("매칭기록2: ", cyMatchingHistory2);
 		
 		List<CyphersMatchedInfo> matchedInfos = new ArrayList<>();
 

@@ -94,7 +94,7 @@ public class CrsSearchService {
 			CrsRecentlyPlayCypherInfos crsRecentCypher = recentCypherInfos.get(i);
 			IoSearchDetailRecentlyPlayCyphersInfo ioRecentCypherInfo = ioRecentlyPlayCypher.get(i);
             
-            crsRecentCypher.setCharacterId(ioRecentCypherInfo.getCharacterId());
+            crsRecentCypher.setCharacterId(ioRecentCypherInfo.getCharacterImage());
             crsRecentCypher.setCharacterName(ioRecentCypherInfo.getCharacterName());
             crsRecentCypher.setWinCount(ioRecentCypherInfo.getWinCount());
             crsRecentCypher.setLoseCount(ioRecentCypherInfo.getLoseCount());
@@ -159,7 +159,7 @@ public class CrsSearchService {
 		for (IoSearchDetailRecentlyPlayCyphersInfo recentCypherInfo : detailResponse.getRecentlyPlayCyphersInfos()) {
 			CrsRecentlyPlayCypherInfos crsRecentCypherInfo = CrsRecentlyPlayCypherInfos.builder()
 														.crsDetailSearch(response)
-														.characterId(recentCypherInfo.getCharacterId())
+														.characterId(recentCypherInfo.getCharacterImage())
 														.characterName(recentCypherInfo.getCharacterName())
 														.winCount(recentCypherInfo.getWinCount())
 														.loseCount(recentCypherInfo.getLoseCount())
@@ -206,7 +206,7 @@ public class CrsSearchService {
     	List<RecentlyPlayCypherInfoResponse> recentCypherResponse = new ArrayList<>();
     	for (CrsRecentlyPlayCypherInfos crsRecentCypher : cds.getRecentlyPlayCyphersInfos()) {
     		RecentlyPlayCypherInfoResponse rcres = new RecentlyPlayCypherInfoResponse();
-    		rcres.setCharacterId(crsRecentCypher.getCharacterId());
+    		rcres.setCharacterImage(crsRecentCypher.getCharacterId());
     		rcres.setCharacterName(crsRecentCypher.getCharacterName());
     		rcres.setWinCount(crsRecentCypher.getWinCount());
     		rcres.setLoseCount(crsRecentCypher.getLoseCount());

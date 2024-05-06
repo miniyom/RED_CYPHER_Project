@@ -12,7 +12,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Builder
 public class IoSearchDetailRecentlyPlayCyphersInfo {
-    private String characterId;
+    private String characterImage;
     private String characterName;
     private Integer winCount;
     private Integer loseCount;
