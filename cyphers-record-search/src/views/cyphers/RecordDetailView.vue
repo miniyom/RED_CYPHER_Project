@@ -128,11 +128,12 @@
               </b-col>
             </b-row>
 
+            <p class="p-font mt-3 d-flex justify-content-start">2주간의 승패 데이터입니다.</p>
             <b-row style="height: 300px;" class="mt-4">
               <!-- LineGraph 컴포넌트를 import하여 사용하고, 필요한 데이터를 props로 전달 -->
               <LineGraph  v-if="lineGraphLoaded" :chartData="lineGraphData" />
             </b-row>
-
+            
           </b-container>
 
         </b-col>
@@ -891,7 +892,7 @@ export default {
       const today = new Date(); 
       const dateLabels = [];
 
-      for (let i = 6; i >= 0; i--) {
+      for (let i = 13; i >= 0; i--) {
         const date = new Date(today);
         date.setDate(today.getDate() - i);
         const formattedDate = this.formatDate(date); 
