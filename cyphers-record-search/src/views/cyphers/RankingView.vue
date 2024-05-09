@@ -41,7 +41,7 @@
                         </b-col>
                         <b-col class="d-flex flex-column">
                             <b-row class="align-self-end">{{ totalRankerNum }}명</b-row>
-                            <b-row class="align-self-end">{{ (heroCutPoint / totalRankerNum).toFixed(2) }}%</b-row>
+                            <b-row class="align-self-end">{{ ((heroCutPoint !== 0 ? legendCutPoint+heroCutPoint : 0) / totalRankerNum).toFixed(2) }}%</b-row>
                             <b-row class="align-self-end">{{ heroPlayerNum}}명</b-row>
                         </b-col>
                     </b-row>
